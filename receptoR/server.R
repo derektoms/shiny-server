@@ -1,4 +1,4 @@
-# 2017-07-31
+# 2018-02-15
 
 ########################################
 #$#$#$#$#$#$    HEADER     $#$#$#$#$#$#$
@@ -72,11 +72,11 @@ gse_gsm = tbl(db, 'gse_gsm')
 ## SERVER
 server <- function(input, output,session) {
   ## Change GPL
-  #gplSelection <- switch(input$gplSelection,
-  #                 mouse = 'GPL1261',
-  #                 human = 'GPL570')
   output$gplSelection <- renderText({
-    paste("You chose", input$gplSelection)
+    species <- switch(input$gplSelection,
+                   mouse = 'GPL1261',
+                   human = 'GPL570')
+    paste("You chose", species)
   })
   
   ## Convert SQLite to data frames
