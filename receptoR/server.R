@@ -55,7 +55,7 @@ library(shinyjs)
 
 #if(!file.exists('./../data/GEOmetadb.sqlite')) getSQLiteFile()
 
-db = src_sqlite('data/GEOmetadb.sqlite')
+db = src_sqlite('../../data/GEOmetadb.sqlite')
 src_tbls(db)
 gse = tbl(db, 'gse')
 gse_gpl = tbl(db, 'gse_gpl')
