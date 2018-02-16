@@ -74,17 +74,17 @@ server <- function(input, output,session) {
   ## Change GPL
   output$gplSelection <- renderText({
     species <- switch(input$gplSelection,
-                   mouse = 'GPL1261',
+                   mouse = 'GPL1260',
                    human = 'GPL570')
     paste("You chose", species)
   })
   
   ## Convert SQLite to data frames
-  as.data.frame.DataTable(gse) -> gse.df
-  as.data.frame.DataTable(gse_gsm) -> gse_gsm.df
-  as.data.frame.DataTable(gsm) -> gsm.df
-  gsm.df$category <- rep("Not yet assigned", nrow(gsm.df)) # I don't love this but it should get the job done
-  gse_to_filter <- data.frame(gse="")
+#  as.data.frame.DataTable(gse) -> gse.df
+#  as.data.frame.DataTable(gse_gsm) -> gse_gsm.df
+#  as.data.frame.DataTable(gsm) -> gsm.df
+#  gsm.df$category <- rep("Not yet assigned", nrow(gsm.df)) # I don't love this but it should get the job done
+#  gse_to_filter <- data.frame(gse="")
   
   ## Search functions
   Totalchar <- eventReactive(input$Search, {nchar(input$Key)})
