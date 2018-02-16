@@ -72,11 +72,11 @@ gse_gsm = tbl(db, 'gse_gsm')
 ## SERVER
 server <- function(input, output,session) {
   ## Change GPL
-  #gplSelection <- switch(input$gplSelection,
-  #                 mouse = 'GPL1261',
-  #                 human = 'GPL570')
+  gplSelection <- switch(input$gplSelection,
+                   mouse = 'GPL1261',
+                   human = 'GPL570')
   output$gplSelection <- renderText({
-    paste("You chose", input$gplSelection)
+    paste("You chose", gplSelection)
   })
   
   ## Convert SQLite to data frames
