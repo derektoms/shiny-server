@@ -11,12 +11,12 @@ shinyUI(fluidPage(
     sidebarPanel(
       selectInput("cultureware",
                   "Culture vessel:",
-                  list("T75"=75,"T25"=25,"24wp"=1.9,"6wp"=34.8,"96wp"=0.32,"35 mm"=9,"60 mm"=21,"100 mm"=55),
+                  list("T75"=75,"T25"=25,"24wp"=1.9,"6wp"=34.8,"96wp"=0.32,"35 mm"=9,"60 mm"=21,"100 mm"=55)),
     # Culture parameters
     
       selectInput("celltype",
                   "Cell type:",
-                  list("Primary MEF"=75,"CHO"=88,"Primary hepatocyte"=600),
+                  list("Primary MEF"=75,"CHO"=88,"Primary hepatocyte"=600)),
     # Culture conditions
 
       sliderInput("O2_pressure",
