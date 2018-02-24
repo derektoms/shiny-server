@@ -26,7 +26,7 @@ shinyUI(fluidPage(
                   value = 20),
       selectInput("elev",
                   "Location:",
-                  list("Vancouver"=1,"Calgary"=0.87),
+                  list("Vancouver"=1,"Calgary"=0.87)),
     # Advanced control
     
       sliderInput("depth",
