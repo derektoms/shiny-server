@@ -15,7 +15,7 @@ shinyUI(fluidPage(
       selectInput("celltype",
                   "Cell type:",
                   list("Primary MEF"=75,"CHO"=88,"Primary hepatocyte"=600)),
-      hr()
+      hr(),
       # Culture conditions
       sliderInput("O2_pressure",
                   "Oxygen concentration (%):",
@@ -25,7 +25,7 @@ shinyUI(fluidPage(
       selectInput("elev",
                   "Location:",
                   list("Vancouver"=1,"Calgary"=0.87)),
-      hr()
+      hr(),
       # Advanced control
     
       sliderInput("depth",
@@ -46,7 +46,7 @@ shinyUI(fluidPage(
       column(4,
              textOutput("caption"),
              plotOutput("piePlot")
-      )
+      ),
       column(3,
              plotOutput("wellPlot")
       )
