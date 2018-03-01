@@ -23,7 +23,7 @@ shinyUI(fluidPage(
                   "Hepatocytes (rat)"=325,
                   "Erythrocytes (rabbit)"=0.02,
                   "Jurkat"=12,
-                  "ESC"=40
+                  "ESC (mouse)"=40
                   )),
       hr(),
       # Culture conditions
