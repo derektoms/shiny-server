@@ -1,4 +1,4 @@
-library(shiny)
+require(shiny)
 require(ggplot2)
 require(ReacTran)
 require(scales)
@@ -23,8 +23,9 @@ dataPlots<-reactive({
     k.Q <- 2.64e-7 # mol/L, Respiratory constant \cite{FROESE1962}
     
     ## Variables
-    Temp <- 310.15 # K (37°C), Temperature
-    a <- (input$depth)/100 # m, Depth of fluid (3 mm)
+    Temp <- as.numeric(input$temp) + 273.15 # K (input from °C), Temperature
+    a <- (as.numeric(input$volume)/as.numeric(input$surfA))/100 # m (from vol/SA), Depth of fluid
+    #     a <- (input$depth)/100 # m, Depth of fluid (3 mm)
 
     p.O2.inc <- (input$O2_pressure)/100 # Partial pressure of O2 supplied to the incubator
     p.CO2.inc <- 0.05 # Partial pressure of CO2 supplied to the incubator
@@ -79,6 +80,9 @@ dataPlots<-reactive({
     }
 
     O2.df <- data.frame(group=c("Available","Restricted"),value=c(100*(1-O2.def),100*O2.def)) # collect oxygen restriction data into a dataframe
+    ## Pass calculated values out
+    media.depth <<- R*1000
+    cell.oxygen <<- oxy[1,1]
     
     ## Culture well plot
     well <<- ggplot(oxy,aes(x=area,y=depth,fill=conc)) + geom_tile() + scale_y_continuous(labels=function(x)x*100,limits=c(0,0.01)) + labs(fill=expression(O[2]~(mM)),x=NULL,y="depth (cm)",title="Culture Media Oxygen Profile") + scale_fill_gradientn(colours=brewer.pal(11,"RdYlGn"),limits=c(0,0.5),oob=squish, values=c(0,.25,1)) + scale_x_continuous(breaks=NULL,labels=NULL) + theme(legend.key.height=unit(3,'line'),legend.key.width=unit(2,'line'))
@@ -90,20 +94,40 @@ dataPlots<-reactive({
     
 })
 
+output$advanced <- renderUI({
+    tagList(
+    textInput("temp",
+              "Incubation temperature °C):",
+              value=37),
+    sliderInput("surfA",
+              label=div(HTML("Surface area (cm<sup>2</sup>):")),
+              min = 0.1,
+              max = 100,
+              value = input$cultureware),
+    sliderInput("Qmet",
+              label=div(HTML("Cell metabolism (amol O<sub>2</sub>/s•cell):")),
+              min = 0,
+              max = 1000,
+              value = input$celltype,
+              step=4)
+    )
+})
+            
   output$wellPlot <- renderPlot({
         dataPlots()
         well
   })
 
-    output$piePlot <- renderPlot({
+  output$piePlot <- renderPlot({
         dataPlots()
         O2
     })
     
-    output$Qcell <- renderText({input$Qmet/1e7})
+  output$Qcell <- renderText({paste(input$Qmet/1e7)})  
+  output$atmo <- renderText({paste("Atmosphere (atm) = ",input$elev)})
+  output$depth <- renderText({paste("Depth (mm) = ",media.depth)})
+  output$oxy <- renderText({paste("Oxygen at cell surface (mmol) = ",cell.oxygen)})
     
-    output$caption <- renderText({paste("Atmosphere (atm) = ",input$elev)})
-    
-    ## Kill shinyApp when session closes
-    session$onSessionEnded(stopApp)
+  ## Kill shinyApp when session closes
+  session$onSessionEnded(stopApp)
 })
