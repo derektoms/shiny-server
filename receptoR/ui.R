@@ -1,4 +1,8 @@
+## 2018-02-27
+
 ## Javascript
+
+# this codes for the 'enter/return' key as an action button
 jscode <- '
 $(function() {
   var $els = $("[data-proxy-click]");
@@ -25,7 +29,10 @@ ui <- fluidPage(
              tabPanel("Search for GEO data series (GSE)",  
                       #search GSE, and select which to include
                       helpText("After searching, click on the second tab to proceed to the next page"),
-                      radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1260)" = "mouse", "Human (GPL570)" = "human")),
+                      ## choose platform
+                      # GPL1261 [Mouse430_2] Affymetrix Mouse Genome 430 2.0 Array
+                      # GPL570 [HG-U133_Plus_2] Affymetrix Human Genome U133 Plus 2.0 Array
+                      radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1261)" = "mouse", "Human (GPL570)" = "human")),
                       textOutput("gplSelection"),
                       tagAppendAttributes(
                         textInput("Key", "Enter search terms, separated by commas", value = ""),
@@ -52,7 +59,7 @@ ui <- fluidPage(
              tabPanel("Assign samples to categories", uiOutput("page3"), 
                       helpText("Highlight the desired search results and click 'assign' to assign them to the specificed category"),
                       actionButton("Assign", "Assign Categories"),
-                      verbatimTextOutput("selectedRows"),
+                      verbatimTextOutput("selectedRows"), ## doesn't seem to be working
                       actionButton("Remove", "Finalize selections and remove not included"),
                       helpText("Do not click 'finish' until all selections have been made. 
                                This button removes the unselected rows and generates a new table on the next page."),
