@@ -35,3 +35,60 @@ gse %>%
   
   collect() %>% ## this was needed here to actually be able to filter a second time
   filter(str_detect(title, search_string))
+  
+  gse %>% 
+    left_join(gse_gpl, copy = TRUE) %>% 
+    filter(str_detect(title, search_string))
+    filter(gpl == "GPL570") %>% 
+    select(title,gse) %>%
+    collect() %>% ## this was needed here to be able to filter a second time
+    
+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#
+
+### Example
+
+
+library(shiny)
+library(DBI)
+library(pool)
+
+## set these up outside of the server function
+## this could be where the database is first filtered based on GPL
+## both can be stored (the other data really isn't necessary) so we
+## limit calls to the server and use a local version of the table as
+## a dataframe for each session
+
+pool <- dbPool(
+  drv = RMySQL::MySQL(),
+  dbname = "shinydemo",
+  host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
+  username = "guest",
+  password = "guest"
+)
+
+ui <- fluidPage(
+  textInput("ID", "Enter your ID:", "5"),
+  tableOutput("tbl"),
+  numericInput("nrows", "How many cities to show?", 10),
+  plotOutput("popPlot")
+)
+
+server <- function(input, output, session) {
+  output$tbl <- renderTable({
+    pool %>% tbl("City") %>%
+      filter(ID == input$ID)
+  })
+  output$popPlot <- renderPlot({
+    df <- pool %>% tbl("City") %>%
+      head(as.integer(input$nrows)[1]) %>% collect()
+    pop <- df$Population
+    names(pop) <- df$Name
+    barplot(pop)
+  })
+}
+
+shinyApp(ui, server)
+
+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#
+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#
+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#+#

@@ -101,7 +101,7 @@ server <- function(input, output,session) {
     species <- switch(input$gplSelection,
                    mouse = 'GPL1261',
                    human = 'GPL570')
-    # paste("You chose", species)
+    paste("You chose", species)
   })
   
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
@@ -195,7 +195,7 @@ server <- function(input, output,session) {
     if (input$Assign == 0)
       return (gsm_annotated())
     else
-      return (gsm_annotated())}, options=list(searching=FALSE))
+      return (finishedtable())}, options=list(searching=FALSE))
 
   output$finishedtable <- renderTable({finishedtable()})
       
