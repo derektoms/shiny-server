@@ -98,7 +98,10 @@ library(shinyjs)
 #save(gsmGPL1261, file = "../../data/gsmGPL1261.rda")
 
 ### not the best place to put this, but it should work for now
-load(c("../../data/gseGPL570.rda","../../data/gsmGPL570.rda","../../data/gseGPL1261.rda","../../data/gsmGPL1261.rda"))
+load("../../data/gseGPL570.rda")
+load("../../data/gsmGPL570.rda")
+load("../../data/gseGPL1261.rda")
+load("../../data/gsmGPL1261.rda")
 
 
 ########################################
