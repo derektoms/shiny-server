@@ -56,42 +56,54 @@ library(shinyjs)
 ## Replace the following line with periodic updates of the db from GEO
 #if(!file.exists('./../data/GEOmetadb.sqlite')) getSQLiteFile()
 
-GEOdb = src_sqlite('../../data/GEOmetadb.sqlite')
+
+### UPDATE March 2018
+### process and save GEOdb as .rda files to save time loading
+### using .rda instead of saveRDS and .rds to maintain the original names
+
+
+#GEOdb = src_sqlite('../../data/GEOmetadb.sqlite')
 #src_tbls(GEOdb)
-gse = tbl(GEOdb, 'gse')
-gse_gpl = tbl(GEOdb, 'gse_gpl')
+#gse = tbl(GEOdb, 'gse')
+#gse_gpl = tbl(GEOdb, 'gse_gpl')
 #gpl = tbl(GEOdb, 'gpl') 
-gsm = tbl(GEOdb, 'gsm')
-gse_gsm = tbl(GEOdb, 'gse_gsm')
+#gsm = tbl(GEOdb, 'gsm')
+#gse_gsm = tbl(GEOdb, 'gse_gsm')
 
 
 # Filter GEOdb tables based on GPL that can be used for subsequent searches based on the species selected (this greatly speeds up the actual run time). I thought it best to keep the whole table, then select specific columns as needed farther along.
 
 ## GPL570
-gseGPL570 <- gse %>% 
-left_join(gse_gpl, copy = TRUE) %>% 
-filter(gpl == "GPL570") %>% 
-collect()
+#gseGPL570 <- gse %>% 
+#left_join(gse_gpl, copy = TRUE) %>% 
+#filter(gpl == "GPL570") %>% 
+#collect()
+#save(gseGPL570, file = "../../data/gseGPL570.rda")
 
-gsmGPL570 <- gsm %>% 
-filter(gpl == "GPL570") %>% 
-collect()
+#gsmGPL570 <- gsm %>% 
+#filter(gpl == "GPL570") %>% 
+#collect()
+#save(gsmGPL570, file = "../../data/gsmGPL570.rda")
 
 ## GPL1261
-gseGPL1261 <- gse %>% 
-left_join(gse_gpl, copy = TRUE) %>% 
-filter(gpl == "GPL1261") %>% 
-collect()
+#gseGPL1261 <- gse %>% 
+#left_join(gse_gpl, copy = TRUE) %>% 
+#filter(gpl == "GPL1261") %>% 
+#collect()
+#save(gseGPL1261, file = "../../data/gseGPL1261.rda")
 
-gsmGPL1261 <- gsm %>% 
-filter(gpl == "GPL1261") %>% 
-collect()
+#gsmGPL1261 <- gsm %>% 
+#filter(gpl == "GPL1261") %>% 
+#collect()
+#save(gsmGPL1261, file = "../../data/gsmGPL1261.rda")
+
+### not the best place to put this, but it should work for now
+load(c("../../data/gseGPL570.rda","../../data/gsmGPL570.rda","../../data/gseGPL1261.rda","../../data/gsmGPL1261.rda"))
 
 
 ########################################
 #$#$#$#$#$#$    Shiny App  $#$#$#$#$#$#$
 ########################################
-
 
 ## SERVER
 server <- function(input, output,session) {
@@ -195,7 +207,7 @@ server <- function(input, output,session) {
     if (input$Assign == 0)
       return (gsm_annotated())
     else
-      return (finishedtable())}, options=list(searching=FALSE))
+      return (gsm_annotated())}, options=list(searching=FALSE))
 
   output$finishedtable <- renderTable({finishedtable()})
       
