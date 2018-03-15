@@ -45,7 +45,8 @@ ui <- fluidPage(
                         actionButton("Search", "Search")
                     ),
                     mainPanel(
-                        "Select GEO data series (GSE)", uiOutput("page1"), 
+                        #"Select GEO data series (GSE)",
+                        uiOutput("page1"), 
                         helpText("Highlight the desired search results (GSE) and click 'Retrieve GSM' to proceed"),
                         actionButton("GSE_GSM", "Retrieve GSM"),
                         helpText("Do not click 'finish' until all selections have been made. This button removes the unselected rows and generates a new table on the next page."),
