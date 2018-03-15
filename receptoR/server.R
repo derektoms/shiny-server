@@ -155,7 +155,7 @@ server <- function(input, output, session) {
   # Assign categories
   rows <- reactiveValues() 
       observeEvent(input$Assign, {
-          if (input$Assign == 0) {
+          if (input$Assign == 1) {
             gsm_selected <- gsm_annotated()
             gsm_selected$category <- rep("Not yet assigned", nrow(gsm_selected))
             gsm_selected[input$gsm_table_rows_selected,"category"] <- input$selection
@@ -209,12 +209,12 @@ server <- function(input, output, session) {
       return (filter(gse_gsm,gse %in% gse_to_keep()$gse)))
   
   output$gsm_table <- DT::renderDataTable({
-    if (input$Assign == 0)
-      return (gsm_annotated())
-    else
-      return (gsm_selected)}, options=list(searching=FALSE))
+    #if (input$Assign == 0)
+    #  return (gsm_annotated())
+    #else
+      return (gsm_annotated())}, options=list(searching=FALSE))
 
-  output$finishedtable <- renderTable({finishedtable()})
+  output$finishedtable <- renderTable({finishedtable()[,c(2,3,4,10,31,32,33)]})
       
   ## Kill shinyApp when session closes
   session$onSessionEnded(stopApp)
