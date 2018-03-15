@@ -212,7 +212,7 @@ server <- function(input, output, session) {
     if (input$Assign == 0)
       return (gsm_annotated())
     else
-      return (rows$df)}, options=list(searching=FALSE))
+      return (gsm_selected)}, options=list(searching=FALSE))
 
   output$finishedtable <- renderTable({finishedtable()})
       

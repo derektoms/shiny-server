@@ -37,7 +37,7 @@ ui <- fluidPage(
             tabPanel("Select GEO data series (GSE)",  #search GSE, and select which to include
                 sidebarLayout(
                     sidebarPanel(
-                        h4("1. Search for GEO data series (GSE)")
+                        h4("1. Search for GEO data series (GSE)"),
                         radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1261)" = "mouse", "Human (GPL570)" = "human")),
                         tagAppendAttributes(
                             textInput("Key", "Enter search terms, separated by commas", value = ""),
