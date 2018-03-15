@@ -212,7 +212,14 @@ server <- function(input, output, session) {
     #if (input$Assign == 0)
     #  return (gsm_annotated())
     #else
-      return (gsm_annotated())}, options=list(searching=FALSE))
+      return (gsm_annotated())}, options=list(searching=FALSE, columnDefs=list(list(
+              targets = "_all",
+              render = JS(
+                  "function(data, type, row, meta) {",
+                      "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
+                      "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
+                      "}") 
+                      ))))
 
   output$finishedtable <- renderTable({finishedtable()[,c(2,3,4,10,31,32,33)]})
       
