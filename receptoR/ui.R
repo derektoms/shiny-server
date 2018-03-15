@@ -21,11 +21,18 @@ $(function() {
 });
 '
 
+library(shiny)
+library(shinythemes)
+library(shinyjs)
+
 ## UI
 ui <- fluidPage(
   tags$head(tags$script(HTML(jscode))),
   #creation of a navigation bar and mulitple pages
-  navbarPage("Bioinformatics Software",
+  navbarPage("receptoR",
+  
+              theme = "sandstone.css",
+              
              tabPanel("Search for GEO data series (GSE)",  
                       #search GSE, and select which to include
                       helpText("After searching, click on the second tab to proceed to the next page"),

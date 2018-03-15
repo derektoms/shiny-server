@@ -29,8 +29,8 @@ library(affy)
 # Equivalent human platform is GPL570 with 127 514 samples
 # HG-U133_Plus_2] Affymetrix Human Genome U133 Plus 2.0 Array
 
-#library(mouse4302.db) 
-#library(hgu133plus2.db)  Both aren't available
+library(mouse4302.db) 
+library(hgu133plus2.db)  # Both aren't available
 
 # Other packages:
 #install.packages(c('dplyr','dbplyr','tidyr','ggplot2','RColorBrewer','readr','stringr','shiny','shinythemes','shinyjs','DT'))
@@ -56,11 +56,13 @@ library(shinyjs)
 ## Replace the following line with periodic updates of the db from GEO
 #if(!file.exists('./../data/GEOmetadb.sqlite')) getSQLiteFile()
 
-
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 ### UPDATE March 2018
 ### process and save GEOdb as .rda files to save time loading
 ### using .rda instead of saveRDS and .rds to maintain the original names
 
+### This should all be replaced by a function that can periodically update the GEOmetadb and subsequently update the .rda files
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 
 #GEOdb = src_sqlite('../../data/GEOmetadb.sqlite')
 #src_tbls(GEOdb)
@@ -180,7 +182,75 @@ server <- function(input, output,session) {
     dplyr::filter(rows$df, category %in% c(input$cat1, input$cat2, input$cat3))
   })
  
-  ## Outputs
+ #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+ #$# Data processing (from processing_6.r), 6 March 2018
+ #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+ 
+ gsm_to_fetch = finishedtable()$gsm
+
+ get_files = TRUE
+ #get_files = FALSE
+ if (get_files) {
+   # get raw CEL files
+   rawFilePaths = lapply(gsm_to_fetch, function(x) {
+       getGEOSuppFiles(x) # confirm this is the right function
+   })
+  
+   gsm_dirs = list.files(pattern = "GSM")
+   gsm_files = lapply(gsm_dirs, list.files, pattern = ".gz", full.names = TRUE)
+  
+ # New approach: Normalize together ------------------------------------------------------------
+ all_data = ReadAffy(filenames = unlist(gsm_files))
+
+ all_eset = rma(all_data)
+
+ all_pData = pData(all_eset)
+
+ gsm = str_match(rownames(all_pData), "(GSM[[:alnum:]]+)")[,2]
+
+ pheno_df = pheno %>% add_rownames("gsm") 
+
+ all_pData_df = all_pData %>% mutate(gsm = gsm) %>% 
+   left_join(pheno, by = c("gsm" = "geo_accession")) %>% 
+   dplyr::select(gsm, Study, tissue)
+
+ rownames(all_pData_df) = rownames(all_pData)
+ pData(all_eset) = all_pData_df
+
+ all_eset_final = all_eset[,!is.na(pData(all_eset)$Study)]
+
+ pData(all_eset_final) %>% View
+
+ identical(colnames(exprs(all_eset_final)), rownames(pData(all_eset_final)))
+
+ run_tsne(t(exprs(all_eset_final)), pData(all_eset_final))
+
+
+ # ok that looks good let's save this now
+
+ save(all_eset_final, file = "final_processed_data_2017-06-25.rda")
+
+ } else {
+   load("esets_2017-06-25.rda")
+ }
+
+
+ ### DE
+
+ ID = featureNames(all_eset_final)
+ Symbol = getSYMBOL(ID, "hgu133plus2.db")
+ fData(all_eset_final) = data.frame(Symbol = Symbol)
+
+ eset = all_eset_final
+
+ tissue = pData(eset)$tissue
+ design = model.matrix(~0 + tissue)
+ colnames(design) = c(UIa,UIb,UIc)
+ 
+ # end processing
+ #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+ 
+ ## Outputs
   output$page3 <- renderUI(
     fluidRow(
       column(3,
