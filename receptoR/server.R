@@ -200,7 +200,14 @@ server <- function(input, output,session) {
  #     filtered_gse()[,c(1,2,7)]}, options=list(searching=TRUE, pageLength=20))
  
   output$filteredgse <- DT::renderDataTable({
-          filtered_gse()}, options=list(searching=TRUE, pageLength=20))
+          filtered_gse()}, options=list(searching=TRUE, pageLength=20, columnDefs=list(list(
+              targets = c(8,9,12),
+              render = JS(
+                  "function(data, type, row, meta) {",
+                      "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
+                      "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
+                      "}") 
+                      )))) ## typeof data needs to be a string, as a NA, converted to JS NULL breaks things
  
  
   output$GSEtoGSMlist <- renderTable(

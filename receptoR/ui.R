@@ -37,15 +37,19 @@ ui <- fluidPage(
                 sidebarLayout(
                     sidebarPanel(
                         radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1261)" = "mouse", "Human (GPL570)" = "human")),
-                        textOutput("gplSelection"),
                         tagAppendAttributes(
                             textInput("Key", "Enter search terms, separated by commas", value = ""),
                             `data-proxy-click` = "Search"
                         ),
-                        actionButton("Search", "Search")
+                        actionButton("Search", "Search"),
+                        br(),
+                        hr(),
+                        helpText("Define the categories that you wish to assign each sample (GSM) for comparison."),
+                        textInput("cat1", "Define Category 1"),
+                        textInput("cat2", "Define Category 2"),
+                        textInput("cat3", "Define Category 3")
                     ),
                     mainPanel(
-                        #"Select GEO data series (GSE)",
                         uiOutput("page1"), 
                         helpText("Highlight the desired search results (GSE) and click 'Retrieve GSM' to proceed"),
                         actionButton("GSE_GSM", "Retrieve GSM"),
@@ -53,15 +57,9 @@ ui <- fluidPage(
                         DT::dataTableOutput("filteredgse"),
                         tableOutput("GSEtoGSMlist")
                     )
-                ),
+                )
             ),
-             tabPanel("Define categories for GEO samples (GSM)", uiOutput("page2"), 
-                      helpText("Define the categories that you wish to compare. After this is complete, click on the third tab to proceed to the next page"),
-                      textInput("cat1", "Define Category 1"),
-                      textInput("cat2", "Define Category 2"),
-                      textInput("cat3", "Define Category 3")
-             ),
-             tabPanel("Assign samples to categories", uiOutput("page3"), 
+              tabPanel("Assign samples to categories", uiOutput("page3"), 
                       helpText("Highlight the desired search results and click 'assign' to assign them to the specificed category"),
                       actionButton("Assign", "Assign Categories"),
                       verbatimTextOutput("selectedRows"), ## doesn't seem to be working

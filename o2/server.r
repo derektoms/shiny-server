@@ -81,7 +81,7 @@ dataPlots<-reactive({
 
     O2.df <- data.frame(group=c("Available","Restricted"),value=c(100*(1-O2.def),100*O2.def)) # collect oxygen restriction data into a dataframe
     ## Pass calculated values out
-    media.depth <<- R*1000
+    media.depth <<- a*1000
     cell.oxygen <<- oxy[1,1]
     
     ## Culture well plot
@@ -123,10 +123,22 @@ output$advanced <- renderUI({
         O2
     })
     
-  output$Qcell <- renderText({paste(input$Qmet/1e7)})  
-  output$atmo <- renderText({paste("Atmosphere (atm) = ",input$elev)})
-  output$depth <- renderText({paste("Depth (mm) = ",media.depth)})
-  output$oxy <- renderText({paste("Oxygen at cell surface (mmol) = ",cell.oxygen)})
+  output$Qcell <- renderText({
+      dataPlots()
+      paste(input$Qmet/1e7)
+  })  
+  output$atmo <- renderText({
+      dataPlots()
+      paste("Atmosphere (atm) = ",input$elev)
+  })
+  output$depth <- renderText({
+      dataPlots()
+      paste("Depth (mm) = ",media.depth)
+  })
+  output$oxy <- renderText({
+      dataPlots()
+      paste("Oxygen at cell surface (mmol) = ",cell.oxygen)
+  })
     
   ## Kill shinyApp when session closes
   session$onSessionEnded(stopApp)
