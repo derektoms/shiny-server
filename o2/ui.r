@@ -11,10 +11,11 @@ shinyUI(fluidPage(
     sidebarPanel(
       selectInput("cultureware",
                   "Culture vessel:",
-                  list("T75"=75,"T25"=25,"24wp"=1.9,"6wp"=34.8,"96wp"=0.32,"35 mm"=9,"60 mm"=21,"100 mm"=55)),
+                  list("T75"=75,"T25"=25,"24wp"=1.9,"6wp"=9.5,"96wp"=0.32,"35 mm"=9,"60 mm"=21,"100 mm"=55)),
       textInput("volume",
                 "Media volume (ml):",
                 value=15),
+      helpText("note: volume is per well in multiple well plates"),
       selectInput("celltype",
                   "Cell type:",
                   list("MEF"=33,
@@ -49,11 +50,11 @@ shinyUI(fluidPage(
              verbatimTextOutput("oxy"),
              verbatimTextOutput("depth"),
              verbatimTextOutput("atmo"),
-             verbatimTextOutput("Qcell"),
+             #verbatimTextOutput("Qcell"),
              plotOutput("piePlot")
       ),
       column(6,
-             plotOutput("wellPlot")
+             plotOutput("wellPlot",height="600px")
       )
       
     )

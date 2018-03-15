@@ -137,7 +137,7 @@ output$advanced <- renderUI({
   })
   output$oxy <- renderText({
       dataPlots()
-      paste("Oxygen at cell surface (mmol) = ",cell.oxygen)
+      paste("Oxygen at cell surface (mM) = ",format(cell.oxygen,digits=6))
   })
     
   ## Kill shinyApp when session closes

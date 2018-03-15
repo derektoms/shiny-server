@@ -20,7 +20,7 @@ library(MergeMaid)
 library(GEOquery)
 library(testthat)
 library(metaArray)
-#library(inSilicoMerging) not available for this version of R
+#library(inSilicoMerging) ## package ‘inSilicoMerging’ is not available (for R version 3.4.3) 
 library(Rtsne)
 library(sva)
 library(affy)
@@ -111,16 +111,8 @@ load("../../data/gsmGPL1261.rda")
 ########################################
 
 ## SERVER
-server <- function(input, output,session) {
-    
-  ## Change GPL
-  output$gplSelection <- renderText({
-    species <- switch(input$gplSelection,
-                   mouse = 'GPL1261',
-                   human = 'GPL570')
-    paste("You chose", species)
-  })
-  
+server <- function(input, output, session) {
+      
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
   ## Search functions
   Totalchar <- eventReactive(input$Search, {nchar(input$Key)})
@@ -139,7 +131,6 @@ server <- function(input, output,session) {
       } else {
           dplyr::filter(gseGPL1261, str_detect(gseGPL1261$title, Searchterms()))
       }
-      
   })
 
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
@@ -164,8 +155,9 @@ server <- function(input, output,session) {
   # Assign categories
   rows <- reactiveValues() 
       observeEvent(input$Assign, {
-          if (input$Assign == 1) {
+          if (input$Assign == 0) {
             gsm_selected <- gsm_annotated()
+            gsm_selected$category <- rep("Not yet assigned", nrow(gsm_selected))
             gsm_selected[input$gsm_table_rows_selected,"category"] <- input$selection
             rows$df <- gsm_selected
             gsm_selected <<- rows$df # '<<-' is necessary to get this to the enclosing environment
@@ -174,7 +166,7 @@ server <- function(input, output,session) {
           {
             gsm_selected[input$gsm_table_rows_selected,"category"] <- input$selection
             rows$df <- gsm_selected
-            gsm_selected <<- rows$df
+            gsm_selected <<- rows$df 
           }
       })
 
@@ -207,7 +199,7 @@ server <- function(input, output,session) {
                       "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
                       "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
                       "}") 
-                      )))) ## typeof data needs to be a string, as a NA, converted to JS NULL breaks things
+                      )))) ## typeof data needs to be a string, as a "NA" converted to JS "NULL" breaks things
  
  
   output$GSEtoGSMlist <- renderTable(
@@ -220,7 +212,7 @@ server <- function(input, output,session) {
     if (input$Assign == 0)
       return (gsm_annotated())
     else
-      return (gsm_annotated())}, options=list(searching=FALSE))
+      return (rows$df)}, options=list(searching=FALSE))
 
   output$finishedtable <- renderTable({finishedtable()})
       

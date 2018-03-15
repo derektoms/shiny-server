@@ -28,30 +28,33 @@ library(shinyjs)
 ## UI
 ui <- fluidPage(
   tags$head(tags$script(HTML(jscode))),
-  #creation of a navigation bar and mulitple pages
+
   navbarPage("receptoR",
   
               theme = "sandstone.css",
+              
     # Search for GSE  ------------------------------------------------------------------------------              
             tabPanel("Select GEO data series (GSE)",  #search GSE, and select which to include
                 sidebarLayout(
                     sidebarPanel(
+                        h4("1. Search for GEO data series (GSE)")
                         radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1261)" = "mouse", "Human (GPL570)" = "human")),
                         tagAppendAttributes(
                             textInput("Key", "Enter search terms, separated by commas", value = ""),
                             `data-proxy-click` = "Search"
                         ),
                         actionButton("Search", "Search"),
-                        br(),
                         hr(),
-                        helpText("Define the categories that you wish to assign each sample (GSM) for comparison."),
+                        # Define categories --------------------------------------------------------
+                        h4("3. Define the categories that you wish to assign each sample (GSM) for comparison."),
                         textInput("cat1", "Define Category 1"),
                         textInput("cat2", "Define Category 2"),
                         textInput("cat3", "Define Category 3")
                     ),
+                    # Filtered GSE list -----------------------------------------------------------
                     mainPanel(
                         uiOutput("page1"), 
-                        helpText("Highlight the desired search results (GSE) and click 'Retrieve GSM' to proceed"),
+                        h4("2. Highlight the desired search results (GSE) and click 'Retrieve GSM' to proceed"),
                         actionButton("GSE_GSM", "Retrieve GSM"),
                         helpText("Do not click 'finish' until all selections have been made. This button removes the unselected rows and generates a new table on the next page."),
                         DT::dataTableOutput("filteredgse"),
@@ -59,8 +62,9 @@ ui <- fluidPage(
                     )
                 )
             ),
+            # Assign samples to categories ------------------------------------------------------
               tabPanel("Assign samples to categories", uiOutput("page3"), 
-                      helpText("Highlight the desired search results and click 'assign' to assign them to the specificed category"),
+                      h4("Highlight the desired search results and click 'assign' to assign them to the specificed category"),
                       actionButton("Assign", "Assign Categories"),
                       verbatimTextOutput("selectedRows"), ## doesn't seem to be working
                       actionButton("Remove", "Finalize selections and remove not included"),
@@ -68,6 +72,7 @@ ui <- fluidPage(
                                This button removes the unselected rows and generates a new table on the next page."),
                       DT::dataTableOutput("gsm_table")
              ),
+             # This will be where the CEL files are downloaded (confirmation, etc) ------------
              tabPanel("Selection details", uiOutput("page4"), 
                       tableOutput("finishedtable")
              )
