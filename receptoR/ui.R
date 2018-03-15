@@ -32,33 +32,30 @@ ui <- fluidPage(
   navbarPage("receptoR",
   
               theme = "sandstone.css",
-              
-             tabPanel("Search for GEO data series (GSE)",  
-                      #search GSE, and select which to include
-                      helpText("After searching, click on the second tab to proceed to the next page"),
-                      ## choose platform
-                      # GPL1261 [Mouse430_2] Affymetrix Mouse Genome 430 2.0 Array
-                      # GPL570 [HG-U133_Plus_2] Affymetrix Human Genome U133 Plus 2.0 Array
-                      radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1261)" = "mouse", "Human (GPL570)" = "human")),
-                      textOutput("gplSelection"),
-                      tagAppendAttributes(
-                        textInput("Key", "Enter search terms, separated by commas", value = ""),
-                        `data-proxy-click` = "Search"
-                      ),
-                      actionButton("Search", "Search")
-             ),
-             tabPanel("Select GEO data series (GSE)", uiOutput("page1"), 
-                      helpText("Highlight the desired search results (GSE) and click 'Retrieve GSM' to proceed"),
-                      actionButton("GSE_GSM", "Retrieve GSM"),
-                      helpText("Do not click 'finish' until all selections have been made. 
-                               This button removes the unselected rows and generates a new table on the next page."),
-                      DT::dataTableOutput("filteredgse"),
-                      tableOutput("GSEtoGSMlist")
-                      
-             ),
+    # Search for GSE  ------------------------------------------------------------------------------              
+            tabPanel("Select GEO data series (GSE)",  #search GSE, and select which to include
+                sidebarLayout(
+                    sidebarPanel(
+                        radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1261)" = "mouse", "Human (GPL570)" = "human")),
+                        textOutput("gplSelection"),
+                        tagAppendAttributes(
+                            textInput("Key", "Enter search terms, separated by commas", value = ""),
+                            `data-proxy-click` = "Search"
+                        ),
+                        actionButton("Search", "Search")
+                    ),
+                    mainPanel(
+                        "Select GEO data series (GSE)", uiOutput("page1"), 
+                        helpText("Highlight the desired search results (GSE) and click 'Retrieve GSM' to proceed"),
+                        actionButton("GSE_GSM", "Retrieve GSM"),
+                        helpText("Do not click 'finish' until all selections have been made. This button removes the unselected rows and generates a new table on the next page."),
+                        DT::dataTableOutput("filteredgse"),
+                        tableOutput("GSEtoGSMlist")
+                    )
+                ),
+            ),
              tabPanel("Define categories for GEO samples (GSM)", uiOutput("page2"), 
-                      helpText("Define the categories that you wish to compare. 
-                               After this is complete, click on the third tab to proceed to the next page"),
+                      helpText("Define the categories that you wish to compare. After this is complete, click on the third tab to proceed to the next page"),
                       textInput("cat1", "Define Category 1"),
                       textInput("cat2", "Define Category 2"),
                       textInput("cat3", "Define Category 3")
