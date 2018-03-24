@@ -34,7 +34,7 @@ dataPlots<-reactive({
     p.atm <- as.numeric(input$elev)*101.325e3 # Pa, Atmospheric pressure; In Calgary: 88 kPa http://climate.weather.gc.ca
 
     OCR <- input$Qmet*1e-18 # mol O2/cell•s, Oxygen consumption for CHO \cite{Wagner2011,Jorjani1999}
-    d.cell <- 2e9 # cells/m^2, Cell density \cite{Camire2007}
+    d.cell <- input$cellDensity*1e10 # cells/m^2, Cell density \cite{Camire2007} equivalent to 0.2 x 10^6 per cm^2
     
     ## Calculations
     # Oxygen partial pressure in the incubator
@@ -94,25 +94,24 @@ dataPlots<-reactive({
     
 })
 
-output$advanced <- renderUI({
-    tagList(
-    textInput("temp",
-              "Incubation temperature °C):",
-              value=37),
-    sliderInput("surfA",
-              label=div(HTML("Surface area (cm<sup>2</sup>):")),
-              min = 0.1,
-              max = 100,
-              value = input$cultureware),
-    sliderInput("Qmet",
-              label=div(HTML("Cell metabolism (amol O<sub>2</sub>/s•cell):")),
-              min = 0,
-              max = 1000,
-              value = input$celltype,
-              step=4)
-    )
-})
-            
+  output$advanced <- renderUI({
+      tagList(
+          textInput("temp",
+                    "Incubation temperature °C):",
+                    value=37),
+          sliderInput("surfA",
+                    label=div(HTML("Surface area (cm<sup>2</sup>):")),
+                    min = 0.1,
+                    max = 100,
+                    value = input$cultureware),
+          sliderInput("Qmet",
+                    label=div(HTML("Cell metabolism (amol O<sub>2</sub>/s•cell):")),
+                    min = 0,
+                    max = 1000,
+                    value = input$celltype,
+                    step=4)
+          )
+  })      
   output$wellPlot <- renderPlot({
         dataPlots()
         well

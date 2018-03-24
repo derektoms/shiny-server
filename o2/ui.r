@@ -15,7 +15,7 @@ shinyUI(fluidPage(
       textInput("volume",
                 "Media volume (ml):",
                 value=15),
-      helpText("note: volume is per well in multiple well plates"),
+      helpText("note: when a multiple well plate is selected volume is per well"),
       selectInput("celltype",
                   "Cell type:",
                   list("MEF"=33,
@@ -26,6 +26,11 @@ shinyUI(fluidPage(
                   "Jurkat"=12,
                   "ESC (mouse)"=40
                   )),
+      sliderInput("cellDensity",
+                   label=div(HTML("Cell Density (x10<sup>6</sup>/cm<sup>2</sup>):")),
+                   min = 0.001,
+                   max = 1,
+                   value = 0.2),
       hr(),
       # Culture conditions
       sliderInput("O2_pressure",
@@ -38,11 +43,11 @@ shinyUI(fluidPage(
                   list("Vancouver"=1,"Calgary"=0.87)),
       hr(),
       # Advanced control
-      checkboxInput("advanced", "Advanced",TRUE),
+      checkboxInput("advanced","Advanced",TRUE),
       conditionalPanel(
-        condition = "input.advanced == true",
-        uiOutput("advanced")
-    )),
+          condition = "input.advanced == true",
+          uiOutput("advanced"))
+      ),
     
     # Show a plot of the generated distribution
     mainPanel(
