@@ -43,10 +43,11 @@ shinyUI(fluidPage(
                   list("Vancouver"=1,"Calgary"=0.87)),
       hr(),
       # Advanced control
-      checkboxInput("advanced","Advanced",TRUE),
-      conditionalPanel(
-          condition = "input.advanced == true",
-          uiOutput("advanced"))
+      helpText("Advanced control"),
+      #checkboxInput("advanced","Advanced",TRUE),
+      #conditionalPanel(
+      #    condition = "input.advanced == true",
+          uiOutput("advanced")
       ),
     
     # Show a plot of the generated distribution
