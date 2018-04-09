@@ -1,4 +1,4 @@
-## 2018-02-27
+## 2018-04-02
 
 ## Javascript
 
@@ -21,9 +21,6 @@ $(function() {
 });
 '
 
-library(shiny)
-library(shinythemes)
-library(shinyjs)
 
 ## UI
 ui <- fluidPage(
@@ -37,6 +34,7 @@ ui <- fluidPage(
             tabPanel("Select GEO data series (GSE)",  #search GSE, and select which to include
                 sidebarLayout(
                     sidebarPanel(
+                        # Search for datasets ------------------------------------------------------
                         h4("1. Search for GEO data series (GSE)"),
                         radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1261)" = "mouse", "Human (GPL570)" = "human")),
                         tagAppendAttributes(
@@ -53,28 +51,28 @@ ui <- fluidPage(
                     ),
                     # Filtered GSE list -----------------------------------------------------------
                     mainPanel(
-                        uiOutput("page1"), 
                         h4("2. Highlight the desired search results (GSE) and click 'Retrieve GSM' to proceed"),
-                        actionButton("GSE_GSM", "Retrieve GSM"),
+                        actionButton("getGSM", "Retrieve GSM"),
                         helpText("Do not click 'finish' until all selections have been made. This button removes the unselected rows and generates a new table on the next page."),
-                        DT::dataTableOutput("filteredgse"),
-                        tableOutput("GSEtoGSMlist")
+                        DT::dataTableOutput("filteredgse")
                     )
                 )
             ),
             # Assign samples to categories ------------------------------------------------------
-              tabPanel("Assign samples to categories", uiOutput("page3"), 
-                      h4("Highlight the desired search results and click 'assign' to assign them to the specificed category"),
+              tabPanel("Assign samples (GSM) to categories", 
+                      h4("4. Highlight the desired search results and click 'assign' to assign them to the specificed category"),
+                      uiOutput("categorySelect"),
                       actionButton("Assign", "Assign Categories"),
-                      verbatimTextOutput("selectedRows"), ## doesn't seem to be working
                       actionButton("Remove", "Finalize selections and remove not included"),
+                      # ^ why aren't these two the same button?
                       helpText("Do not click 'finish' until all selections have been made. 
                                This button removes the unselected rows and generates a new table on the next page."),
                       DT::dataTableOutput("gsm_table")
              ),
              # This will be where the CEL files are downloaded (confirmation, etc) ------------
              tabPanel("Selection details", uiOutput("page4"), 
-                      tableOutput("finishedtable")
+                      DT::dataTableOutput("finishedtable"),
+                      actionButton("downloadCEL","Download CEL files")
              )
   )
 )

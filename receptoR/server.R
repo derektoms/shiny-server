@@ -1,8 +1,29 @@
-# 2018-03-01
+# 2018-04-02
+# Hoping to work with the filtered table to integrate 
+# 1. saving table data (e.g. search results) for reproducibility
+# 2. displaying sorted table tibble and associated categories
+# 3. .rda of CEL to get that can be loaded (thinking along the lines of a !exist escape if there is no processed datafile)
+# 4. aforementioned processed datafile, saved for each user for some length of time
 
 ########################################
 #$#$#$#$#$#$    HEADER     $#$#$#$#$#$#$
 ########################################
+
+# App structural packages:
+#install.packages(c('dplyr','dbplyr','tidyr','ggplot2','RColorBrewer','readr','stringr','shiny','shinythemes','shinyjs','DT'))
+
+library(dplyr)
+library(dbplyr)
+library(tidyr)
+library(ggplot2)
+library(RColorBrewer)
+library(readr)
+library(stringr)
+library(DT)
+library(shiny)
+library(shinythemes)
+library(shinyjs)
+
 # Bioinformatics packages installed via biocLite:
 #source("https://bioconductor.org/biocLite.R")
 #biocLite(c('limma','annotate','genefilter','ComplexHeatmap','pheatmap','cowplot','GEOmetadb','mouse4302.db','hgu133plus2.db'))
@@ -14,7 +35,6 @@ library(ComplexHeatmap)
 library(pheatmap)
 library(cowplot)
 library(GEOmetadb)
-
 #biocLite(c('MergeMaid','GEOquery','inSilicoMerging','affy','sva','Rtsne','metaArray','testthat'))
 library(MergeMaid)
 library(GEOquery)
@@ -30,22 +50,9 @@ library(affy)
 # HG-U133_Plus_2] Affymetrix Human Genome U133 Plus 2.0 Array
 
 library(mouse4302.db) 
-library(hgu133plus2.db)  # Both aren't available
+library(hgu133plus2.db)
 
-# Other packages:
-#install.packages(c('dplyr','dbplyr','tidyr','ggplot2','RColorBrewer','readr','stringr','shiny','shinythemes','shinyjs','DT'))
 
-library(dplyr)
-library(dbplyr)
-library(tidyr)
-library(ggplot2)
-library(RColorBrewer)
-library(readr)
-library(stringr)
-library(DT)
-library(shiny)
-library(shinythemes)
-library(shinyjs)
 
 ########################################
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
@@ -105,6 +112,7 @@ load("../../data/gsmGPL570.rda")
 load("../../data/gseGPL1261.rda")
 load("../../data/gsmGPL1261.rda")
 
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 
 ########################################
 #$#$#$#$#$#$    Shiny App  $#$#$#$#$#$#$
@@ -113,7 +121,8 @@ load("../../data/gsmGPL1261.rda")
 ## SERVER
 server <- function(input, output, session) {
       
-#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+      CELtoDownload<-NULL
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
   ## Search functions
   Totalchar <- eventReactive(input$Search, {nchar(input$Key)})
   Commas <- eventReactive(input$Search, {which(strsplit(input$Key, "")[[1]]==",")})
@@ -129,70 +138,12 @@ server <- function(input, output, session) {
       if(input$gplSelection=='human'){
           dplyr::filter(gseGPL570, str_detect(gseGPL570$title, Searchterms()))
       } else {
-          dplyr::filter(gseGPL1261, str_detect(gseGPL1261$title, Searchterms()))
+          dplyr::filter(gseGPL1261, str_detect(gseGPL1261$summary, Searchterms()))
       }
   })
 
-#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
-  
-  ## Collect samples to use (GSE - GSM)
-    # List of the GSM associated with the selected GSE
-  
-  gse_to_keep <- eventReactive(input$GSE_GSM, {
-    filtered_gse()[input$filteredgse_rows_selected,]
-  })
-  
-  # Use GSE to load GSM
-  gsm_annotated <- eventReactive(input$GSE_GSM, {
-      if(input$gplSelection=='human'){
-          dplyr::filter(gsmGPL570,series_id %in% gse_to_keep()$gse)
-      } else {
-          dplyr::filter(gsmGPL1261,series_id %in% gse_to_keep()$gse)
-      }
-  })
-  
-  ## Assign categories to each sample (GSM)
-  # Assign categories
-  rows <- reactiveValues() 
-      observeEvent(input$Assign, {
-          if (input$Assign == 1) {
-            gsm_selected <- gsm_annotated()
-            gsm_selected$category <- rep("Not yet assigned", nrow(gsm_selected))
-            gsm_selected[input$gsm_table_rows_selected,"category"] <- input$selection
-            rows$df <- gsm_selected
-            gsm_selected <<- rows$df # '<<-' is necessary to get this to the enclosing environment
-          }
-          else
-          {
-            gsm_selected[input$gsm_table_rows_selected,"category"] <- input$selection
-            rows$df <- gsm_selected
-            gsm_selected <<- rows$df 
-          }
-      })
-
-  finishedtable <- eventReactive(input$Remove, {
-    dplyr::filter(rows$df, category %in% c(input$cat1, input$cat2, input$cat3))
-  })
- 
- 
- ## Outputs
-  output$page3 <- renderUI(
-    fluidRow(
-      column(3,
-             selectInput("selection", "Select a Category",
-                         c("category1" <- {input$cat1},
-                           "category2" <- {input$cat2},
-                           "category3" <- {input$cat3},
-                           "category4" <- "Not included"))
-      )
-    )
-  )
-  
- # output$filteredgse <- DT::renderDataTable({
- #     filtered_gse()[,c(1,2,7)]}, options=list(searching=TRUE, pageLength=20))
- 
   output$filteredgse <- DT::renderDataTable({
-          filtered_gse()}, options=list(searching=TRUE, pageLength=20, columnDefs=list(list(
+          filtered_gse()}, options=list(searching=TRUE, pageLength=6, columnDefs=list(list(
               targets = c(8,9,12),
               render = JS(
                   "function(data, type, row, meta) {",
@@ -200,19 +151,42 @@ server <- function(input, output, session) {
                       "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
                       "}") 
                       )))) ## typeof data needs to be a string, as a "NA" converted to JS "NULL" breaks things
+
  
- 
-  output$GSEtoGSMlist <- renderTable(
-    if (input$GSE_GSM == 0)
-      return ()
-    else
-      return (filter(gse_gsm,gse %in% gse_to_keep()$gse)))
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+  ## Collect samples to use (GSE - GSM)
+    # List of the GSM associated with the selected GSE
+  
+  gse_to_keep <- eventReactive(input$getGSM, {
+    filtered_gse()[input$filteredgse_rows_selected,]
+  })
+  
+  # Use GSE to load GSM from the prefiltered lists
+  gsm_annotated <- eventReactive(input$getGSM, {
+      withProgress(message='Collecting GSM',{
+      if(input$gplSelection=='human'){
+          dplyr::filter(gsmGPL570,series_id %in% gse_to_keep()$gse)
+      } else {
+          dplyr::filter(gsmGPL1261,series_id %in% gse_to_keep()$gse)
+      }
+      })
+  })
+
+  ## ^ these two things should be condensed, so that there is one action on the button click
+
+
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+
+  ## Assign categories to each sample (GSM)
   
   output$gsm_table <- DT::renderDataTable({
-    #if (input$Assign == 0)
-    #  return (gsm_annotated())
-    #else
-      return (gsm_annotated())}, options=list(searching=FALSE, columnDefs=list(list(
+
+       if(input$Assign==0){
+          return (gsm_annotated()[,c(-5:-7,-11,-12,-14:-26,-28:-32)])
+       } else {
+          return (samples$df[,c(-5:-7,-11,-12,-14:-26,-28:-32)])
+       }
+  }, options=list(searching=FALSE, columnDefs=list(list(
               targets = "_all",
               render = JS(
                   "function(data, type, row, meta) {",
@@ -220,9 +194,63 @@ server <- function(input, output, session) {
                       "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
                       "}") 
                       ))))
+                      
+  proxy.gsm = dataTableProxy('gsm_table')
+  observeEvent(input$Assign,{
+      proxy.gsm %>% selectRows(NULL)
+  })
+  
+  ## UI output
 
-  output$finishedtable <- renderTable({finishedtable()[,c(2,3,4,10,31,32,33)]})
-      
+    output$categorySelect <- renderUI(
+      fluidRow(
+        column(3,
+               selectInput("selection", "Select a Category",
+                           c("category1" <- {input$cat1},
+                             "category2" <- {input$cat2},
+                             "category3" <- {input$cat3},
+                             "category4" <- "Not included"))
+        )
+      )
+    )
+
+  ## Assign categories
+  samples <- reactiveValues()
+  samples$df <- data.frame()
+  
+  observeEvent(input$Assign, {
+      if (input$Assign == 1) {
+        gsm_selected <- gsm_annotated()
+        gsm_selected$category <- rep("Not yet assigned", nrow(gsm_selected))
+        gsm_selected[input$gsm_table_rows_selected,"category"] <- input$selection
+        samples$df <<- gsm_selected
+      }
+      else
+      {
+        samples$df[input$gsm_table_rows_selected,"category"] <<- input$selection
+      }
+  })      
+  
+  # ^ don't love this... would like to have the category set without a button click (maybe change to this tab), but it's working for the moment
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+
+## Finished table, to ultimately lead to CEL download
+
+  finishedtable <- eventReactive(input$Remove, {
+    dplyr::filter(samples$df, category %in% c(input$cat1, input$cat2, input$cat3))
+  })
+ 
+  output$finishedtable <- DT::renderDataTable({finishedtable()[,c(2,3,4,10,31,32,33)]})
+    
+  proxy.finishedtable = dataTableProxy('finishedtable')
+  observeEvent(input$downloadCEL, {
+      proxy.finishedtable %>% selectRows(2) %>% selectColumns(2) # selectColumn doesn't work. Instead what I would prefer is a PDF of the final table and a R list of CEL files to download
+      CELtoDownload<<-proxy.finishedtable$gsm
+  })
+ 
+ 
+  
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$  
   ## Kill shinyApp when session closes
   session$onSessionEnded(stopApp)
 
