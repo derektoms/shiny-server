@@ -40,9 +40,10 @@ library(ComplexHeatmap)
 library(pheatmap)
 library(cowplot)
 
-#biocLite(c('MergeMaid','GEOquery','inSilicoMerging','affy','sva','Rtsne','metaArray','testthat'))
-library(MergeMaid)
+#biocLite(c('mixOmics','MergeMaid','GEOquery','inSilicoMerging','affy','sva','Rtsne','metaArray','testthat'))
 
+library(mixOmics)
+library(MergeMaid)
 library(testthat)
 library(metaArray)
 #library(inSilicoMerging) ## package ‘inSilicoMerging’ is not available (for R version 3.4.3) 

@@ -35,7 +35,7 @@ tagList(
       sidebarLayout(
         sidebarPanel(
           checkboxGroupInput("tissues", label = "Select tissues to inclued",
-              choices = groups, selected = c("photoreceptors", "retina", "RPC")),
+              choices = groups, selected = groups),
           br(),
           checkboxInput("de_state", label = "Show differential expressed only", value = FALSE),
           uiOutput("de_choices"),
@@ -63,25 +63,22 @@ tagList(
       sidebarLayout(
         sidebarPanel(
           checkboxGroupInput("pls_tissues", label = "Select tissues to inclued",
-              choices = c("photoreceptors", "retina", "RPC"), selected = c("photoreceptors", "retina", "RPC")),
+              choices = groups, selected = groups),
           checkboxInput("pls_probe", "Perform PLS-DA at probe level", value = FALSE),
           br(),
           h4("Gene contribution plot"),
           uiOutput("numGenesUI"),
           radioButtons("pls_ncomp", "Select component for gene contribution plot", choices = c(1,2)),
-          br(),
-          downloadButton("pls_download", "Download gene contribution data")
+          br()
+          # downloadButton("pls_download", "Download gene contribution data")
         ),
         mainPanel(
           plotOutput("indPlot"),
           plotOutput("varPlot"),
-          plotOutput("contribPlot", height = 600),
-          DT::dataTableOutput("contribTable")
+          plotOutput("contribPlot", height = 600)
+          # DT::dataTableOutput("contribTable")
         )
       )
     )
   )
 )
-
-  
-  

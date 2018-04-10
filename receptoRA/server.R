@@ -209,37 +209,36 @@ function(input, output, session) {
      
     ndisplay = input$pls_num_genes
     comp = as.integer(input$pls_ncomp)
-    plotContrib(plsdaData()$result, name.var = plsdaData()$varNames, ndisplay = ndisplay,
+    plotLoadings(plsdaData()$result, name.var = plsdaData()$varNames, ndisplay = ndisplay,
                 comp = comp, legend.color = cols)
      
   })
   
-  contribData = reactive({
-      
-
-    ndisplay = input$pls_num_genes
-    comp = as.integer(input$pls_ncomp)
-    contrib = plotContrib(plsdaData()$result, name.var = plsdaData()$varNames, ndisplay = ndisplay,
-                comp = comp, plot = FALSE)
-    
-    contrib$contrib %>% dplyr::select(-Contrib) %>% add_rownames("Gene") %>% 
-      mutate(Gene = getSYMBOL(Gene, "mouse4302.db"))
-  })
+  # contribData = reactive({
+  #
+  #   ndisplay = input$pls_num_genes
+  #   comp = as.integer(input$pls_ncomp)
+  #   contrib = plotLoadings(plsdaData()$result, name.var = plsdaData()$varNames, ndisplay = ndisplay,
+  #               comp = comp, plot = TRUE)
+  #
+  #   contrib$contrib %>% dplyr::select(-Contrib) %>% add_rownames("Gene") %>%
+  #     mutate(Gene = getSYMBOL(Gene, "mouse4302.db"))
+  # })
   
-  output$contribTable = renderDataTable({
-    validate(
-      need(contribData(), "No data")
-    )
-    contribData()
-  })
+  # output$contribTable = renderDataTable({
+#     validate(
+#       need(contribData(), "No data")
+#     )
+#      contribData()
+#   })
   
-  output$pls_download = downloadHandler(
-    filename = 'gene_contribution_data.csv',
-    content = function(file) {
-      write_csv(contribData(), file)
-    }
-  
-  )
+  # output$pls_download = downloadHandler(
+#     filename = 'gene_contribution_data.csv',
+#     content = function(file) {
+#       write_csv(contribData(), file)
+#     }
+#
+#   )
     session$onSessionEnded(stopApp)
 }
 
