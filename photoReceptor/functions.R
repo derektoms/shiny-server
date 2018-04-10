@@ -23,8 +23,8 @@ get_expression_summary = function(eset, gene_list) {
   get_gene_data(eset, gene_list) %>% 
     group_by(Symbol, tissue) %>% 
     summarise(expression = mean(expression)) %>% 
-    spread(tissue, expression) %>% rowwise() %>%  
-    mutate(mean = mean(photoreceptors, retina, RPC)) %>% 
+    spread(tissue, expression) %>% #rowwise() %>%  
+    mutate(mean = mean(p6, older)) %>% 
     arrange(desc(mean))
   
 }

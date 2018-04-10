@@ -28,22 +28,26 @@ library(shinyjs)
 #source("https://bioconductor.org/biocLite.R")
 #biocLite(c('limma','annotate','genefilter','ComplexHeatmap','pheatmap','cowplot','GEOmetadb','mouse4302.db','hgu133plus2.db'))
 
+library(GEOmetadb)
+library(GEOquery)
+
+library(affy)
+
 library(limma)
 library(annotate)
 library(genefilter)
 library(ComplexHeatmap)
 library(pheatmap)
 library(cowplot)
-library(GEOmetadb)
+
 #biocLite(c('MergeMaid','GEOquery','inSilicoMerging','affy','sva','Rtsne','metaArray','testthat'))
 library(MergeMaid)
-library(GEOquery)
+
 library(testthat)
 library(metaArray)
 #library(inSilicoMerging) ## package ‘inSilicoMerging’ is not available (for R version 3.4.3) 
 library(Rtsne)
 library(sva)
-library(affy)
 
 # Microarray platform annotations:
 # Equivalent human platform is GPL570 with 127 514 samples
@@ -112,6 +116,8 @@ load("../../data/gsmGPL570.rda")
 load("../../data/gseGPL1261.rda")
 load("../../data/gsmGPL1261.rda")
 
+## GSM downloads
+CELtoDownload <- c("gsm", "category", "timestamp")
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 
 ########################################
@@ -121,7 +127,6 @@ load("../../data/gsmGPL1261.rda")
 ## SERVER
 server <- function(input, output, session) {
       
-      CELtoDownload<-NULL
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
   ## Search functions
   Totalchar <- eventReactive(input$Search, {nchar(input$Key)})
@@ -245,11 +250,24 @@ server <- function(input, output, session) {
   proxy.finishedtable = dataTableProxy('finishedtable')
   observeEvent(input$downloadCEL, {
       proxy.finishedtable %>% selectRows(2) %>% selectColumns(2) # selectColumn doesn't work. Instead what I would prefer is a PDF of the final table and a R list of CEL files to download
-      CELtoDownload<<-proxy.finishedtable$gsm
+      saveData(formData()) # success, this will save the tables as variables I can use to download the CEL files
+      ####
+      #### Move to SQL 
+      ####
+      withProgress(
+          message = "Downloading and processing GSM"
+          processData(responses$gsm))
+      
   })
  
+  formData <- eventReactive(input$Remove, {
+      time <- strftime(Sys.time(),"%Y.%m.%d %H:%M")
+      stamp <- data.frame("timestamp"=rep(time,nrow(finishedtable())))
+      CELdl <- c(finishedtable()[,3],finishedtable()[,33],stamp)
+      CELdl
+  })
  
-  
+ output$CELdl <- renderTable(formData()) 
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$  
   ## Kill shinyApp when session closes
   session$onSessionEnded(stopApp)

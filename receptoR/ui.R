@@ -72,7 +72,8 @@ ui <- fluidPage(
              # This will be where the CEL files are downloaded (confirmation, etc) ------------
              tabPanel("Selection details", uiOutput("page4"), 
                       DT::dataTableOutput("finishedtable"),
-                      actionButton("downloadCEL","Download CEL files")
+                      actionButton("downloadCEL","Download CEL files"),
+                      tableOutput("CELdl")
              )
   )
 )

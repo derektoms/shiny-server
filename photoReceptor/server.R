@@ -70,7 +70,8 @@ function(input, output) {
   })
   
   # single gene plot
-  output$singleGenePlot = renderPlot({
+#  output$singleGenePlot = renderPlot({
+  output$singleGenePlot = renderTable({
     validate(
       need(input$genes_rows_selected >= 1, "No genes selected")
     )

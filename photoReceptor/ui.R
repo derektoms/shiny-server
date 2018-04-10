@@ -24,7 +24,7 @@ tagList(
               DT::dataTableOutput("genes")),
             column(6,
               h4("Gene Boxplot"),
-              plotOutput("singleGenePlot"))
+              tableOutput("singleGenePlot"))
           )
         )
       )
