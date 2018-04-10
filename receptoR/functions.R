@@ -1,10 +1,11 @@
+### source('~/Desktop/shiny-server/receptoR/functions.R')
  #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 saveData = function(data) {
   data <- as.data.frame(data)
   if (exists("CELdl")) {
-    responses <<- rbind(responses, data)
+    CELtoDownload <<- rbind(CELtoDownload, data)
   } else {
-    responses <<- data
+    CELtoDownload <<- data
   }
 }
 
@@ -14,8 +15,8 @@ saveData = function(data) {
  processData = function(gsm_to_process){
  gsm_to_fetch <- gsm_to_process
 
- get_files = TRUE
- #get_files = FALSE
+ # get_files = TRUE
+ get_files = FALSE
  if (get_files) {
    # get raw CEL files
    rawFilePaths = lapply(gsm_to_fetch, function(x) {
@@ -33,7 +34,7 @@ saveData = function(data) {
 
  gsm = str_match(rownames(all_pData), "(GSM[[:alnum:]]+)")[,2]
  
- all_pData<-data.frame("tissue"=responses$category)
+ all_pData<-data.frame("tissue"=CELtoDownload$category)
  colnames(all_eset)<-gsm
  rownames(all_pData)<-gsm
  
@@ -49,10 +50,10 @@ saveData = function(data) {
 
  # ok that looks good let's save this now
  
- save(all_eset_final, file = "CEL_testing/final_processed_data_2018-04-09.rda") # filename should include timestamp
+ save(all_eset_final, file = "final_processed_data_2018-04-10.rda") # filename should include timestamp
 
  } else {
-   load("CEL_testing/final_processed_data_2018-04-09.rda")
+   load("final_processed_data_2018-04-10.rda")
  }
 
 
@@ -81,6 +82,7 @@ saveData = function(data) {
  results = decideTests(efit)
  results_lfc = decideTests(tfit)
 
+ # I like these... they should return something in the UI!
  vennDiagram(results, include = c("up", "down"))
  vennDiagram(results_lfc)
  
@@ -105,7 +107,7 @@ saveData = function(data) {
 
    all_genes = featureData(eset)@data[["Symbol"]] %>% as.character() %>% unique()
 
-   save(all_genes, mapped_probes, eset, de_choices, sig_genes_lfc, file = "CEL_testing/app_data.rda")
+   save(all_genes, mapped_probes, eset, de_choices, sig_genes_lfc, file = "2018-04-10_app_data.rda")
 }
 
  # end processing
@@ -115,7 +117,7 @@ saveData = function(data) {
  ## Functions for photoreceptor app ##
 
 
- # Converte gene symbols back to probes --------------------------------------------------------
+ # Convert gene symbols back to probes --------------------------------------------------------
 
  gene2probe = function(gene_list, mapped_probes) {
    na.omit(unlist(mapped_probes[gene_list]))
@@ -125,7 +127,7 @@ saveData = function(data) {
  # Get de genes from topTable output that match a genelist -------------------------------------
 
  get_de_genes = function(gene_list, de_choice, sig_genes_lfc) {
-   sig_genes_lfc[[de_choice]] %>% add_rownames("probe") %>% filter(Symbol %in% gene_list)
+   sig_genes_lfc[[de_choice]] %>% tibble::rownames_to_column("probe") %>% filter(Symbol %in% gene_list)
  }
 
 
@@ -134,11 +136,12 @@ saveData = function(data) {
  get_expression_summary = function(eset, gene_list) {
    
    get_gene_data(eset, gene_list) %>% 
-     group_by(Symbol, tissue) %>% 
-     summarise(expression = mean(expression)) %>% 
-     spread(tissue, expression) %>% rowwise() %>%  
-     mutate(mean=mean(groups)) %>% ### changed here to make dynamic
-     arrange(desc(mean))
+    group_by(Symbol, tissue) %>% 
+    summarise(expression = mean(expression)) %>% 
+    spread(tissue, expression) # %>% rowwise() %>%
+    # mutate(mean = mean(tissue2,tissue1,tissue3)) %>%
+    # ^ this code was never right; only photoreceptor mean was calculated
+    # arrange(desc(mean))
   
  }
 
@@ -180,10 +183,10 @@ saveData = function(data) {
 
  get_gene_data = function(eset, gene_list) {
   
-   ph = pData(eset) %>% add_rownames("Sample")
+   ph = pData(eset) %>% tibble::rownames_to_column("Sample")
    exprs(eset) %>% 
      as.data.frame() %>% 
-     add_rownames("probe") %>% 
+     tibble::rownames_to_column("probe") %>% 
      mutate(Symbol = getSYMBOL(probe, "mouse4302.db")) %>% 
      filter(Symbol %in% gene_list) %>% 
      gather(Sample, expression, starts_with("GSM")) %>% 

@@ -115,7 +115,7 @@ load("../../data/gseGPL570.rda")
 load("../../data/gsmGPL570.rda")
 load("../../data/gseGPL1261.rda")
 load("../../data/gsmGPL1261.rda")
-
+source("../receptoR/functions.R")
 ## GSM downloads
 CELtoDownload <- c("gsm", "category", "timestamp")
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
@@ -255,8 +255,8 @@ server <- function(input, output, session) {
       #### Move to SQL 
       ####
       withProgress(
-          message = "Downloading and processing GSM"
-          processData(responses$gsm))
+          message = "Downloading and processing GSM",
+          processData(CELtoDownload$gsm))
       
   })
  
