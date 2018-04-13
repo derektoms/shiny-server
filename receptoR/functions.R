@@ -15,8 +15,8 @@ saveData = function(data) {
  processData = function(gsm_to_process){
  gsm_to_fetch <- gsm_to_process
 
- # get_files = TRUE
- get_files = FALSE
+ get_files = TRUE
+ #get_files = FALSE
  if (get_files) {
    # get raw CEL files
    rawFilePaths = lapply(gsm_to_fetch, function(x) {
@@ -50,7 +50,7 @@ saveData = function(data) {
 
  # ok that looks good let's save this now
  
- save(all_eset_final, file = "final_processed_data_2018-04-10.rda") # filename should include timestamp
+ save(all_eset_final, file = "final_processed_data_2018-04-12.rda") # filename should include timestamp
 
  } else {
    load("final_processed_data_2018-04-10.rda")

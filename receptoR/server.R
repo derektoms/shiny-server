@@ -118,7 +118,7 @@ load("../../data/gseGPL1261.rda")
 load("../../data/gsmGPL1261.rda")
 source("../receptoR/functions.R")
 ## GSM downloads
-CELtoDownload <- c("gsm", "category", "timestamp")
+#CELtoDownload <- c("gsm", "category", "timestamp")
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 
 ########################################
