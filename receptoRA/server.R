@@ -3,8 +3,8 @@ source("../receptoR/functions.R")
 load("genelists.rda")
 load("2018-04-10_app_data.rda")
 
-## load up the groups from the CELtoDownload
-groups<-levels(CELtoDownload$category)
+## load up the groups (this information should be saved, but isn't)
+# groups<-c("photoreceptors","RPE","whole.retina")
 
 function(input, output, session) {
   

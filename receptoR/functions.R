@@ -34,9 +34,14 @@ saveData = function(data) {
 
  gsm = str_match(rownames(all_pData), "(GSM[[:alnum:]]+)")[,2]
  
- all_pData<-data.frame("tissue"=CELtoDownload$category)
- colnames(all_eset)<-gsm
- rownames(all_pData)<-gsm
+ ## missing CEL files (2018-04-13) required the fix below
+ gsm <- tibble(gsm)
+ dlSamples <- inner_join(gsm,CELtoDownload)
+ 
+ all_pData<-tibble("tissue"=dlSamples$category)
+ colnames(all_eset)<-dlSamples$gsm
+ rownames(all_pData)<-dlSamples$gsm # Warning: setting row names on a tibble is deprecated
+ ## end fix
  
  all_eset_final<-all_eset
  pData(all_eset_final)<-all_pData
@@ -49,11 +54,16 @@ saveData = function(data) {
 
 
  # ok that looks good let's save this now
+ ## 2018-04-13
+ ## just before saving, there is a problem with the annotation (see below at the call to contrast_matrix)
+ ## quick and dirty fix: 
  
- save(all_eset_final, file = "final_processed_data_2018-04-12.rda") # filename should include timestamp
+ # pData(all_eset_final)<-pData(all_eset_final)%>%mutate(tissue=str_replace(tissue,"whole retina","whole.retina"))
+ 
+ save(all_eset_final, file = "final_processed_data_2018-04-13.rda") # filename should include timestamp
 
  } else {
-   load("final_processed_data_2018-04-10.rda")
+   load("final_processed_data_2018-04-13.rda")
  }
 
 
@@ -66,13 +76,17 @@ saveData = function(data) {
 
  eset = all_eset_final
 
- tissue = pData(eset)$tissue
+ tissue = as.factor(pData(eset)$tissue)
  design = model.matrix(~0 + tissue)
  colnames(design) = levels(tissue)
  
  fit = lmFit(eset, design)
  matrices<-t(combn(levels(tissue),2))
  contrasts <- paste(matrices[,1],matrices[,2],sep='-')
+ 
+ ## 2018-04-13
+ ## Ran into more issues at the contrast matrix because the levels need to by syntatically allowed (i.e. no spaces)
+ ## adding code higher up to avoid this
  contrast_matrix = makeContrasts(contrasts=contrasts, levels = design)
  
  fit2 = contrasts.fit(fit, contrast_matrix)
@@ -107,7 +121,7 @@ saveData = function(data) {
 
    all_genes = featureData(eset)@data[["Symbol"]] %>% as.character() %>% unique()
 
-   save(all_genes, mapped_probes, eset, de_choices, sig_genes_lfc, file = "2018-04-10_app_data.rda")
+   save(all_genes, mapped_probes, eset, de_choices, sig_genes_lfc, file = "2018-04-13_app_data.rda")
 }
 
  # end processing
@@ -184,8 +198,8 @@ saveData = function(data) {
  # Get expression data from eset for given genes -----------------------------------------------
 
  get_gene_data = function(eset, gene_list) {
-  
    ph = pData(eset) %>% tibble::rownames_to_column("Sample")
+   ph$Sample <- colnames(exprs(eset)) # 2018-04-17 fix missing row names
    exprs(eset) %>% 
      as.data.frame() %>% 
      tibble::rownames_to_column("probe") %>% 
