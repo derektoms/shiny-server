@@ -35,7 +35,7 @@ ui<-fluidPage(
       sidebarLayout(
         sidebarPanel(
           checkboxGroupInput("tissues", label = "Select tissues to inclued",
-              choices = groups, selected = groups),
+              choices = c("photoreceptors","RPE","whole.retina"), selected = c("photoreceptors","RPE","whole.retina")),
           br(),
           checkboxInput("de_state", label = "Show differential expressed only", value = FALSE),
           uiOutput("de_choices"),
