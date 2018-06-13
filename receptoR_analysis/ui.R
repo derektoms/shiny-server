@@ -79,7 +79,6 @@ ui<-fluidPage(
     #      )
     #    )
     #  )
-  )
-  
+  ),
   useShinyjs()
 )
