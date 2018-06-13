@@ -30,7 +30,7 @@ library(cowplot)
 
 #biocLite(c('mixOmics','MergeMaid','GEOquery','inSilicoMerging','affy','sva','Rtsne','metaArray','testthat'))
 
-library(mixOmics)
+#library(mixOmics)
 library(MergeMaid)
 library(testthat)
 library(metaArray)
