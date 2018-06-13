@@ -1,6 +1,6 @@
 ## receptoRA ui.R
 
-tagList(
+ui<-tagList(
   
   useShinyjs(),
   navbarPage("receptoR expression Analysis",
