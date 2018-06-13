@@ -1,7 +1,56 @@
+## temporary packages from the first part, necessary for this to work
+#####---------------------
+library(dplyr)
+library(dbplyr)
+library(tidyr)
+library(ggplot2)
+library(RColorBrewer)
+library(readr)
+library(stringr)
+library(DT)
+library(shiny)
+library(shinythemes)
+library(shinyjs)
+
+# Bioinformatics packages installed via biocLite:
+#source("https://bioconductor.org/biocLite.R")
+#biocLite(c('limma','annotate','genefilter','ComplexHeatmap','pheatmap','cowplot','GEOmetadb','mouse4302.db','hgu133plus2.db'))
+
+library(GEOmetadb)
+library(GEOquery)
+
+library(affy)
+
+library(limma)
+library(annotate)
+library(genefilter)
+library(ComplexHeatmap)
+library(pheatmap)
+library(cowplot)
+
+#biocLite(c('mixOmics','MergeMaid','GEOquery','inSilicoMerging','affy','sva','Rtsne','metaArray','testthat'))
+
+library(mixOmics)
+library(MergeMaid)
+library(testthat)
+library(metaArray)
+#library(inSilicoMerging) ## package ‘inSilicoMerging’ is not available (for R version 3.4.3) 
+library(Rtsne)
+library(sva)
+
+# Microarray platform annotations:
+# Equivalent human platform is GPL570 with 127 514 samples
+# HG-U133_Plus_2] Affymetrix Human Genome U133 Plus 2.0 Array
+
+library(mouse4302.db) 
+library(hgu133plus2.db)
+#####---------------------
+
+
 ## receptoRA server.R
 source("../receptoR/functions.R")
 load("genelists.rda")
-load("2018-04-10_app_data.rda")
+load("2018-04-13_app_data.rda")
 
 ## load up the groups (this information should be saved, but isn't)
 groups<-c("photoreceptors","RPE","whole.retina")

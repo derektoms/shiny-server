@@ -57,28 +57,29 @@ tagList(
           )
         )
       )
-    ),
-    
-    tabPanel("PLS-DA",
-      sidebarLayout(
-        sidebarPanel(
-          checkboxGroupInput("pls_tissues", label = "Select tissues to inclued",
-              choices = groups, selected = groups),
-          checkboxInput("pls_probe", "Perform PLS-DA at probe level", value = FALSE),
-          br(),
-          h4("Gene contribution plot"),
-          uiOutput("numGenesUI"),
-          radioButtons("pls_ncomp", "Select component for gene contribution plot", choices = c(1,2)),
-          br()
-          # downloadButton("pls_download", "Download gene contribution data")
-        ),
-        mainPanel(
-          plotOutput("indPlot", height = 800),
-          plotOutput("varPlot", height = 800),
-          plotOutput("contribPlot", height = 800)
-          # DT::dataTableOutput("contribTable")
-        )
-      )
     )
+    # ,
+#
+#     tabPanel("PLS-DA",
+#       sidebarLayout(
+#         sidebarPanel(
+#           checkboxGroupInput("pls_tissues", label = "Select tissues to inclued",
+#               choices = groups, selected = groups),
+#           checkboxInput("pls_probe", "Perform PLS-DA at probe level", value = FALSE),
+#           br(),
+#           h4("Gene contribution plot"),
+#           uiOutput("numGenesUI"),
+#           radioButtons("pls_ncomp", "Select component for gene contribution plot", choices = c(1,2)),
+#           br()
+#           # downloadButton("pls_download", "Download gene contribution data")
+#         ),
+#         mainPanel(
+#           plotOutput("indPlot", height = 800),
+#           plotOutput("varPlot", height = 800),
+#           plotOutput("contribPlot", height = 800)
+#           # DT::dataTableOutput("contribTable")
+#         )
+#       )
+#     )
   )
 )
