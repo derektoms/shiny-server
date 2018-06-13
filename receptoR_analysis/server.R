@@ -4,7 +4,7 @@ load("genelists.rda")
 load("2018-04-10_app_data.rda")
 
 ## load up the groups (this information should be saved, but isn't)
-# groups<-c("photoreceptors","RPE","whole.retina")
+groups<-c("photoreceptors","RPE","whole.retina")
 
 function(input, output, session) {
   
@@ -174,6 +174,7 @@ function(input, output, session) {
     
   })
 
+# PCA plot ----------------------------------------------------------------------------
   output$indPlot = renderPlot({
     validate(
       need(plsdaData(), "No PLS-DA to plot"),
@@ -181,15 +182,16 @@ function(input, output, session) {
     )
     
     plotIndiv(plsdaData()$result, ind.names = FALSE, group = plsdaData()$tissue_grps, pch = 16, 
-              col.per.group = brewer.pal(3, "Set1"), add.legend = TRUE, cex = 2)
+              col.per.group = brewer.pal(3, "Set1")[1:length(input$pls_tissues)], legend = TRUE, cex = 2, ellipse=TRUE)
   })
-  
+
+# Correlation Circle plot ----------------------------------------------------------------------------  
   output$varPlot = renderPlot({
      validate(
       need(plsdaData(), "No PLS-DA to plot")
     )
 
-    plotVar(plsdaData()$result, var.names = list(plsdaData()$varNames), cex = 3)
+    plotVar(plsdaData()$result, var.names = list(plsdaData()$varNames), cex = 3,overlap=FALSE)
     
   })
 
@@ -198,6 +200,7 @@ function(input, output, session) {
                  value = 10, min = 1, max = length(geneList()), step = 1)
   })
   
+# Loadings plot ----------------------------------------------------------------------------
   output$contribPlot = renderPlot({
     validate(
       need(plsdaData(), "No PLS-DA to plot"),
@@ -210,7 +213,7 @@ function(input, output, session) {
     ndisplay = input$pls_num_genes
     comp = as.integer(input$pls_ncomp)
     plotLoadings(plsdaData()$result, name.var = plsdaData()$varNames, ndisplay = ndisplay,
-                comp = comp, legend.color = cols)
+                comp = comp, legend.color = c(1:2))
      
   })
   

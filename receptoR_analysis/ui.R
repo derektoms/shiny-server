@@ -73,9 +73,9 @@ tagList(
           # downloadButton("pls_download", "Download gene contribution data")
         ),
         mainPanel(
-          plotOutput("indPlot"),
-          plotOutput("varPlot"),
-          plotOutput("contribPlot", height = 600)
+          plotOutput("indPlot", height = 800),
+          plotOutput("varPlot", height = 800),
+          plotOutput("contribPlot", height = 800)
           # DT::dataTableOutput("contribTable")
         )
       )

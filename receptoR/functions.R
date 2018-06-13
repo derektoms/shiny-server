@@ -184,6 +184,10 @@ saveData = function(data) {
    }
   
    anno_df = pData(eset)[anno_col]
+   # another fix for Tibble deprecating row names
+   anno_df <- data.frame(anno_df)
+   rownames(anno_df) <- colnames(mat)
+   # end fix
    vars = as.character(unique(anno_df[[anno_col]]))
    anno_colours = brewer.pal(9, "Set1")[1:length(vars)]
    names(anno_colours) = vars
