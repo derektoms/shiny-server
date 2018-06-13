@@ -1,7 +1,7 @@
 ## receptoRA ui.R
 
-ui<-fluidPage(
-  
+ui<-tagList(
+    shinyjs::useShinyjs(),
   navbarPage("receptoR expression Analysis",
     
     theme = "sandstone.css",
@@ -79,6 +79,5 @@ ui<-fluidPage(
     #      )
     #    )
     #  )
-  ),
-  useShinyjs()
+  )
 )
