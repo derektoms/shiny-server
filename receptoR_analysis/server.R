@@ -118,7 +118,7 @@ server<-function(input, output, session) {
     genes_to_plot = summary_gene_data()$Symbol[rows]
     
     gene_data = get_gene_data(eset, genes_to_plot)
-    by_gene_boxplot(gene_data)
+    by_gene_boxplot(gene_data,tissues=c("photoreceptors","RPE","whole.retina"))
     
     
   })
