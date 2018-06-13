@@ -2,7 +2,7 @@
 
 ui<-tagList(
   
-  #useShinyjs(),
+  useShinyjs(),
   navbarPage("receptoR expression Analysis",
     
     theme = "sandstone.css",
