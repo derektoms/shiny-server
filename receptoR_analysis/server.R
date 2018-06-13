@@ -52,12 +52,11 @@ source("../receptoR/functions.R")
 load("genelists.rda")
 load("2018-04-13_app_data.rda")
 
-## load up the groups (this information should be saved, but isn't)
-groups<-c("photoreceptors","RPE","whole.retina")
-
 server<-function(input, output, session) {
   
-
+    ## load up the groups (this information should be saved, but isn't)
+    groups<-c("photoreceptors","RPE","whole.retina")
+    
 # Load genes tab ------------------------------------------------------------------------------
 
   geneList = reactive({
