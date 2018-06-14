@@ -163,7 +163,7 @@ server<-function(input, output, session) {
     sub_eset = eset[, eset$tissue %in% selected_tissues]
     genes = gene2probe(genesToPlot(), mapped_probes)
     
-    gene_heatmap(sub_eset, genes, scale = "row",
+    heatmaply::heatmaply(sub_eset, genes, scale = "row",
                   probe_level = input$hm_probes,
                   show_rownames = input$hm_rownames,
                   cluster_rows = input$hm_row_cluster,
