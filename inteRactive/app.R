@@ -1,8 +1,8 @@
 # Load libraries
 library(plotly)
+library(heatmaply)
 
 # Global variables can go here
-m <- 200
 
 
 # Define the UI
@@ -12,7 +12,7 @@ ui <- fluidPage(
             sliderInput('plotValue','Distribution mean',min=30,max=70,value=40)
             ),
         mainPanel(
-            plotlyOutput('plot')
+            plotly::plotlyOutput('plot')
             )
         )
 )
@@ -20,12 +20,9 @@ ui <- fluidPage(
 
 # Define the server code
 server <- function(input, output) {
-    meantoplot<- reactive({
-        input$plotValue
-    })
     
-  output$plot <- renderPlotly({
-    plot_ly(y = ~rnorm(meantoplot()),type="box")
+  output$plot <- plotly::renderPlotly({
+    heatmaply::heatmaply(mtcars)
   })
 }
 
