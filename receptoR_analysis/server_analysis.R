@@ -13,8 +13,8 @@ library(shinythemes)
 library(shinyjs)
 
 # Bioinformatics packages installed via biocLite:
-#source("https://bioconductor.org/biocLite.R")
-#biocLite(c('limma','annotate','genefilter','ComplexHeatmap','pheatmap','cowplot','GEOmetadb','mouse4302.db','hgu133plus2.db'))
+# source("https://bioconductor.org/biocLite.R")
+# biocLite(c('limma','annotate','genefilter','ComplexHeatmap','pheatmap','cowplot','GEOmetadb','mouse4302.db','hgu133plus2.db'))
 
 library(GEOmetadb)
 library(GEOquery)
@@ -30,7 +30,7 @@ library(cowplot)
 
 #biocLite(c('mixOmics','MergeMaid','GEOquery','inSilicoMerging','affy','sva','Rtsne','metaArray','testthat'))
 
-#library(mixOmics)
+library(mixOmics)
 library(MergeMaid)
 library(testthat)
 library(metaArray)
@@ -165,6 +165,7 @@ server<-function(input, output, session) {
     
     gene_heatmap(sub_eset, genes, scale = "row",
                   probe_level = input$hm_probes,
+                  gsm_show = input$hm_gsm,
                   show_rownames = input$hm_rownames,
                   cluster_rows = input$hm_row_cluster,
                   cluster_cols = input$hm_col_cluster,

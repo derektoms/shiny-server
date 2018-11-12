@@ -1,5 +1,10 @@
-### source('~/Desktop/shiny-server/receptoR/functions.R')
- #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+# October 2018 receptoR v 1.0
+## 2018-10-27
+## functions.R
+### Integrating both applications to a final shiny executable
+
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+
 saveData = function(data) {
   data <- as.data.frame(data)
   if (exists("CELdl")) {
@@ -15,8 +20,9 @@ saveData = function(data) {
  processData = function(gsm_to_process){
  gsm_to_fetch <- gsm_to_process
 
- get_files = TRUE
- #get_files = FALSE
+ # get_files = TRUE
+ get_files = FALSE
+ 
  if (get_files) {
    # get raw CEL files
    rawFilePaths = lapply(gsm_to_fetch, function(x) {
@@ -170,17 +176,19 @@ saveData = function(data) {
  #' @param probe_level Plot expression of probes instead of aggregating to genes
  #' @param ... additional arguments to pheatmap
  #' @export
- gene_heatmap = function(eset, subset_probes, anno_col = 'tissue', probe_level = FALSE, ...) {
+ gene_heatmap = function(eset, subset_probes, anno_col = 'tissue', probe_level = FALSE, gsm_show = TRUE, ...) {
 
    mat = exprs(eset)[subset_probes,]
    #mat = t(scale(t(mat)))
-   rownames(mat) = getSYMBOL(rownames(mat), "mouse4302.db") 
+   row_labs = paste(getSYMBOL(rownames(mat), "mouse4302.db"),rownames(mat),sep=":")
+   rownames(mat) = getSYMBOL(rownames(mat), "mouse4302.db")
    mat = mat[order(rownames(mat)),]
-  
+   
    if (!probe_level) {
      mat = aggregate(mat, list(genes = rownames(mat)), mean)
      rownames(mat) = mat$genes
      mat = as.matrix(mat[,-1])
+     row_labs=rownames(mat)
    }
   
    anno_df = pData(eset)[anno_col]
@@ -194,7 +202,7 @@ saveData = function(data) {
    anno_colours = list(anno_colours)
    names(anno_colours) = anno_col 
   
-   pheatmap(mat, show_colnames = FALSE, annotation_col = anno_df, annotation_colors = anno_colours, ...)
+   pheatmap(mat, show_colnames = gsm_show, annotation_col = anno_df, annotation_colors = anno_colours, labels_row = row_labs,...)
   
  }
 
