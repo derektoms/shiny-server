@@ -33,7 +33,7 @@ ui<-tagList(
     tabPanel("Expression plots", 
       sidebarLayout(
         sidebarPanel(
-          checkboxGroupInput("tissues", label = "Select tissues to inclued",
+          checkboxGroupInput("tissues", label = "Select tissues to include",
               choices = c("photoreceptors","RPE","whole.retina"), selected = c("photoreceptors","RPE","whole.retina")),
           br(),
           checkboxInput("de_state", label = "Show differential expressed only", value = FALSE),
@@ -63,7 +63,7 @@ ui<-tagList(
       sidebarLayout(
         sidebarPanel(
           checkboxGroupInput("pls_tissues", label = "Select tissues to inclued",
-              choices = groups, selected = groups),
+              choices = c("photoreceptors","RPE","whole.retina"), selected = groups),
           checkboxInput("pls_probe", "Perform PLS-DA at probe level", value = FALSE),
           br(),
           h4("Gene contribution plot"),
