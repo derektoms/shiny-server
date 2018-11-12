@@ -48,9 +48,9 @@ library(hgu133plus2.db)
 
 
 ## receptoRA server.R
-source("../receptoR/functions.R")
-load("genelists.rda")
-load("2018-04-13_app_data.rda")
+source("../receptoR_final/functions.R")
+load("../genelists.rda")
+load("../2018-04-13_app_data.rda")
 
 server<-function(input, output, session) {
   
