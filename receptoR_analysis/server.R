@@ -50,9 +50,12 @@ library(hgu133plus2.db)
 ## receptoRA server.R
 source("../receptoR_final/functions.R")
 load("../genelists.rda")
+load("../2018-04-13_app_data.rda")
+# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/genelists.rda")
+# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-04-13_app_data.rda")
+
 
 server<-function(input, output, session) {
-     withProgress(message="Loading gene expression data",value=0.5,{load("../2018-04-13_app_data.rda")})
      
     ## load up the groups (this information should be saved, but isn't)
     groups<-c("photoreceptors","RPE","whole.retina")
@@ -111,6 +114,7 @@ server<-function(input, output, session) {
   # single gene plot
  output$singleGenePlot = renderPlot({
   # output$singleGenePlot = renderTable({
+      withProgress(message="Loading gene data",value=1,detail="...",{
     validate(
       need(input$genes_rows_selected >= 1, "No genes selected")
     )
@@ -121,7 +125,7 @@ server<-function(input, output, session) {
     gene_data = get_gene_data(eset, genes_to_plot)
     by_gene_boxplot(gene_data,tissues=c("photoreceptors","RPE","whole.retina"))
     
-    
+    })
   })
 
   # DE choices UI
