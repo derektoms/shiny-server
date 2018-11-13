@@ -16,8 +16,8 @@ library(shinyjs)
 # source("https://bioconductor.org/biocLite.R")
 # biocLite(c('limma','annotate','genefilter','ComplexHeatmap','pheatmap','cowplot','GEOmetadb','mouse4302.db','hgu133plus2.db'))
 
-library(GEOmetadb)
-library(GEOquery)
+# library(GEOmetadb)
+# library(GEOquery)
 
 library(affy)
 
@@ -50,10 +50,10 @@ library(hgu133plus2.db)
 ## receptoRA server.R
 source("../receptoR_final/functions.R")
 load("../genelists.rda")
-load("../2018-04-13_app_data.rda")
 
 server<-function(input, output, session) {
-  
+     withProgress(message="Loading gene expression data",value=0.5,{load("../2018-04-13_app_data.rda")})
+     
     ## load up the groups (this information should be saved, but isn't)
     groups<-c("photoreceptors","RPE","whole.retina")
     
@@ -81,8 +81,9 @@ server<-function(input, output, session) {
   
   # gene list UI
   output$geneListsUI = renderUI({
-    checkboxGroupInput("genelist", "Select a gene list", 
-          choices = names(gene_lists))
+      checkboxGroupInput("genelist", "Select a gene list", 
+            choices = names(gene_lists))
+
   })
   
   # single gene UI
