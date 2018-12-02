@@ -1,4 +1,7 @@
 ## 2018-04-02
+library(shiny)
+library(shinythemes)
+library(shinyjs)
 
 ## Javascript
 
