@@ -28,61 +28,71 @@ tags$head(tags$script(HTML(jscode))),
 # tags$script(HTML("$('body').addClass('fixed);")),
 shinyjs::useShinyjs(),
 navbarPage("receptoR",
-    theme = "sandstone.css",
-
+    theme = shinytheme("spacelab"),
+    
     tabPanel("Search for datasets",
         # Search for GSE  ------------------------------------------------------------------------------              
-        sidebarLayout(
-        sidebarPanel(
-        # Search for datasets ------------------------------------------------------
-        h4("Search for GEO data series (GSE)"),
-        radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1261)" = "mouse", "Human (GPL570)" = "human")),
-        tagAppendAttributes(
-        textInput("Key", "Enter search terms, separated by commas", value = ""),
-        `data-proxy-click` = "Search"
-        ),
-        actionButton("Search", "Search"),
-        hr(),
-        # Define categories --------------------------------------------------------
-        h4("Define the categories that you wish to assign each sample (GSM) for comparison."),
-        textInput("cat1", "Define Category 1"),
-        textInput("cat2", "Define Category 2"),
-        textInput("cat3", "Define Category 3")
-        ),
-        mainPanel(
-            tabsetPanel(
-            tabPanel("Select GEO data series (GSE)",  #search GSE, and select which to include
-                h4("2. Highlight the desired search results (GSE) and click 'Retrieve GSM' to proceed"),
+        tabsetPanel(
+        tabPanel("Search for GEO data series (GSE)",
+            h4("Highlight the desired search results (GSE) and click 'Retrieve GSM' to proceed"),
+            # fluidRow(
+                # column(6,
+                radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1261)" = "mouse", "Human (GPL570)" = "human")),
+                tagAppendAttributes(textInput("Key", "Enter search terms, separated by commas", value = ""),`data-proxy-click` = "Search"),
+                # ),
+                # column(6,
+                actionButton("Search", "Search"),
                 actionButton("getGSM", "Retrieve GSM"),
-                helpText("Do not click 'finish' until all selections have been made. This button removes the unselected rows and generates a new table on the next page."),
-                DT::dataTableOutput("filteredgse")
-            ),
-            # Assign samples to categories ------------------------------------------------------
-            tabPanel("Assign samples (GSM) to categories", 
-                h4("4. Highlight the desired search results and click 'assign' to assign them to the specificed category"),
+            #     )
+            # ),
+            hr(),
+            DT::dataTableOutput("filteredgse")
+        ),
+        # Assign samples to categories ------------------------------------------------------
+        tabPanel("Assign samples (GSM) to categories",
+            h4("Define the categories that you wish to assign each sample (GSM) for comparison."),
+            # uiOutput("categorySelect"
+            # fluidRow(
+            #     column(5,
+                    textInput("cat1", label=NULL, placeholder="Category 1"),
+                    textInput("cat2", label=NULL, placeholder="Category 2"),
+                    textInput("cat3", label=NULL, placeholder="Category 3"),
+                #     ),
+                # column(7,
+                    # actionButton("Remove", "Finalize selections and remove not included"),#))),
+            
+            # ^ why aren't these two the same button?
+            # helpText("Do not click 'finish' until all selections have been made. This button removes the unselected rows and generates a new table on the next page."),
+            
+            hr(),
+            DT::dataTableOutput("gsm_table"),
+            # Category assignment panel
+            absolutePanel(id="assignCat",class="panel panel-default",fixed=TRUE,draggable=TRUE,top=120,left="auto",right=20,bottom="auto",width="420",height=50,
+            wellPanel(
+                h4("Highlight samples, then click to Assign them to the specificed category."),
                 uiOutput("categorySelect"),
-                actionButton("Assign", "Assign Categories"),
-                actionButton("Remove", "Finalize selections and remove not included"),
-                # ^ why aren't these two the same button?
-                helpText("Do not click 'finish' until all selections have been made. This button removes the unselected rows and generates a new table on the next page."),
-                DT::dataTableOutput("gsm_table")
-            ),
+                actionButton("Assign", "Assign GSM to Category")
+                )
+            )
+        ),
             # This will be where the CEL files are downloaded (confirmation, etc) ------------
-            tabPanel("Selection details", uiOutput("page4"), 
-                DT::dataTableOutput("finishedtable"),
-                actionButton("downloadCEL","Download CEL files"),
-                tableOutput("CELdl")
-            )
-            )
+        tabPanel("Confirm sample categories", uiOutput("page4"),
+            h4("Please check that your samples are appropriately categorized."),
+            fluidRow(column(8,DT::dataTableOutput("finishedtable")),column(4,actionButton("downloadCEL","Download CEL files")))
+            # DT::dataTableOutput("finishedtable"),
+           #  actionButton("downloadCEL","Download CEL files")#,
+#            tableOutput("CELdl")
         )
         )
     ),
+    # Load Gene Expression Data tab -------------------------------------
+    tabPanel("Experimental Design"),
 
-    # Load Genes tab -------------------------------------
+    # Load Gene Expression Data tab -------------------------------------
     tabPanel("Load data",
         sidebarLayout(
         sidebarPanel(
-            selectInput(inputId="user_data",label="Select user data for analysis",choices=c("none"="none","Photoreceptors v RPE"="2018-04-13_app_data.rda"),selected="2018-04-13_app_data.rda"),
+            selectInput(inputId="user_data",label="Select user data for analysis",choices=c("none"="none","Photoreceptors v RPE"="2018-04-13_app_data.rda"),selected="none"),
             br(),
             uiOutput("geneListsUI"),
             br(),
@@ -133,7 +143,8 @@ navbarPage("receptoR",
         sidebarLayout(
         sidebarPanel(
             checkboxGroupInput("pls_tissues", label = "Select tissues to inclued",
-            choices = groups, selected = groups),
+            choices = c("photoreceptors","RPE","whole.retina"), selected = c("photoreceptors","RPE","whole.retina")
+            ),
             checkboxInput("pls_probe", "Perform PLS-DA at probe level", value = FALSE),
             br(),
             h4("Gene contribution plot"),

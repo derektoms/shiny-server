@@ -1,5 +1,5 @@
 # October 2018 receptoR v 1.0
-## 2018-10-27
+## Last update: 2018-11-23
 ## server.R
 ### Integrating both applications to a final shiny executable
 
@@ -20,49 +20,45 @@
 #install.packages(c('dplyr','dbplyr','tidyr','ggplot2','RColorBrewer','readr','stringr','shiny','shinythemes','shinyjs','DT'))
 
 library(dplyr)
-library(dbplyr)
 library(tidyr)
 library(ggplot2)
 library(RColorBrewer)
 library(readr)
 library(stringr)
-library(DT)
 library(shiny)
 library(shinythemes)
 library(shinyjs)
+library(dbplyr)
+library(DT)
 
 # Bioinformatics packages installed via biocLite:
 #source("https://bioconductor.org/biocLite.R")
 #biocLite(c('limma','annotate','genefilter','ComplexHeatmap','pheatmap','cowplot','GEOmetadb','mouse4302.db','hgu133plus2.db'))
+#biocLite(c('mixOmics','MergeMaid','GEOquery','inSilicoMerging','affy','sva','Rtsne','metaArray','testthat'))
 
 library(GEOmetadb)
 library(GEOquery)
-
 library(affy)
 
 library(limma)
 library(annotate)
-library(genefilter)
-library(ComplexHeatmap)
 library(pheatmap)
+library(mixOmics)
 library(cowplot)
 
-#biocLite(c('mixOmics','MergeMaid','GEOquery','inSilicoMerging','affy','sva','Rtsne','metaArray','testthat'))
-
-library(mixOmics)
-library(MergeMaid)
-library(testthat)
-library(metaArray)
-#library(inSilicoMerging) ## package ‘inSilicoMerging’ is not available (for R version 3.4.3) 
-library(Rtsne)
-library(sva)
+## 2018-12-02 not currently needed:
+    # library(genefilter)
+   #  library(ComplexHeatmap)
+   #
+   #  library(MergeMaid)
+   #  library(testthat)
+   #  library(metaArray)
+   #  library(Rtsne)
+   #  library(sva)
 
 # Microarray platform annotations:
-# Equivalent human platform is GPL570 with 127 514 samples
-# HG-U133_Plus_2] Affymetrix Human Genome U133 Plus 2.0 Array
-
 library(mouse4302.db) 
-library(hgu133plus2.db)
+# library(hgu133plus2.db)
 
 ########################################
 #$#$#$#$#$#$    Shiny App  $#$#$#$#$#$#$
@@ -72,17 +68,19 @@ library(hgu133plus2.db)
 
 # load("../../data/gseGPL570.rda")
 # load("../../data/gsmGPL570.rda")
-load("gseGPL1261.rda")
-load("gsmGPL1261.rda")
+load("../gseGPL1261.rda")
+load("../gsmGPL1261.rda")
 
-source("../receptoR/functions.R")
+source("functions.R")
 
-load("genelists.rda")
-load("2018-04-13_app_data.rda")
+load("../genelists.rda")
+### I'm going to try and not have this loaded to start
+# load("2018-04-13_app_data.rda")
 
 ## SERVER
 server <- function(input, output, session) {
-      
+  catCol <- brewer.pal(3, "Set1")
+  rowCol <-desat(catCol)
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
   ## Search functions
   Totalchar <- eventReactive(input$Search, {nchar(input$Key)})
@@ -104,7 +102,7 @@ server <- function(input, output, session) {
   })
 
   output$filteredgse <- DT::renderDataTable({
-          filtered_gse()}, options=list(searching=TRUE, pageLength=6, columnDefs=list(list(
+          filtered_gse()}, options=list(searching=TRUE, pageLength=50, columnDefs=list(list(
               targets = c(8,9,12),
               render = JS(
                   "function(data, type, row, meta) {",
@@ -145,29 +143,38 @@ shinyjs::disable("gplSelection")
   output$gsm_table <- DT::renderDataTable({
 
        if(input$Assign==0){
-          return (gsm_annotated()[,c(-5:-7,-11,-12,-14:-26,-28:-32)])
-       } else {
-          return (samples$df[,c(-5:-7,-11,-12,-14:-26,-28:-32)])
-       }
-  }, options=list(searching=FALSE, columnDefs=list(list(
+          return (datatable(gsm_annotated()[,c(-5:-7,-11,-12,-14:-26,-28:-32)],options=list(searching=FALSE, pageLength=50,
+              columnDefs=list(list(
               targets = "_all",
               render = JS(
                   "function(data, type, row, meta) {",
                       "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
                       "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
                       "}") 
-                      ))))
+                      )))))
+       } else {
+          return (datatable(samples$df[,c(-5:-7,-11,-12,-14:-26,-28:-32)],options=list(searching=FALSE, pageLength=50,
+              columnDefs=list(list(
+              targets = "_all",
+              render = JS(
+                  "function(data, type, row, meta) {",
+                      "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
+                      "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
+                      "}") 
+                      ))))%>% formatStyle('category',target="row",backgroundColor=styleEqual(c(input$cat1,input$cat2,input$cat3),c(rowCol[1],rowCol[2],rowCol[3]))))
+       }
+  })
                       
   proxy.gsm = dataTableProxy('gsm_table')
   observeEvent(input$Assign,{
       proxy.gsm %>% selectRows(NULL)
-  })
+  }) 
   
   ## UI output
 
     output$categorySelect <- renderUI(
       fluidRow(
-        column(3,
+        column(12,
                selectInput("selection", "Select a Category",
                            c("category1" <- {input$cat1},
                              "category2" <- {input$cat2},
@@ -182,6 +189,7 @@ shinyjs::disable("gplSelection")
   samples$df <- data.frame()
   
   observeEvent(input$Assign, {
+  
       if (input$Assign == 1) {
         gsm_selected <- gsm_annotated()
         gsm_selected$category <- rep("Not yet assigned", nrow(gsm_selected))
@@ -200,11 +208,11 @@ shinyjs::disable("gplSelection")
 
 ## Finished table, to ultimately lead to CEL download
 
-  finishedtable <- eventReactive(input$Remove, {
+  finishedtable <- eventReactive(input$Assign, {
     dplyr::filter(samples$df, category %in% c(input$cat1, input$cat2, input$cat3))
   })
  
-  output$finishedtable <- DT::renderDataTable({finishedtable()[,c(2,3,4,10,31,32,33)]})
+  output$finishedtable <- DT::renderDataTable({finishedtable()[,c(2,3,4,10,31,32,33)]}, options=list(pageLength=100, scrollY=220))
     
   proxy.finishedtable = dataTableProxy('finishedtable')
   observeEvent(input$downloadCEL, {
@@ -219,7 +227,7 @@ shinyjs::disable("gplSelection")
       
   })
  
-  formData <- eventReactive(input$Remove, {
+  formData <- eventReactive(input$Assign, {
       time <- strftime(Sys.time(),"%Y.%m.%d %H:%M")
       stamp <- data.frame("timestamp"=rep(time,nrow(finishedtable())))
       CELdl <- c(finishedtable()[,3],finishedtable()[,33],stamp)
@@ -233,6 +241,20 @@ shinyjs::disable("gplSelection")
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 ## This is where the analysis part of the application begins
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+
+
+
+observeEvent(input$user_data,{
+   if(input$user_data=="none"){
+        mapped_probes<<-NULL
+        eset<<-NULL
+        de_choices<<-NULL
+        sig_genes_lfc<<-NULL
+    }else{
+        withProgress(message="Dataset loading",value=0.4,{load("../2018-04-13_app_data.rda",envir=.GlobalEnv)})
+    }
+    
+})
 
 # Load genes tab ------------------------------------------------------------------------------
 
@@ -269,7 +291,8 @@ shinyjs::disable("gplSelection")
   
  summary_gene_data = reactive({
    validate(
-      need(geneList(), "No genes selected")
+      need(geneList(), "No genes selected"),
+      need(!is.null(eset),"No dataset selected")
     )
    get_expression_summary(eset, geneList())
  })
@@ -295,7 +318,7 @@ shinyjs::disable("gplSelection")
     genes_to_plot = summary_gene_data()$Symbol[rows]
     
     gene_data = get_gene_data(eset, genes_to_plot)
-    by_gene_boxplot(gene_data,tissues=c("photoreceptors","RPE","whole.retina"))
+    by_gene_violplot(gene_data,tissues=c("photoreceptors","RPE","whole.retina"))
     
     
   })
