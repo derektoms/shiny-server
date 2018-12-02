@@ -146,6 +146,7 @@ saveData = function(data) {
    all_genes = featureData(eset)@data[["Symbol"]] %>% as.character() %>% unique()
 
    save(all_genes, mapped_probes, eset, de_choices, sig_genes_lfc, file = "2018-04-13_app_data.rda")
+    save(all_genes, gene_lists, file = " 2018-12_genelists.rda")
 }
 
  # end processing
