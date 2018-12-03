@@ -64,14 +64,14 @@ library(mouse4302.db)
 #$#$#$#$#$#$    Shiny App  $#$#$#$#$#$#$
 ########################################
 
+source("functions.R")
+
 ### not the best place to put this, but it should work for now
 
 # load("../../data/gseGPL570.rda")
 # load("../../data/gsmGPL570.rda")
 load("../gseGPL1261.rda")
 load("../gsmGPL1261.rda")
-
-source("functions.R")
 
 load("../2018-12_genelists.rda")
 ### I'm going to try and not have this loaded to start
@@ -114,7 +114,8 @@ server <- function(input, output, session) {
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 ### 2018-10-28 Disable platform selection to get it working with mice
 shinyjs::disable("gplSelection")
- 
+shinyjs::disable("downloadCEL")
+
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
   ## Collect samples to use (GSE - GSM)
     # List of the GSM associated with the selected GSE
@@ -212,7 +213,7 @@ shinyjs::disable("gplSelection")
     dplyr::filter(samples$df, category %in% c(input$cat1, input$cat2, input$cat3))
   })
  
-  output$finishedtable <- DT::renderDataTable({finishedtable()[,c(2,3,4,10,31,32,33)]}, options=list(pageLength=100, scrollY=220))
+  output$finishedtable <- DT::renderDataTable({datatable(finishedtable()[,c(2,3,4,10,31,32,33)],, options=list(pageLength=100, scrollY=220)) %>% formatStyle('category',target="row",backgroundColor=styleEqual(c(input$cat1,input$cat2,input$cat3),c(rowCol[1],rowCol[2],rowCol[3])))})
     
   proxy.finishedtable = dataTableProxy('finishedtable')
   observeEvent(input$downloadCEL, {
@@ -286,7 +287,7 @@ observeEvent(input$user_data,{
   
   # single gene UI
   output$geneUI = renderUI({
-    selectInput("gene", "Select gene(s) to show", choices = all_genes, multiple = TRUE)
+    withProgress(message="Dataset loading",value=0.4,{selectInput("gene", "Select gene(s) to show", choices = all_genes, multiple = TRUE)})
   })
   
  summary_gene_data = reactive({

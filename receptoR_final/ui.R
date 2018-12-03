@@ -88,9 +88,7 @@ navbarPage("receptoR",
         )
         )
     ),
-    # Load Gene Expression Data tab -------------------------------------
-    tabPanel("Experimental Design"),
-
+    
     # Load Gene Expression Data tab -------------------------------------
     tabPanel("Load data",
         sidebarLayout(
@@ -109,6 +107,11 @@ navbarPage("receptoR",
         )
         )
     ),
+    
+    # Load Gene Expression Data tab -------------------------------------
+    tabPanel("Experimental Design",
+        h4("Category definitions and contrasts")),
+    
     # Expression tab ------------------------------------------------------------------------------
 
     tabPanel("Expression plots", 
