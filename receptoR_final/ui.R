@@ -90,7 +90,7 @@ navbarPage("receptoR",
     ),
     
     # Load Gene Expression Data tab -------------------------------------
-    tabPanel("Load data",
+    tabPanel("Load expression data",
         sidebarLayout(
         sidebarPanel(
             selectInput(inputId="user_data",label="Select user data for analysis",choices=c("none"="none","Photoreceptors v RPE"="2018-04-13_app_data.rda"),selected="none"),
@@ -100,23 +100,23 @@ navbarPage("receptoR",
             uiOutput("geneUI")
         ),
         mainPanel(
-            fluidRow(
+            tabsetPanel(type="tabs",
+            tabPanel("Experimental design",h4("Category definitions and contrasts")),
+            tabPanel("Gene-level expression",
+                fluidRow(
                 column(6, h4("Average Expression"), DT::dataTableOutput("genes")),
                 column(6, h4("Gene Boxplot"), plotOutput("singleGenePlot"))
-            )
+            )))
         )
         )
     ),
     
-    # Load Gene Expression Data tab -------------------------------------
-    tabPanel("Experimental Design",
-        h4("Category definitions and contrasts")),
-    
-    # Expression tab ------------------------------------------------------------------------------
+    # Magnitude expression tab ------------------------------------------------------------------------------
 
-    tabPanel("Expression plots", 
+    tabPanel("Absolute expression", 
         sidebarLayout(
         sidebarPanel(
+            style = "position:fixed",
             checkboxGroupInput("tissues", label = "Select tissues to inclued",
             choices = c("photoreceptors","RPE","whole.retina"), selected = c("photoreceptors","RPE","whole.retina")
             ),
@@ -145,7 +145,7 @@ navbarPage("receptoR",
     ),
 
     # Mixomics tab ---------------------------------------------
-    tabPanel("PLS-DA",
+    tabPanel("Relative expression",
         sidebarLayout(
         sidebarPanel(
             checkboxGroupInput("pls_tissues", label = "Select tissues to inclued",
@@ -160,10 +160,11 @@ navbarPage("receptoR",
             # downloadButton("pls_download", "Download gene contribution data")
         ),
         mainPanel(
-            plotOutput("indPlot", height = 800),
-            plotOutput("varPlot", height = 800),
-            plotOutput("contribPlot", height = 800)
-            # DT::dataTableOutput("contribTable")
+            tabsetPanel(type = "tabs",
+            tabPanel("PCA Analysis", plotOutput("indPlot", height = 800)),
+            tabPanel("Circle variance", plotOutput("varPlot", height = 800)),
+            tabPanel("Loadings plot", plotOutput("contribPlot", height = 800))
+        )
         )
         )
     )
