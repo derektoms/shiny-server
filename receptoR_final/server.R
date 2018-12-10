@@ -79,8 +79,14 @@ load("../2018-12_genelists.rda")
 
 ## SERVER
 server <- function(input, output, session) {
+
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+  ## Set up colour environment
   catCol <- brewer.pal(3, "Set1")
   rowCol <-desat(catCol)
+  # groups <- c(group1,group2,group3) ## Use these in all following code! They should have a "name" variable for user-assigned names 2018-12-10
+  groups<-c("photoreceptors","RPE","whole.retina") ## what is has to be for the moment
+  userID <- NULL
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
   ## Search functions
   Totalchar <- eventReactive(input$Search, {nchar(input$Key)})
@@ -114,17 +120,19 @@ server <- function(input, output, session) {
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 ### 2018-10-28 Disable platform selection to get it working with mice
 shinyjs::disable("gplSelection")
-shinyjs::disable("downloadCEL")
+
+### 2018-12-10 The Download CEL button was also disabled once both the whole application was integrated. I'm planning on fixing this today to enable a PDF and RDA of the assigned categories, CEL can be downloaded and annotated at a later date
+# shinyjs::disable("downloadCEL")
 
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
   ## Collect samples to use (GSE - GSM)
-    # List of the GSM associated with the selected GSE
   
-  gse_to_keep <- eventReactive(input$getGSM, {
+  ### List of the GSM associated with the selected GSE
+    gse_to_keep <- eventReactive(input$getGSM, {
     filtered_gse()[input$filteredgse_rows_selected,]
   })
   
-  # Use GSE to load GSM from the prefiltered lists
+  ### Use GSE to load GSM from the prefiltered lists
   gsm_annotated <- eventReactive(input$getGSM, {
       withProgress(message='Collecting GSM',{
       if(input$gplSelection=='human'){
@@ -135,8 +143,6 @@ shinyjs::disable("downloadCEL")
       })
   })
 
-  ## ^ these two things should be condensed, so that there is one action on the button click
-
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 
   ## Assign categories to each sample (GSM)
@@ -144,7 +150,7 @@ shinyjs::disable("downloadCEL")
   output$gsm_table <- DT::renderDataTable({
 
        if(input$Assign==0){
-          return (datatable(gsm_annotated()[,c(-5:-7,-11,-12,-14:-26,-28:-32)],options=list(searching=FALSE, pageLength=50,
+          return (datatable(gsm_annotated()[,c(-5:-7,-11,-12,-14:-26,-28:-32)],options=list(searching=FALSE, pageLength=50, ## 2018-12-10 Pick which columns are necessary ^
               columnDefs=list(list(
               targets = "_all",
               render = JS(
@@ -182,7 +188,7 @@ shinyjs::disable("downloadCEL")
                              "category3" <- {input$cat3},
                              "category4" <- "Not included"))
         )
-      )
+      )     ### 2018-12-10 I'd like to have a button to add category 3
     )
 
   ## Assign categories
@@ -213,31 +219,37 @@ shinyjs::disable("downloadCEL")
     dplyr::filter(samples$df, category %in% c(input$cat1, input$cat2, input$cat3))
   })
  
-  output$finishedtable <- DT::renderDataTable({datatable(finishedtable()[,c(2,3,4,10,31,32,33)],, options=list(pageLength=100, scrollY=220)) %>% formatStyle('category',target="row",backgroundColor=styleEqual(c(input$cat1,input$cat2,input$cat3),c(rowCol[1],rowCol[2],rowCol[3])))})
+  output$finishedtable <- DT::renderDataTable({datatable(finishedtable()[,c(2,3,4,10,31,32,33)],
+      options=list(pageLength=100, scrollY=620)) %>%
+      formatStyle('category',target="row",
+      backgroundColor=styleEqual(c(input$cat1,input$cat2,input$cat3),c(rowCol[1],rowCol[2],rowCol[3]))
+  )})
     
-  proxy.finishedtable = dataTableProxy('finishedtable')
-  observeEvent(input$downloadCEL, {
-      proxy.finishedtable %>% selectRows(2) %>% selectColumns(2) # selectColumn doesn't work. Instead what I would prefer is a PDF of the final table and a R list of CEL files to download
-      saveData(formData()) # success, this will save the tables as variables I can use to download the CEL files
-      ####
-      #### Move to SQL 
-      ####
-      withProgress(
-          message = "Downloading and processing GSM",
-          processData(CELtoDownload$gsm))
+  # proxy.finishedtable = dataTableProxy('finishedtable')
+  output$report <- downloadHandler(
+      filename = paste(userID,"GSM_report.csv",sep="_"),
+      content = function(file){
+          write.csv(finishedtable(),file)
+#           tempReport <- file.path(tempdir(),"report.Rmd")
+#           file.copy("report.Rmd",tempReport,overwrite=TRUE)
+#           params <- list(annotatedGSM = finishedtable())
+#
+#           rmarkdown::render(tempReport,output_file = file,
+#               params = params,
+#               envir = new.env(parent=globalenv())
+#               )
+      })
       
+observeEvent(input$downloadCEL, {
+    withProgress(
+        message = "Downloading and processing GSM",
+        {userID <<- processData(finishedtable())})
+    
+    showModal(modalDialog(title="Important! Downloading CEL files.","We are currently not allowing downloads due to server limitation. We will however, keep all annotations and notify you when your data has been processed and is available for analysis. Please click below to download a report.",
+    footer = tagList(
+        modalButton("Cancel"),
+        downloadButton("report","Download report"))))      
   })
- 
-  formData <- eventReactive(input$Assign, {
-      time <- strftime(Sys.time(),"%Y.%m.%d %H:%M")
-      stamp <- data.frame("timestamp"=rep(time,nrow(finishedtable())))
-      CELdl <- c(finishedtable()[,3],finishedtable()[,33],stamp)
-      CELdl
-  })
- 
- output$CELdl <- renderTable(formData()) 
- 
-    groups<-c("photoreceptors","RPE","whole.retina")
 
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 ## This is where the analysis part of the application begins
@@ -287,7 +299,7 @@ observeEvent(input$user_data,{
   
   # single gene UI
   output$geneUI = renderUI({
-    withProgress(message="Dataset loading",value=0.4,{selectInput("gene", "Select gene(s) to show", choices = all_genes, multiple = TRUE)})
+    withProgress(message="Loading gene lists",value=0.6,{selectInput("gene", "Select gene(s) to show", choices = all_genes, multiple = TRUE)})
   })
   
  summary_gene_data = reactive({

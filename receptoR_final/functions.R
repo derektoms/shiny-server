@@ -5,27 +5,19 @@
 ## functions.R
 ### Integrating both applications to a final shiny executable
 
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 desat = function(cols, sat=0.5) {
     X <- diag(c(1, sat, 1)) %*% rgb2hsv(col2rgb(cols))
     hsv(X[1,], X[2,], X[3,])
 }
 
+
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
-
-saveData = function(data) {
-  data <- as.data.frame(data)
-  if (exists("CELdl")) {
-    CELtoDownload <<- rbind(CELtoDownload, data)
-  } else {
-    CELtoDownload <<- data
-  }
-}
-
-
- #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
  #$# Data processing 9 April 2018
- processData = function(gsm_to_process){
- gsm_to_fetch <- gsm_to_process
+ ##  Updates 2018-12-10 to switch between user input and CEL downloads
+ 
+ processData = function(finished_table){
+ gsm_to_fetch <- finished_table$gsm
  ## timestamp
  timeStamp <- strftime(Sys.time(),"%Y%m%d-%H%M")
 
@@ -34,35 +26,34 @@ saveData = function(data) {
  
  if (get_files) {
    # get raw CEL files
+
    setDir<-paste(getwd(),'/',timeStamp,sep='')
-   
+
    rawFilePaths = lapply(gsm_to_fetch, function(x) {
        dir.create(file.path(setDir), showWarnings = FALSE)
        getGEOSuppFiles(x,baseDir=setDir)
    })
-  
-  setwd(setDir)
-  
-  gsm_dirs = list.files(pattern = "GSM")
-   
-  gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names = TRUE)
-  
+ 
+gsm_dirs = list.files(path=setDir, pattern = "GSM", full.names=TRUE)
+
+gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names = TRUE)
+
  # New approach: Normalize together ------------------------------------------------------------
  all_data = ReadAffy(filenames = unlist(gsm_files))
  all_eset = rma(all_data)
  all_pData = pData(all_eset)
 
  gsm = str_match(rownames(all_pData), "(GSM[[:alnum:]]+)")[,2]
- 
+
  ## missing CEL files (2018-04-13) required the fix below
  gsm <- tibble(gsm)
- dlSamples <- inner_join(gsm,CELtoDownload)
- 
+ dlSamples <- inner_join(gsm,finished_table)
+
  all_pData<-tibble("tissue"=dlSamples$category)
  colnames(all_eset)<-dlSamples$gsm
  rownames(all_pData)<-dlSamples$gsm # Warning: setting row names on a tibble is deprecated
  ## end fix
- 
+
  all_eset_final<-all_eset
  pData(all_eset_final)<-all_pData
  pData(all_eset_final) %>% View
@@ -76,20 +67,11 @@ saveData = function(data) {
  # ok that looks good let's save this now
  ## 2018-04-13
  ## just before saving, there is a problem with the annotation (see below at the call to contrast_matrix)
- ## quick and dirty fix: 
- 
+ ## quick and dirty fix:
+
  # pData(all_eset_final)<-pData(all_eset_final)%>%mutate(tissue=str_replace(tissue,"whole retina","whole.retina"))
- 
- save(all_eset_final, file = paste("final_processed_data",timeStamp,".rda",sep='')) # filename should include timestamp
 
- setwd('..')
-
- } else {
-
-   # load(paste(timeStamp,"/final_processed_data",timeStamp,".rda",sep=''))
-   load("../final_processed_data_2018-04-13.rda")
- }
-
+ save(all_eset_final, file = paste("final_processed_data_",timeStamp,".rda",sep='')) # filename should include timestamp
 
  ### DE
 
@@ -145,8 +127,15 @@ saveData = function(data) {
 
    all_genes = featureData(eset)@data[["Symbol"]] %>% as.character() %>% unique()
 
-   save(all_genes, mapped_probes, eset, de_choices, sig_genes_lfc, file = "2018-04-13_app_data.rda")
-    save(all_genes, gene_lists, file = " 2018-12_genelists.rda")
+ save(mapped_probes, eset, de_choices, sig_genes_lfc, file = paste("app_data_",timeStamp,".rda",sep='')) # filename should include timestamp
+   # save(all_genes, mapped_probes, eset, de_choices, sig_genes_lfc, file = "2018-04-13_app_data.rda")
+   #  save(all_genes, gene_lists, file = " 2018-12_genelists.rda")
+   return(timeStamp)
+} else {
+    save(finished_table, file = paste("annotated_gsm_",timeStamp,".rda",sep=''))
+    return(timeStamp)
+}
+
 }
 
  # end processing

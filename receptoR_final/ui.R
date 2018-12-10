@@ -81,10 +81,9 @@ navbarPage("receptoR",
             # This will be where the CEL files are downloaded (confirmation, etc) ------------
         tabPanel("Confirm sample categories", uiOutput("page4"),
             h4("Please check that your samples are appropriately categorized."),
-            fluidRow(column(8,DT::dataTableOutput("finishedtable")),column(4,actionButton("downloadCEL","Download CEL files")))
-            # DT::dataTableOutput("finishedtable"),
-           #  actionButton("downloadCEL","Download CEL files")#,
-#            tableOutput("CELdl")
+            fluidRow(
+                column(8,DT::dataTableOutput("finishedtable")),
+                column(4,actionButton("downloadCEL","Download CEL files")))
         )
         )
     ),
@@ -121,7 +120,7 @@ navbarPage("receptoR",
             choices = c("photoreceptors","RPE","whole.retina"), selected = c("photoreceptors","RPE","whole.retina")
             ),
             br(),
-            checkboxInput("de_state", label = "Show differential expressed only", value = FALSE),
+            checkboxInput("de_state", label = "Show differential expressed only", value = TRUE),
             uiOutput("de_choices"),
             br(),
             h3("Heatmap parameters"),
