@@ -32,9 +32,19 @@ tags$head(tags$script(HTML(jscode))),
 shinyjs::useShinyjs(),
 navbarPage("receptoR",
     theme = shinytheme("spacelab"),
-    
+    tabPanel("Start here",
+    tags$div(class="header", checked=NA,
+                   tags$h3("Welcome to receptoR, an automated hypothesis generation software to identify cellular signaling pathways from transcriptomics data"),
+                   tags$p("This software allows you to browse and analyze public transcriptomics data. To proceed, click \'Search for datasets\', above")
+        )
+                   
+        ),
     tabPanel("Search for datasets",
-        # Search for GSE  ------------------------------------------------------------------------------              
+        # Search for GSE  ------------------------------------------------------------------------------
+        tags$div(class="header", checked=NA,
+                       tags$h3("1. To begin, search for experiments that contain the data you're interested in.")
+                   
+            ),              
         tabsetPanel(
         tabPanel("Search for GEO data series (GSE)",
             h4("Highlight the desired search results (GSE) and click 'Retrieve GSM' to proceed"),
