@@ -150,7 +150,7 @@ shinyjs::disable("gplSelection")
   output$gsm_table <- DT::renderDataTable({
 
        if(input$Assign==0){
-          return (datatable(gsm_annotated()[,c(-5:-7,-11,-12,-14:-26,-28:-32)],options=list(searching=FALSE, pageLength=50, ## 2018-12-10 Pick which columns are necessary ^
+          return (datatable(gsm_annotated()[,c(-5:-7,-11,-12,-14:-26,-28:-32)],options=list(searching=TRUE, pageLength=50, scrollY='60vh',## 2018-12-10 Pick which columns are necessary ^
               columnDefs=list(list(
               targets = "_all",
               render = JS(
@@ -160,7 +160,7 @@ shinyjs::disable("gplSelection")
                       "}") 
                       )))))
        } else {
-          return (datatable(samples$df[,c(-5:-7,-11,-12,-14:-26,-28:-32)],options=list(searching=FALSE, pageLength=50,
+          return (datatable(samples$df[,c(-5:-7,-11,-12,-14:-26,-28:-32)],options=list(searching=TRUE, pageLength=50, scrollY='60vh',
               columnDefs=list(list(
               targets = "_all",
               render = JS(
@@ -220,11 +220,14 @@ shinyjs::disable("gplSelection")
   })
  
   output$finishedtable <- DT::renderDataTable({datatable(finishedtable()[,c(2,3,4,10,31,32,33)],
-      options=list(pageLength=100, scrollY=620)) %>%
+      options=list(searching=FALSE,pageLength=100, scrollY='20vh')) %>%
       formatStyle('category',target="row",
       backgroundColor=styleEqual(c(input$cat1,input$cat2,input$cat3),c(rowCol[1],rowCol[2],rowCol[3]))
   )})
-    
+
+
+rv <- reactiveValues(download_flag = 0)
+
   # proxy.finishedtable = dataTableProxy('finishedtable')
   output$report <- downloadHandler(
       filename = paste(userID,"GSM_report.csv",sep="_"),
@@ -238,17 +241,27 @@ shinyjs::disable("gplSelection")
 #               params = params,
 #               envir = new.env(parent=globalenv())
 #               )
+rv$download_flag <- rv$download_flag + 1
       })
       
 observeEvent(input$downloadCEL, {
-    withProgress(
-        message = "Downloading and processing GSM",
-        {userID <<- processData(finishedtable())})
     
     showModal(modalDialog(title="Important! Downloading CEL files.","We are currently not allowing downloads due to server limitation. We will however, keep all annotations and notify you when your data has been processed and is available for analysis. Please click below to download a report.",
     footer = tagList(
         modalButton("Cancel"),
         downloadButton("report","Download report"))))      
+  })
+
+
+  observeEvent(rv$download_flag, {
+      removeModal()
+   })
+
+
+  observeEvent(input$downloadCEL, {
+      withProgress(
+          message = "Downloading and processing GSM",
+          {userID<<-processData(finishedtable())})
   })
 
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
