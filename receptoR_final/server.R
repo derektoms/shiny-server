@@ -108,7 +108,7 @@ server <- function(input, output, session) {
   })
 
   output$filteredgse <- DT::renderDataTable({
-          filtered_gse()}, options=list(searching=TRUE, pageLength=50, columnDefs=list(list(
+          filtered_gse()}, options=list(searching=TRUE, pageLength=50, scrollY='60vh', columnDefs=list(list(
               targets = c(8,9,12),
               render = JS(
                   "function(data, type, row, meta) {",
@@ -264,6 +264,11 @@ observeEvent(input$downloadCEL, {
           {userID<<-processData(finishedtable(),input$comments)})
   })
 
+#  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  
+# ( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )
+# \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/\ 
+# (_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)
+  
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 ## This is where the analysis part of the application begins
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$

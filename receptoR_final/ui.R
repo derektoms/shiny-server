@@ -6,6 +6,7 @@
 library(shiny)
 library(shinythemes)
 library(shinyjs)
+
 #  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  
 # ( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )
 # \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/\ 
@@ -49,16 +50,17 @@ navbarPage("receptoR",
        sidebarLayout(
            sidebarPanel(
                h4("receptoR is an automated hypothesis generation software to identify cellular signaling pathways from transcriptomics data."),
-               p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky. Andouille t-bone biltong bacon beef ribs boudin frankfurter ham hock pork loin capicola tail ground round brisket tenderloin tri-tip. Ham pork bacon strip steak, ball tip leberkas meatball capicola pork loin. Ribeye turducken tri-tip jowl filet mignon drumstick shank corned beef prosciutto spare ribs sausage leberkas cupim burgdoggen bacon."),
+               p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky. Andouille t-bone biltong bacon beef ribs boudin frankfurter ham hock pork loin capicola tail ground round brisket tenderloin tri-tip. Ham pork bacon strip steak, ball tip leberkas meatball capicola pork loin. Ribeye turducken tri-tip jowl filet mignon drumstick shank corned beef prosciutto spare ribs sausage leberkas cupim burgdoggen bacon.",style="color:#D8BFD8"),
+               hr(),
                p("(C) 2019 Derek Toms")),
            mainPanel(
                p("This software allows you to browse and analyze public transcriptomics data. To proceed, click \'Search for datasets\', above"),
                img(src="overview.png"),
-               p("Spicy jalapeno bacon ipsum dolor amet brisket ribeye tri-tip tail meatloaf ground round salami fatback. Ball tip flank pork turkey prosciutto. Venison burgdoggen beef pork hamburger tongue shankle rump frankfurter kielbasa pastrami pork belly. T-bone fatback venison tenderloin salami biltong turkey chuck."),
+               p("Spicy jalapeno bacon ipsum dolor amet brisket ribeye tri-tip tail meatloaf ground round salami fatback. Ball tip flank pork turkey prosciutto. Venison burgdoggen beef pork hamburger tongue shankle rump frankfurter kielbasa pastrami pork belly. T-bone fatback venison tenderloin salami biltong turkey chuck.",style="color:#D8BFD8"),
 
-p("Turkey tenderloin buffalo frankfurter, strip steak capicola filet mignon ribeye cow t-bone biltong. Tri-tip hamburger ham hock, shank landjaeger kielbasa pork loin spare ribs pastrami salami shoulder alcatra. Biltong tail brisket, turkey beef ribs hamburger prosciutto bacon tenderloin pancetta shank venison picanha cupim. Frankfurter porchetta turkey biltong corned beef, burgdoggen prosciutto jerky tail. Capicola beef ribs burgdoggen pancetta, frankfurter leberkas pig. Filet mignon jerky ground round cow burgdoggen, shoulder boudin ham hock pancetta."),
+p("Turkey tenderloin buffalo frankfurter, strip steak capicola filet mignon ribeye cow t-bone biltong. Tri-tip hamburger ham hock, shank landjaeger kielbasa pork loin spare ribs pastrami salami shoulder alcatra. Biltong tail brisket, turkey beef ribs hamburger prosciutto bacon tenderloin pancetta shank venison picanha cupim. Frankfurter porchetta turkey biltong corned beef, burgdoggen prosciutto jerky tail. Capicola beef ribs burgdoggen pancetta, frankfurter leberkas pig. Filet mignon jerky ground round cow burgdoggen, shoulder boudin ham hock pancetta.",style="color:#D8BFD8"),
 
-p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback short ribs corned beef. Beef shank shoulder, leberkas pancetta ground round jowl tenderloin ribeye hamburger shankle flank. Strip steak short loin kevin pork belly meatball swine sausage ham jowl pig tongue venison fatback t-bone beef. Spare ribs shoulder ham hock strip steak pastrami.")
+p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback short ribs corned beef. Beef shank shoulder, leberkas pancetta ground round jowl tenderloin ribeye hamburger shankle flank. Strip steak short loin kevin pork belly meatball swine sausage ham jowl pig tongue venison fatback t-bone beef. Spare ribs shoulder ham hock strip steak pastrami.",style="color:#D8BFD8")
                ))
                
         ),
@@ -66,12 +68,15 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
 # Search for GSE  ------------------------------------------------------------------------------
 
     tabPanel("Search for datasets",
-       h3("Search for and categorize expression datasets"),
+       h3("Organize publicly available expression data"),
        hr(),
        sidebarLayout(
            
        sidebarPanel(
-           style = "position:fixed;width:30%",
+           # style = "position:fixed;width:30%",
+           h4("Search for datasets"),
+           p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
+           hr(),
            conditionalPanel(condition="input.searchpanel==1",
            h4("Find expression data from publicly available datasets to begin defining your own experiment."),
            p("Begin by searching for ",span("G",style="font-weight:bold"),"EO data ",span("se",style="font-weight:bold"),"ries (GSE) containing expression data for your cell or tissue type of interest."),
@@ -98,34 +103,24 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
            conditionalPanel(condition="input.searchpanel==3",
                h4("Thank you for using receptoR!"),
                p(" Please enter your name and any comments/bugs/questions/requests in the box below, then click the \'Download and Process\' button to retrieve the raw files from the NCBI server and process them based on their assigned categories."),
-               textAreaInput("comments","Comments",width="100%",height="100px"),
+               textAreaInput("comments","Comments",width="100%",height="100px",resize="vertical"),
                textInput("downloadId","Download ID"),
                actionButton("downloadCEL","Download and Process"))
        ),
        
        mainPanel(
-        
+           # Search GSE based on species
         tabsetPanel(
         tabPanel("Search", value=1,
-            h4("Search NCBI for GEO data series (\'GSE\')"),
+            h4("GEO data series (\'GSE\') matching search query"), # return search here!
             DT::dataTableOutput("filteredgse")
         ),
         # Assign samples to categories ------------------------------------------------------
         tabPanel("Assign", value=2,
             h4("From the selected series' (GSE) assign individual samples (GSM) to categories of your choosing."),
             DT::dataTableOutput("gsm_table")
-            
-            # ,
-            # # Category assignment panel
-            # absolutePanel(id="assignCat",class="panel panel-default",fixed=TRUE,draggable=TRUE,top=120,left="auto",right=20,bottom="auto",width="420",height=50,
-            # wellPanel(
-            #     h4("Highlight samples, then click to Assign them to the specificed category."),
-            #     uiOutput("categorySelect"),
-            #     actionButton("Assign", "Assign GSM to Category")
-            #     )
-            # )
         ),
-# This will be where the CEL files are downloaded (confirmation, etc) ------------
+        # This will be where the CEL files are downloaded (confirmation, etc) ------------
         tabPanel("Process", value=3,
         h4("Please confirm samples are properly categorized."),
         p("Expression samples annotated:"),
@@ -142,10 +137,13 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
     
     # Load Gene Expression Data tab -------------------------------------
     tabPanel("Load expression data",
-        h3("Load experiments to perform analysis"),
+        h3("Pick from user-defined experiments to perform analyses"),
         hr(),
         sidebarLayout(
         sidebarPanel(
+            h4("Load expression data"),
+            p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
+            hr(),
             selectInput(inputId="user_data",label="Select user data for analysis",choices=c("none"="none","Photoreceptors v RPE"="2018-04-13_app_data.rda"),selected="none"),
             br(),
             uiOutput("geneListsUI"),
@@ -153,8 +151,8 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
             uiOutput("geneUI")
         ),
         mainPanel(
-            tabsetPanel(type="tabs",
-            tabPanel("Experimental design",h4("Category definitions and contrasts")),
+            tabsetPanel(type="tabs",selected="Gene-level expression",
+            tabPanel("Experimental design",h4("Category definitions and contrasts"),p("Coming soon!")),
             tabPanel("Gene-level expression",
                 fluidRow(
                 column(6, h4("Average Expression"), DT::dataTableOutput("genes")),
@@ -171,6 +169,8 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
         hr(),
         sidebarLayout(
         sidebarPanel(
+            h4("Absolute expression"),
+            p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
             # style = "position:fixed",
             checkboxGroupInput("tissues", label = "Select tissues to inclued",
             choices = c("photoreceptors","RPE","whole.retina"), selected = c("photoreceptors","RPE","whole.retina")
@@ -207,6 +207,8 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
         hr(),
         sidebarLayout(
         sidebarPanel(
+            h4("Relative expression"),
+            p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
             checkboxGroupInput("pls_tissues", label = "Select tissues to inclued",
             choices = c("photoreceptors","RPE","whole.retina"), selected = c("photoreceptors","RPE","whole.retina")
             ),
