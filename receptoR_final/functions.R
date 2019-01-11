@@ -16,7 +16,7 @@ desat = function(cols, sat=0.5) {
  #$# Data processing 9 April 2018
  ##  Updates 2018-12-10 to switch between user input and CEL downloads
  
- processData = function(finished_table){
+ processData = function(finished_table,userComments){
  gsm_to_fetch <- finished_table$gsm
  ## timestamp
  timeStamp <- strftime(Sys.time(),"%Y%m%d-%H%M")
@@ -132,7 +132,7 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
    #  save(all_genes, gene_lists, file = " 2018-12_genelists.rda")
    return(timeStamp)
 } else {
-    save(finished_table, file = paste("annotated_gsm_",timeStamp,".rda",sep=''))
+    save(userComments,finished_table, file = paste("annotated_gsm_",timeStamp,".rda",sep=''))
     return(timeStamp)
 }
 

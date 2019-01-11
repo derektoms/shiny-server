@@ -69,7 +69,9 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
        h3("Search for and categorize expression datasets"),
        hr(),
        sidebarLayout(
+           
        sidebarPanel(
+           style = "position:fixed;width:30%",
            conditionalPanel(condition="input.searchpanel==1",
            h4("Find expression data from publicly available datasets to begin defining your own experiment."),
            p("Begin by searching for ",span("G",style="font-weight:bold"),"EO data ",span("se",style="font-weight:bold"),"ries (GSE) containing expression data for your cell or tissue type of interest."),
@@ -94,18 +96,23 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
            actionButton("Assign", "Assign GSM to Category")),
            
            conditionalPanel(condition="input.searchpanel==3",
-               h4("Please check that your samples are appropriately categorized."),
-               actionButton("downloadCEL","Download CEL files"))
+               h4("Thank you for using receptoR!"),
+               p(" Please enter your name and any comments/bugs/questions/requests in the box below, then click the \'Download and Process\' button to retrieve the raw files from the NCBI server and process them based on their assigned categories."),
+               textAreaInput("comments","Comments",width="100%",height="100px"),
+               textInput("downloadId","Download ID"),
+               actionButton("downloadCEL","Download and Process"))
        ),
        
        mainPanel(
+        
         tabsetPanel(
-        tabPanel("Search for GEO data series (GSE)", value=1,
+        tabPanel("Search", value=1,
+            h4("Search NCBI for GEO data series (\'GSE\')"),
             DT::dataTableOutput("filteredgse")
         ),
         # Assign samples to categories ------------------------------------------------------
-        tabPanel("Assign samples (GSM) to categories", value=2,
-            
+        tabPanel("Assign", value=2,
+            h4("From the selected series' (GSE) assign individual samples (GSM) to categories of your choosing."),
             DT::dataTableOutput("gsm_table")
             
             # ,
@@ -118,8 +125,10 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
             #     )
             # )
         ),
-            # This will be where the CEL files are downloaded (confirmation, etc) ------------
-        tabPanel("Confirm sample categories", value=3,
+# This will be where the CEL files are downloaded (confirmation, etc) ------------
+        tabPanel("Process", value=3,
+        h4("Please confirm samples are properly categorized."),
+        p("Expression samples annotated:"),
                 DT::dataTableOutput("finishedtable")
         ),
         
@@ -214,7 +223,9 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
             tabPanel("PCA Analysis", plotOutput("indPlot", height = 800)),
             tabPanel("Circle variance", plotOutput("varPlot", height = 800)),
             tabPanel("Loadings plot", plotOutput("contribPlot", height = 800))
-        )
+        ),
+        position = c("right","left"),
+        fluid = TRUE
         )
         )
     )

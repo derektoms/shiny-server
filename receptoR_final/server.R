@@ -58,7 +58,7 @@ library(cowplot)
 
 # Microarray platform annotations:
 library(mouse4302.db) 
-# library(hgu133plus2.db)
+library(hgu133plus2.db)
 
 ########################################
 #$#$#$#$#$#$    Shiny App  $#$#$#$#$#$#$
@@ -68,8 +68,8 @@ source("functions.R")
 
 ### not the best place to put this, but it should work for now
 
-# load("../../data/gseGPL570.rda")
-# load("../../data/gsmGPL570.rda")
+load("../gseGPL570.rda")
+load("../gsmGPL570.rda")
 load("../gseGPL1261.rda")
 load("../gsmGPL1261.rda")
 
@@ -119,7 +119,7 @@ server <- function(input, output, session) {
 
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 ### 2018-10-28 Disable platform selection to get it working with mice
-shinyjs::disable("gplSelection")
+# shinyjs::disable("gplSelection")
 
 ### 2018-12-10 The Download CEL button was also disabled once both the whole application was integrated. I'm planning on fixing this today to enable a PDF and RDA of the assigned categories, CEL can be downloaded and annotated at a later date
 # shinyjs::disable("downloadCEL")
@@ -230,7 +230,7 @@ rv <- reactiveValues(download_flag = 0)
 
   # proxy.finishedtable = dataTableProxy('finishedtable')
   output$report <- downloadHandler(
-      filename = paste(userID,"GSM_report.csv",sep="_"),
+      filename = paste(input$downloadId,userID,"GSM_report.csv",sep="_"),
       content = function(file){
           write.csv(finishedtable(),file)
 #           tempReport <- file.path(tempdir(),"report.Rmd")
@@ -246,10 +246,10 @@ rv$download_flag <- rv$download_flag + 1
       
 observeEvent(input$downloadCEL, {
     
-    showModal(modalDialog(title="Important! Downloading CEL files.","We are currently not allowing downloads due to server limitation. We will however, keep all annotations and notify you when your data has been processed and is available for analysis. Please click below to download a report.",
+    showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.","Jan 11th, 2019: As I finish working out the bugs in converting these files to the analyzed output, the downloading has been disabled. However, all annotations will be saved and processed (Jan 12-13) to be made available for analysis. Please click below to download a record of your submission.",
     footer = tagList(
         modalButton("Cancel"),
-        downloadButton("report","Download report"))))      
+        downloadButton("report","Download submission record"))))      
   })
 
 
@@ -261,7 +261,7 @@ observeEvent(input$downloadCEL, {
   observeEvent(input$downloadCEL, {
       withProgress(
           message = "Downloading and processing GSM",
-          {userID<<-processData(finishedtable())})
+          {userID<<-processData(finishedtable(),input$comments)})
   })
 
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
