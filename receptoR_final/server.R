@@ -68,20 +68,20 @@ source("functions.R")
 
 ### not the best place to put this, but it should work for now
 
-# load("../gseGPL570.rda")
-# load("../gsmGPL570.rda")
-# load("../gseGPL1261.rda")
-# load("../gsmGPL1261.rda")
+load("../gseGPL570.rda")
+load("../gsmGPL570.rda")
+load("../gseGPL1261.rda")
+load("../gsmGPL1261.rda")
+
+load("../2018-12_genelists.rda")
+
+
+# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gseGPL570.rda")
+# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gsmGPL570.rda")
+# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gseGPL1261.rda")
+# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gsmGPL1261.rda")
 #
-# load("../2018-12_genelists.rda")
-
-
-load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gseGPL570.rda")
-load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gsmGPL570.rda")
-load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gseGPL1261.rda")
-load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gsmGPL1261.rda")
-
-load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-12_genelists.rda")
+# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-12_genelists.rda")
 
 
 ### I'm going to try and not have this loaded to start
@@ -292,8 +292,8 @@ observeEvent(input$user_data,{
         de_choices<<-NULL
         sig_genes_lfc<<-NULL
     }else{
-        # withProgress(message="Dataset loading",value=0.4,{load("../2018-04-13_app_data.rda",envir=.GlobalEnv)})
-        withProgress(message="Dataset loading",value=0.4,{load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-04-13_app_data.rda",envir=.GlobalEnv)})
+        withProgress(message="Dataset loading",value=0.4,{load("../2018-04-13_app_data.rda",envir=.GlobalEnv)})
+        # withProgress(message="Dataset loading",value=0.4,{load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-04-13_app_data.rda",envir=.GlobalEnv)})
     }
     
 })
