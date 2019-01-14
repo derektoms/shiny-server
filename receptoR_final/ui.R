@@ -49,63 +49,73 @@ navbarPage("receptoR",
        hr(),
        sidebarLayout(
            sidebarPanel(
-               h4("receptoR is an automated hypothesis generation software to identify cellular signaling pathways from transcriptomics data."),
-               p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky. Andouille t-bone biltong bacon beef ribs boudin frankfurter ham hock pork loin capicola tail ground round brisket tenderloin tri-tip. Ham pork bacon strip steak, ball tip leberkas meatball capicola pork loin. Ribeye turducken tri-tip jowl filet mignon drumstick shank corned beef prosciutto spare ribs sausage leberkas cupim burgdoggen bacon.",style="color:#D8BFD8"),
+               # h4("An automated hypothesis generation software to identify cellular signaling pathways from transcriptomics data"),
+               p("This software allows you to browse and analyze public transcriptomics data. This is based on the idea that each cell type expresses a particular suite of cellular receptors that drive its behaviour."),
+               tags$ol(tags$li("A cell transcribes mRNA that will be translated into functional receptor proteins."),tags$li("Isolating RNA from the cell and converting it to labeled cDNA allows us to hybridize it to an probe array to measure expression."),tags$li("Each sample represents a particular transcriptomic snapshot. Thousands of these have been digitized and made publicly available."),tags$li("By mining this data, we can predict which receptors are expressed by our samples of interest to direct tissue engineering strategies.")),
                hr(),
-               p("(C) 2019 Derek Toms")),
+               
+               #div
+               p("There are two ways to begin using receptor, either by searching for expression data to design your own experiment, or by loading and analysing an existing experiment."),
+               # To proceed, click \'Search for datasets\', above"),
+               hr(),
+               p("(C) 2019 Derek Toms"),
+               p("License")
+               #/div
+               ),
            mainPanel(
-               p("This software allows you to browse and analyze public transcriptomics data. To proceed, click \'Search for datasets\', above"),
-               img(src="overview.png"),
-               p("Spicy jalapeno bacon ipsum dolor amet brisket ribeye tri-tip tail meatloaf ground round salami fatback. Ball tip flank pork turkey prosciutto. Venison burgdoggen beef pork hamburger tongue shankle rump frankfurter kielbasa pastrami pork belly. T-bone fatback venison tenderloin salami biltong turkey chuck.",style="color:#D8BFD8"),
-
-p("Turkey tenderloin buffalo frankfurter, strip steak capicola filet mignon ribeye cow t-bone biltong. Tri-tip hamburger ham hock, shank landjaeger kielbasa pork loin spare ribs pastrami salami shoulder alcatra. Biltong tail brisket, turkey beef ribs hamburger prosciutto bacon tenderloin pancetta shank venison picanha cupim. Frankfurter porchetta turkey biltong corned beef, burgdoggen prosciutto jerky tail. Capicola beef ribs burgdoggen pancetta, frankfurter leberkas pig. Filet mignon jerky ground round cow burgdoggen, shoulder boudin ham hock pancetta.",style="color:#D8BFD8"),
-
-p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback short ribs corned beef. Beef shank shoulder, leberkas pancetta ground round jowl tenderloin ribeye hamburger shankle flank. Strip steak short loin kevin pork belly meatball swine sausage ham jowl pig tongue venison fatback t-bone beef. Spare ribs shoulder ham hock strip steak pastrami.",style="color:#D8BFD8")
+               img(src="overview.png",width="100%")
                ))
                
         ),
 
 # Search for GSE  ------------------------------------------------------------------------------
 
-    tabPanel("Search for datasets",
+    tabPanel("Search Expression Data",
        h3("Organize publicly available expression data"),
        hr(),
        sidebarLayout(
            
        sidebarPanel(
            # style = "position:fixed;width:30%",
-           h4("Search for datasets"),
-           p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
-           hr(),
            conditionalPanel(condition="input.searchpanel==1",
-           h4("Find expression data from publicly available datasets to begin defining your own experiment."),
-           p("Begin by searching for ",span("G",style="font-weight:bold"),"EO data ",span("se",style="font-weight:bold"),"ries (GSE) containing expression data for your cell or tissue type of interest."),
+           h4("Search Expression Data"),
+           p("Begin by searching for experiments that expression data for your cell or tissue type of interest."),
+           br(),
            radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1261)" = "mouse", "Human (GPL570)" = "human")),
            tagAppendAttributes(textInput("Key", "Enter search terms, separated by commas", value = ""),`data-proxy-click` = "Search"),
            actionButton("Search", "Search"),
            hr(),
-           p("When you have selected the appropriate datasets, click \'Retrieve GSM\' to collect sample information and then click on the \'Assign samples\' tab above."),
+           HTML(paste("These experiments, each containing multiple biological samples, are refered to as ",span("G",style="font-weight:bold"),"EO data ",span("se",style="font-weight:bold"),"ries (GSE). Each ",span("G",style="font-weight:bold"),"EO ",span("s",style="font-weight:bold"), "a",span("m",style="font-weight:bold"),"ple (GSM) represents a digitized transcriptional snapshot.",sep="")),
+           p("Click \'Retrieve GSM\' to retrieve sample (GSM) information and then click on the \'Assign\' tab above to organize this data for analysis."),
+          
            actionButton("getGSM", "Retrieve GSM")),
            
            conditionalPanel(condition="input.searchpanel==2",
            h4("Define the categories that you wish to assign each sample (GSM) for comparison."),
-           textInput("cat1", label=NULL, placeholder="Category 1"),
-           textInput("cat2", label=NULL, placeholder="Category 2"),
-           textInput("cat3", label=NULL, placeholder="Category 3 (optional)"),
+           p("Each sample of interest should be assigned to a category. In this way, experimental comparisons can be performed to determine differential expression between categories."),
+           splitLayout(cellWidths=c("90%","10%"), textInput("cat1", label=NULL, placeholder="Category 1"),tags$span(style="color:#E41A1C",icon("circle",class="fa-2x"))),
+           splitLayout(cellWidths=c("90%","10%"), textInput("cat2", label=NULL, placeholder="Category 2"),tags$span(style="color:#377EB8",icon("circle",class="fa-2x"))),
+           splitLayout(cellWidths=c("90%","10%"), textInput("cat3", label=NULL, placeholder="Category 3 (optional)"),tags$span(style="color:#4DAF4A",icon("circle",class="fa-2x"))),
            ### https://www.aridhia.com/blog/the-sky-is-not-the-limit-embedding-raw-html-and-javascript-to-create-dynamic-ui-elements-in-shiny-applications/   
            ### ^ this should help with dynamically adding/subtracting categories
            
            hr(),
            h4("Highlight samples, then click to Assign them to the specificed category."),
-           uiOutput("categorySelect"),
-           actionButton("Assign", "Assign GSM to Category")),
+           p("Using the table at right and the drop down menu below, click on samples and \'Assign\' them to different categories. Samples can be filtered using the search bar."),
+           fluidRow(column(8,uiOutput("categorySelect")),
+           column(4,actionButton("Assign", "Assign")))
+           ),
            
            conditionalPanel(condition="input.searchpanel==3",
                h4("Thank you for using receptoR!"),
                p(" Please enter your name and any comments/bugs/questions/requests in the box below, then click the \'Download and Process\' button to retrieve the raw files from the NCBI server and process them based on their assigned categories."),
                textAreaInput("comments","Comments",width="100%",height="100px",resize="vertical"),
                textInput("downloadId","Download ID"),
-               actionButton("downloadCEL","Download and Process"))
+               actionButton("downloadCEL","Download and Process")),
+               hr(),
+               # Help banner on the bottom -------------------------
+               h4("Help me!"),
+               p("Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle.",style="color:#D8BFD8")
        ),
        
        mainPanel(
@@ -136,22 +146,24 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
     ),
     
     # Load Gene Expression Data tab -------------------------------------
-    tabPanel("Load expression data",
+    tabPanel("Load Experiment",
         h3("Pick from user-defined experiments to perform analyses"),
         hr(),
         sidebarLayout(
         sidebarPanel(
-            h4("Load expression data"),
-            p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
+            h4("Load Experiment"),
+            selectInput(inputId="user_data",label="Select an experiment for analysis",choices=c("none"="none","Photoreceptors v RPE"="2018-04-13_app_data.rda"),selected="none"),
+            # tags$ul(tags$li(tags$span(style="color:#E41A1C", icon("circle", class="fa-2x")), "photoreceptors"), tags$li("RPE"), tags$li("whole retina")),
             hr(),
-            selectInput(inputId="user_data",label="Select user data for analysis",choices=c("none"="none","Photoreceptors v RPE"="2018-04-13_app_data.rda"),selected="none"),
-            br(),
             uiOutput("geneListsUI"),
             br(),
             uiOutput("geneUI")
         ),
         mainPanel(
             tabsetPanel(type="tabs",selected="Gene-level expression",
+            tabPanel("Quality control",
+            uiOutput("QC")
+        ),
             tabPanel("Experimental design",h4("Category definitions and contrasts"),p("Coming soon!")),
             tabPanel("Gene-level expression",
                 fluidRow(
@@ -163,14 +175,14 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
     ),
     
     # Magnitude expression tab ------------------------------------------------------------------------------
-
-    tabPanel("Absolute expression",
+    
+    tabPanel("Absolute Expression",
         h3("Compare genes based on absolute expression"),
         hr(),
         sidebarLayout(
         sidebarPanel(
             h4("Absolute expression"),
-            p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
+            p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
             # style = "position:fixed",
             checkboxGroupInput("tissues", label = "Select tissues to inclued",
             choices = c("photoreceptors","RPE","whole.retina"), selected = c("photoreceptors","RPE","whole.retina")
@@ -180,15 +192,14 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
             uiOutput("de_choices"),
             br(),
             conditionalPanel(condition="input.absexpanel==1",
-                h3("Heatmap parameters"),
+                h5("Heatmap parameters"),
                 checkboxInput("hm_probes", "Show probe-level", value = FALSE),
                 checkboxInput("hm_gsm", "Show GSM (column names)", value = TRUE),
                 checkboxInput("hm_rownames", "Show rownames", value = TRUE),
                 checkboxInput("hm_col_cluster", "Cluster columns", value = TRUE),
                 checkboxInput("hm_row_cluster", "Cluster rows", value = TRUE),
-                h4("Select plot dimensions (px)"),
-                numericInput("hm_width", "Width", value = 900, min = 100, max = 2400, step = 10),
-                numericInput("hm_height", "Height", value = 1200, min = 100, max = 2400, step = 10))
+                numericInput("hm_width", "Plot width (px)", value = 900, min = 100, max = 2400, step = 10),
+                numericInput("hm_height", "Plot height (px)", value = 1200, min = 100, max = 2400, step = 10))
         ),
         mainPanel(
             tabsetPanel(type = "tabs",
@@ -202,7 +213,7 @@ p("Sirloin salami strip steak burgdoggen pork chop ribeye, pastrami fatback shor
     ),
 
     # Mixomics tab ---------------------------------------------
-    tabPanel("Relative expression",
+    tabPanel("Relative Expression",
         h3("Compare genes based on relative expression between experimental groups"),
         hr(),
         sidebarLayout(

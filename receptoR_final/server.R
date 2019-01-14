@@ -68,12 +68,22 @@ source("functions.R")
 
 ### not the best place to put this, but it should work for now
 
-load("../gseGPL570.rda")
-load("../gsmGPL570.rda")
-load("../gseGPL1261.rda")
-load("../gsmGPL1261.rda")
+# load("../gseGPL570.rda")
+# load("../gsmGPL570.rda")
+# load("../gseGPL1261.rda")
+# load("../gsmGPL1261.rda")
+#
+# load("../2018-12_genelists.rda")
 
-load("../2018-12_genelists.rda")
+
+load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gseGPL570.rda")
+load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gsmGPL570.rda")
+load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gseGPL1261.rda")
+load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gsmGPL1261.rda")
+
+load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-12_genelists.rda")
+
+
 ### I'm going to try and not have this loaded to start
 # load("2018-04-13_app_data.rda")
 
@@ -220,7 +230,7 @@ server <- function(input, output, session) {
   })
  
   output$finishedtable <- DT::renderDataTable({datatable(finishedtable()[,c(2,3,4,10,31,32,33)],
-      options=list(searching=FALSE,pageLength=100, scrollY='20vh')) %>%
+      options=list(searching=FALSE,pageLength=100, scrollY='60vh')) %>%
       formatStyle('category',target="row",
       backgroundColor=styleEqual(c(input$cat1,input$cat2,input$cat3),c(rowCol[1],rowCol[2],rowCol[3]))
   )})
@@ -246,7 +256,7 @@ rv$download_flag <- rv$download_flag + 1
       
 observeEvent(input$downloadCEL, {
     
-    showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.","Jan 11th, 2019: As I finish working out the bugs in converting these files to the analyzed output, the downloading has been disabled. However, all annotations will be saved and processed (Jan 12-13) to be made available for analysis. Please click below to download a record of your submission.",
+    showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.","Jan 13th, 2019: As I finish working out the bugs in converting these files to the analyzed output, the downloading has been disabled. However, all annotations will be saved and processed (Jan 14-16) to be made available for analysis. Please click below to download a record of your submission.",
     footer = tagList(
         modalButton("Cancel"),
         downloadButton("report","Download submission record"))))      
@@ -282,7 +292,8 @@ observeEvent(input$user_data,{
         de_choices<<-NULL
         sig_genes_lfc<<-NULL
     }else{
-        withProgress(message="Dataset loading",value=0.4,{load("../2018-04-13_app_data.rda",envir=.GlobalEnv)})
+        # withProgress(message="Dataset loading",value=0.4,{load("../2018-04-13_app_data.rda",envir=.GlobalEnv)})
+        withProgress(message="Dataset loading",value=0.4,{load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-04-13_app_data.rda",envir=.GlobalEnv)})
     }
     
 })
@@ -311,7 +322,7 @@ observeEvent(input$user_data,{
   
   # gene list UI
   output$geneListsUI = renderUI({
-    checkboxGroupInput("genelist", "Select a gene list", 
+    checkboxGroupInput("genelist", "Select a receptor type to analyze", 
           choices = names(gene_lists))
   })
   
@@ -327,6 +338,15 @@ observeEvent(input$user_data,{
     )
    get_expression_summary(eset, geneList())
  })
+  
+ output$QC = renderUI({
+    validate(
+      need(input$user_data!="none","No dataset selected")
+    )
+    fluidRow(h4("Expression normalization (array intensity, before and after)"), tags$img(src="array-processing.png",width="100%"), h4("RNA degradation plot (probe position vs intensity)"),
+    tags$img(src="RNA-deg.png",width="100%"))
+  })
+  
   
   output$genes = DT::renderDataTable({
     validate(
