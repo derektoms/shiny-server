@@ -26,14 +26,14 @@ desat = function(cols, sat=0.5) {
  ## timestamp
  timeStamp <- strftime(Sys.time(),"%Y%m%d-%H%M")
 
- PATH = "./data/"
+ PATH = "./data"
  get_files = TRUE
  # get_files = FALSE
  
  if (get_files) {
    # get raw CEL files
 
-   setDir<-paste(PATH,getwd(),'/',timeStamp,sep='')
+   setDir<-paste(PATH,'/',timeStamp,sep='')
 
    rawFilePaths = lapply(gsm_to_fetch, function(x) {
        dir.create(file.path(setDir), showWarnings = FALSE)
