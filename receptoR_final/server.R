@@ -1,16 +1,13 @@
-# October 2018 receptoR v 1.0
-## Last update: 2018-11-23
+#                          _        ____
+#  _ __ ___  ___ ___ _ __ | |_ ___ |  _ \
+# | '__/ _ \/ __/ _ \ '_ \| __/ _ \| |_) |
+# | | |  __/ (_|  __/ |_) | || (_) |  _ <
+# |_|  \___|\___\___| .__/ \__\___/|_| \_\
+#                   |_|
+#
+# March 2019 receptoR v 1.2
+## Last update: 2019-04-11, Derek Toms
 ## server.R
-### Integrating both applications to a final shiny executable
-
-#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
-
-# 2018-04-02
-# Hoping to work with the filtered table to integrate 
-# 1. saving table data (e.g. search results) for reproducibility
-# 2. displaying sorted table tibble and associated categories
-# 3. .rda of CEL to get that can be loaded (thinking along the lines of a !exist escape if there is no processed datafile)
-# 4. aforementioned processed datafile, saved for each user for some length of time
 
 ########################################
 #$#$#$#$#$#$    HEADER     $#$#$#$#$#$#$
@@ -46,6 +43,8 @@ library(pheatmap)
 library(mixOmics)
 library(cowplot)
 
+library(pool)
+
 ## 2018-12-02 not currently needed:
     # library(genefilter)
    #  library(ComplexHeatmap)
@@ -60,66 +59,65 @@ library(cowplot)
 library(mouse4302.db) 
 library(hgu133plus2.db)
 
-########################################
-#$#$#$#$#$#$    Shiny App  $#$#$#$#$#$#$
-########################################
-
 source("functions.R")
+## 2019-03-27 Ran this to get the latest database
+# if(!file.exists('./../data/GEOmetadb.sqlite')) getSQLiteFile()
+load("./../2018-12_genelists.rda")
 
-### not the best place to put this, but it should work for now
-
-load("../gseGPL570.rda")
-load("../gsmGPL570.rda")
-load("../gseGPL1261.rda")
-load("../gsmGPL1261.rda")
-
-load("../2018-12_genelists.rda")
-
-
+### for local work
 # load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gseGPL570.rda")
 # load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gsmGPL570.rda")
 # load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gseGPL1261.rda")
 # load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gsmGPL1261.rda")
-#
 # load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-12_genelists.rda")
+# poolGEO <- dbPool(
+#   drv = RSQLite::SQLite(),
+#   dbname = "/Volumes/ULTRA/across_array/GEOmetadb.sqlite"
+# )
 
 
-### I'm going to try and not have this loaded to start
-# load("2018-04-13_app_data.rda")
+# 2019-03-04
+## Connection to GEO Metadata DB
+poolGEO <- dbPool(
+  drv = RSQLite::SQLite(),
+  dbname = "./../GEOmetadb.sqlite"
+)
 
-## SERVER
+onStop(function() {
+  poolClose(poolGEO)
+})
+
+########################################
+#$#$#$#$#$#$#    SERVER    #$#$#$#$#$#$#
+########################################
+
 server <- function(input, output, session) {
 
-#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
-  ## Set up colour environment
+# Set up colour environment _,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   catCol <- brewer.pal(3, "Set1")
   rowCol <-desat(catCol)
-  # groups <- c(group1,group2,group3) ## Use these in all following code! They should have a "name" variable for user-assigned names 2018-12-10
-  groups<-c("photoreceptors","RPE","whole.retina") ## what is has to be for the moment
+  groups <- NULL
+  # groups <- c("group1","group2","group3") ## Use these in all following code! They should have a "name" variable for user-assigned names 2018-12-10
+  # groups<-c("photoreceptors","RPE","whole.retina") ## what is has to be for the moment
   userID <- NULL
-#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
-  ## Search functions
-  Totalchar <- eventReactive(input$Search, {nchar(input$Key)})
-  Commas <- eventReactive(input$Search, {which(strsplit(input$Key, "")[[1]]==",")})
-  Ncommas <- eventReactive(input$Search, {length(Commas())})
-  Commasstart <- eventReactive(input$Search, {Commas() + 1})
-  Commasend <- eventReactive(input$Search, {Commas() - 1})
   
-  Searchterms <- eventReactive(input$Search, {
-    substring(input$Key, c(1, Commasstart()), c(Commasend(), Totalchar()))
-  })
+# Search functions _,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+  ### 2019-03-04 UPDATE to SQL searching directly
   
-  filtered_gse <- eventReactive(input$Search, {
+  searchGSM <- eventReactive(input$searchButton, {
       if(input$gplSelection=='human'){
-          dplyr::filter(gseGPL570, str_detect(gseGPL570$title, Searchterms()))
+          sql<-"SELECT * FROM appgsm WHERE description MATCH ?id1 AND gpl LIKE 'GPL570';"
       } else {
-          dplyr::filter(gseGPL1261, str_detect(gseGPL1261$summary, Searchterms()))
+          sql<-"SELECT * FROM appgsm WHERE description MATCH ?id1 AND gpl LIKE 'GPL1261';"
       }
+      query<-sqlInterpolate(poolGEO,sql,id1=input$searchText)
+      queryGSM<-dbGetQuery(poolGEO,query)
+      return(queryGSM)
   })
 
-  output$filteredgse <- DT::renderDataTable({
-          filtered_gse()}, options=list(searching=TRUE, pageLength=50, scrollY='60vh', columnDefs=list(list(
-              targets = c(8,9,12),
+  output$searchResultsGSM <- DT::renderDataTable({
+          searchGSM()}, options=list(searching=TRUE, pageLength=50, scrollY='60vh', columnDefs=list(list(
+              targets = c(8),
               render = JS(
                   "function(data, type, row, meta) {",
                       "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
@@ -127,87 +125,33 @@ server <- function(input, output, session) {
                       "}") 
                       )))) ## typeof data needs to be a string, as a "NA" converted to JS "NULL" breaks things
 
-#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
-### 2018-10-28 Disable platform selection to get it working with mice
-# shinyjs::disable("gplSelection")
-
-### 2018-12-10 The Download CEL button was also disabled once both the whole application was integrated. I'm planning on fixing this today to enable a PDF and RDA of the assigned categories, CEL can be downloaded and annotated at a later date
-# shinyjs::disable("downloadCEL")
-
-#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
-  ## Collect samples to use (GSE - GSM)
-  
-  ### List of the GSM associated with the selected GSE
-    gse_to_keep <- eventReactive(input$getGSM, {
-    filtered_gse()[input$filteredgse_rows_selected,]
+# Add sample (array) record to the current experiment _,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+  proxy.search = dataTableProxy('searchResultsGSM')
+  testTable <- NULL
+  gsm_annotated <- eventReactive(input$addButton, {
+      testTable <<- rbind(testTable,searchGSM()[input$searchResultsGSM_rows_selected,])
+      proxy.search %>% selectRows(NULL)
+      return(testTable)
   })
   
-  ### Use GSE to load GSM from the prefiltered lists
-  gsm_annotated <- eventReactive(input$getGSM, {
-      withProgress(message='Collecting GSM',{
-      if(input$gplSelection=='human'){
-          dplyr::filter(gsmGPL570,series_id %in% gse_to_keep()$gse)
-      } else {
-          dplyr::filter(gsmGPL1261,series_id %in% gse_to_keep()$gse)
-      }
-      })
+  observeEvent(input$addButton, {
+      updateTabsetPanel(session = session, inputId = "searchpanel", selected = "2")
   })
+
 
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 
   ## Assign categories to each sample (GSM)
-  
-  output$gsm_table <- DT::renderDataTable({
 
-       if(input$Assign==0){
-          return (datatable(gsm_annotated()[,c(-5:-7,-11,-12,-14:-26,-28:-32)],options=list(searching=TRUE, pageLength=50, scrollY='60vh',## 2018-12-10 Pick which columns are necessary ^
-              columnDefs=list(list(
-              targets = "_all",
-              render = JS(
-                  "function(data, type, row, meta) {",
-                      "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
-                      "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
-                      "}") 
-                      )))))
-       } else {
-          return (datatable(samples$df[,c(-5:-7,-11,-12,-14:-26,-28:-32)],options=list(searching=TRUE, pageLength=50, scrollY='60vh',
-              columnDefs=list(list(
-              targets = "_all",
-              render = JS(
-                  "function(data, type, row, meta) {",
-                      "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
-                      "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
-                      "}") 
-                      ))))%>% formatStyle('category',target="row",backgroundColor=styleEqual(c(input$cat1,input$cat2,input$cat3),c(rowCol[1],rowCol[2],rowCol[3]))))
-       }
-  })
-                      
-  proxy.gsm = dataTableProxy('gsm_table')
-  observeEvent(input$Assign,{
-      proxy.gsm %>% selectRows(NULL)
-  }) 
-  
-  ## UI output
-
-    output$categorySelect <- renderUI(
-      fluidRow(
-        column(12,
-               selectInput("selection", "Select a Category",
-                           c("category1" <- {input$cat1},
-                             "category2" <- {input$cat2},
-                             "category3" <- {input$cat3},
-                             "category4" <- "Not included"))
-        )
-      )     ### 2018-12-10 I'd like to have a button to add category 3
-    )
-
-  ## Assign categories
+  ## Set up reactive table to store category data
   samples <- reactiveValues()
   samples$df <- data.frame()
   
-  observeEvent(input$Assign, {
+  observeEvent(input$assignButton, {
   
-      if (input$Assign == 1) {
+      groups <<- c(input$cat1,input$cat2,input$cat3) ## Use these in all following code! They should have a "name" variable for user-assigned names 2018-12-10
+ 
+      if (input$assignButton == 1) {
         gsm_selected <- gsm_annotated()
         gsm_selected$category <- rep("Not yet assigned", nrow(gsm_selected))
         gsm_selected[input$gsm_table_rows_selected,"category"] <- input$selection
@@ -220,16 +164,65 @@ server <- function(input, output, session) {
   })      
   
   # ^ don't love this... would like to have the category set without a button click (maybe change to this tab), but it's working for the moment
+   
+  output$gsm_table <- DT::renderDataTable({
+      if(input$assignButton == 0){
+         return (datatable(gsm_annotated(),options=list(searching=TRUE, pageLength=50, scrollY='60vh',## 2018-12-10 Pick which columns are necessary ^
+             columnDefs=list(list(
+             targets = "_all",
+             render = JS(
+                 "function(data, type, row, meta) {",
+                     "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
+                     "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
+                     "}")
+                     )))))
+      } else {
+         return (datatable(samples$df,options=list(searching=TRUE, pageLength=50, scrollY='60vh',
+             columnDefs=list(list(
+             targets = "_all",
+             render = JS(
+                 "function(data, type, row, meta) {",
+                     "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
+                     "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
+                     "}")
+                     )))) %>%
+                     formatStyle('category', target="row", backgroundColor=styleEqual(c(input$cat1, input$cat2, input$cat3), c(rowCol[1], rowCol[2], rowCol[3]))))
+      }
+  })
+                 
+  proxy.gsm = dataTableProxy('gsm_table')
+  observeEvent(input$assignButton,{
+      proxy.gsm %>% selectRows(NULL)
+  }) 
   
+
+  # outputOptions(output, "searchResultsGSM", suspendWhenHidden = FALSE)
+  # outputOptions(output, "gsm_table", suspendWhenHidden = FALSE)
+
+  ## UI output
+
+    output$categorySelect <- renderUI(
+      fluidRow(
+        column(12,
+               selectizeInput("selection", "Select a Category",
+                           c("category1" <- {input$cat1},
+                             "category2" <- {input$cat2},
+                             "category3" <- {input$cat3},
+                             "category4" <- "Not included")
+                             # , options = list(create=TRUE, plugins = list("remove_button")))  ### <- "remove_button" isn't what I thought it was. I would also like the "create" option but I will need to link this to the table as cat1-3 are linked (otherwise new variables are not coloured or sent along for processing)
+        )
+      )     ### 2018-12-10 I'd like to have a button to add category 3
+    )
+    )  
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 
 ## Finished table, to ultimately lead to CEL download
 
-  finishedtable <- eventReactive(input$Assign, {
+  finishedtable <- eventReactive(input$assignButton, {
     dplyr::filter(samples$df, category %in% c(input$cat1, input$cat2, input$cat3))
   })
  
-  output$finishedtable <- DT::renderDataTable({datatable(finishedtable()[,c(2,3,4,10,31,32,33)],
+  output$finishedtable <- DT::renderDataTable({datatable(finishedtable(),
       options=list(searching=FALSE,pageLength=100, scrollY='60vh')) %>%
       formatStyle('category',target="row",
       backgroundColor=styleEqual(c(input$cat1,input$cat2,input$cat3),c(rowCol[1],rowCol[2],rowCol[3]))
@@ -256,22 +249,22 @@ rv$download_flag <- rv$download_flag + 1
       
 observeEvent(input$downloadCEL, {
     
-    showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.","Jan 13th, 2019: As I finish working out the bugs in converting these files to the analyzed output, the downloading has been disabled. However, all annotations will be saved and processed (Jan 14-16) to be made available for analysis. Please click below to download a record of your submission.",
+    showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.","April 11th, 2019: App should be working now. Please click below to begin processing the data.",
     footer = tagList(
         modalButton("Cancel"),
-        downloadButton("report","Download submission record"))))      
+        actionButton("process","Proceed"))))      
   })
 
 
-  observeEvent(rv$download_flag, {
+  observeEvent(input$process, {
       removeModal()
    })
 
 
-  observeEvent(input$downloadCEL, {
+  observeEvent(input$process, {
       withProgress(
           message = "Downloading and processing GSM",
-          {userID<<-processData(finishedtable(),input$comments)})
+          {userID<<-processData(finishedtable(),input$comments,input$gplSelection)})
   })
 
 #  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  
@@ -292,8 +285,16 @@ observeEvent(input$user_data,{
         de_choices<<-NULL
         sig_genes_lfc<<-NULL
     }else{
-        withProgress(message="Dataset loading",value=0.4,{load("../2018-04-13_app_data.rda",envir=.GlobalEnv)})
+        # withProgress(message="Dataset loading",value=0.4,{load("../2018-04-13_app_data.rda",envir=.GlobalEnv)})
         # withProgress(message="Dataset loading",value=0.4,{load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-04-13_app_data.rda",envir=.GlobalEnv)})
+        withProgress(message="Dataset loading",value=0.4,{load("~/Desktop/shiny-server/receptoR_final/app_data_20190410-2123.rda",envir=.GlobalEnv)
+        tissue = as.factor(pData(eset)$tissue)
+        groups <<- levels(tissue)
+        updateCheckboxGroupInput(session, "tissues", 
+            choices = groups, selected = groups)
+        updateCheckboxGroupInput(session, "pls_tissues", 
+            choices = groups, selected = groups)
+    })
     }
     
 })
@@ -330,6 +331,8 @@ observeEvent(input$user_data,{
   output$geneUI = renderUI({
     withProgress(message="Loading gene lists",value=0.6,{selectInput("gene", "Select gene(s) to show", choices = all_genes, multiple = TRUE)})
   })
+#### This was key to loading the output before we get to this page. All that remains now is either loading both human and mouse, or loading just one depending on the species button. I think loading both at the beginning will help it be snappier overall...
+  outputOptions(output, "geneUI", suspendWhenHidden = FALSE)
   
  summary_gene_data = reactive({
    validate(
@@ -369,7 +372,7 @@ observeEvent(input$user_data,{
     genes_to_plot = summary_gene_data()$Symbol[rows]
     
     gene_data = get_gene_data(eset, genes_to_plot)
-    by_gene_violplot(gene_data,tissues=c("photoreceptors","RPE","whole.retina"))
+    by_gene_violplot(gene_data,tissues=groups)
     
     
   })

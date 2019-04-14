@@ -1,16 +1,21 @@
-## 2019-01-11
-## Beta version to be completed today!
+#                          _        ____
+#  _ __ ___  ___ ___ _ __ | |_ ___ |  _ \
+# | '__/ _ \/ __/ _ \ '_ \| __/ _ \| |_) |
+# | | |  __/ (_|  __/ |_) | || (_) |  _ <
+# |_|  \___|\___\___| .__/ \__\___/|_| \_\
+#                   |_|
+#
+# March 2019 receptoR v 1.2
+## Last update: 2019-04-11, Derek Toms
+## ui.R
 
+########################################
+#$#$#$#$#$#$    HEADER     $#$#$#$#$#$#$
+########################################
 
-## 2018-04-02
 library(shiny)
 library(shinythemes)
 library(shinyjs)
-
-#  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  
-# ( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )
-# \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/\ 
-# (_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)
 
 ## Javascript
 
@@ -34,9 +39,15 @@ $(function() {
 '
 
 
-## UI
+########################################
+#$#$#$#$#$#$#$    UI     $#$#$#$#$#$#$#$
+########################################
+
 ui <- fluidPage(
 tags$head(tags$script(HTML(jscode))),
+tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "receptor.css")),
+tags$head(tags$link(rel = "stylesheet", href = "https://use.fontawesome.com/releases/v5.6.3/css/all.css",  integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/", crossorigin="anonymous")
+),
 # tags$script(HTML("$('body').addClass('fixed);")),
 shinyjs::useShinyjs(),
 navbarPage("receptoR",
@@ -68,7 +79,7 @@ navbarPage("receptoR",
                
         ),
 
-# Search for GSE  ------------------------------------------------------------------------------
+# Search for GSM  ------------------------------------------------------------------------------
 
     tabPanel("Search Expression Data",
        h3("Organize publicly available expression data"),
@@ -82,28 +93,32 @@ navbarPage("receptoR",
            p("Begin by searching for experiments that expression data for your cell or tissue type of interest."),
            br(),
            radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1261)" = "mouse", "Human (GPL570)" = "human")),
-           tagAppendAttributes(textInput("Key", "Enter search terms, separated by commas", value = ""),`data-proxy-click` = "Search"),
-           actionButton("Search", "Search"),
+           tagAppendAttributes(textInput("searchText", "Enter search terms:", value = ""),`data-proxy-click` = "searchButton"),
+           actionButton("searchButton", "Search for arrays"),
            hr(),
-           HTML(paste("These experiments, each containing multiple biological samples, are refered to as ",span("G",style="font-weight:bold"),"EO data ",span("se",style="font-weight:bold"),"ries (GSE). Each ",span("G",style="font-weight:bold"),"EO ",span("s",style="font-weight:bold"), "a",span("m",style="font-weight:bold"),"ple (GSM) represents a digitized transcriptional snapshot.",sep="")),
-           p("Click \'Retrieve GSM\' to retrieve sample (GSM) information and then click on the \'Assign\' tab above to organize this data for analysis."),
+           # HTML(paste("These experiments, each containing multiple biological samples, are refered to as ",span("G",style="font-weight:bold"),"EO data ",span("se",style="font-weight:bold"),"ries (GSE). Each ",span("G",style="font-weight:bold"),"EO ",span("s",style="font-weight:bold"), "a",span("m",style="font-weight:bold"),"ple (GSM) represents a digitized transcriptional snapshot.",sep="")),
+           p("Click \'Add array to experiment\' to retrieve array (GSM) information and then click on the \'Assign\' tab above to organize this data for analysis."),
           
-           actionButton("getGSM", "Retrieve GSM")),
+           actionButton("addButton", "Add array to experiment")),
            
            conditionalPanel(condition="input.searchpanel==2",
            h4("Define the categories that you wish to assign each sample (GSM) for comparison."),
            p("Each sample of interest should be assigned to a category. In this way, experimental comparisons can be performed to determine differential expression between categories."),
-           splitLayout(cellWidths=c("90%","10%"), textInput("cat1", label=NULL, placeholder="Category 1"),tags$span(style="color:#E41A1C",icon("circle",class="fa-2x"))),
-           splitLayout(cellWidths=c("90%","10%"), textInput("cat2", label=NULL, placeholder="Category 2"),tags$span(style="color:#377EB8",icon("circle",class="fa-2x"))),
-           splitLayout(cellWidths=c("90%","10%"), textInput("cat3", label=NULL, placeholder="Category 3 (optional)"),tags$span(style="color:#4DAF4A",icon("circle",class="fa-2x"))),
+
+           tags$div(class="inputWithIcon",textInput("cat1", label=NULL, placeholder="Category 1"),tags$span(style="color:#E41A1C",icon("circle",class="fa-2x"))),
+           
+           tags$div(class="inputWithIcon",textInput("cat2", label=NULL, placeholder="Category 2"),tags$span(style="color:#377EB8",icon("skull",class="fa-2x"))),
+           
+           tags$div(class="inputWithIcon",textInput("cat3", label=NULL, placeholder="Category 3 (optional)"),tags$span(style="color:#4DAF4A",icon("bong",class="fa-2x"))),
+
            ### https://www.aridhia.com/blog/the-sky-is-not-the-limit-embedding-raw-html-and-javascript-to-create-dynamic-ui-elements-in-shiny-applications/   
            ### ^ this should help with dynamically adding/subtracting categories
            
            hr(),
            h4("Highlight samples, then click to Assign them to the specificed category."),
-           p("Using the table at right and the drop down menu below, click on samples and \'Assign\' them to different categories. Samples can be filtered using the search bar."),
+           p("Using the table at right and the drop down menu below, click on samples and \'Assign\' them to different categories. Samples can be filtered using the search bar. \nPLEASE NOTE: once you have clicked the \'Assign\' button you will no longer be able to add arrays to your experiment."),
            fluidRow(column(8,uiOutput("categorySelect")),
-           column(4,actionButton("Assign", "Assign")))
+           column(4,actionButton("assignButton", "Assign")))
            ),
            
            conditionalPanel(condition="input.searchpanel==3",
@@ -111,7 +126,8 @@ navbarPage("receptoR",
                p(" Please enter your name and any comments/bugs/questions/requests in the box below, then click the \'Download and Process\' button to retrieve the raw files from the NCBI server and process them based on their assigned categories."),
                textAreaInput("comments","Comments",width="100%",height="100px",resize="vertical"),
                textInput("downloadId","Download ID"),
-               actionButton("downloadCEL","Download and Process")),
+               downloadButton("report","Download Report"),
+               actionButton("downloadCEL","Process")),
                hr(),
                # Help banner on the bottom -------------------------
                h4("Help me!"),
@@ -122,17 +138,17 @@ navbarPage("receptoR",
            # Search GSE based on species
         tabsetPanel(
         tabPanel("Search", value=1,
-            h4("GEO data series (\'GSE\') matching search query"), # return search here!
-            DT::dataTableOutput("filteredgse")
+            h4("GEO microarrays (\'GSM\') matching your search query"), # return search here!
+            DT::dataTableOutput("searchResultsGSM")
         ),
         # Assign samples to categories ------------------------------------------------------
         tabPanel("Assign", value=2,
-            h4("From the selected series' (GSE) assign individual samples (GSM) to categories of your choosing."),
+            h4("Assign individual arrays (GSM) to categories of your choosing"),
             DT::dataTableOutput("gsm_table")
         ),
         # This will be where the CEL files are downloaded (confirmation, etc) ------------
         tabPanel("Process", value=3,
-        h4("Please confirm samples are properly categorized."),
+        h4("Please confirm samples are properly categorized before proceeding"),
         p("Expression samples annotated:"),
                 DT::dataTableOutput("finishedtable")
         ),
