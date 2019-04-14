@@ -26,7 +26,7 @@ desat = function(cols, sat=0.5) {
  ## timestamp
  timeStamp <- strftime(Sys.time(),"%Y%m%d-%H%M")
 
- PATH = "./../"
+ PATH = "./data/"
  get_files = TRUE
  # get_files = FALSE
  
