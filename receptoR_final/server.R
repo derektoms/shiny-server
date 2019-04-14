@@ -6,7 +6,7 @@
 #                   |_|
 #
 # March 2019 receptoR v 1.2
-## Last update: 2019-04-11, Derek Toms
+## Last update: 2019-04-14, Derek Toms
 ## server.R
 
 
@@ -20,6 +20,7 @@
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(reshape2)
 library(RColorBrewer)
 library(readr)
 library(stringr)
@@ -58,8 +59,8 @@ library(pool)
 
 # Microarray platform annotations:
 library(mouse4302.db) 
-# library(hgu133plus2.db)
-library(hgu133plus2cdf) # 2019-04-14 updated annotations
+library(hgu133plus2.db)
+library(hgu133plus2cdf) # 2019-04-14 required
 
 source("functions.R")
 ## 2019-03-27 Ran this to get the latest database

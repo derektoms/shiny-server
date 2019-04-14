@@ -6,7 +6,7 @@
 #                   |_|
 #
 # March 2019 receptoR v 1.2
-## Last update: 2019-04-12, Derek Toms
+## Last update: 2019-04-14, Derek Toms
 ## functions.R
 
 
@@ -59,25 +59,22 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
  colnames(all_eset)<-dlSamples$gsm
  rownames(all_pData)<-dlSamples$gsm # Warning: setting row names on a tibble is deprecated
  ## end fix
-
+ 
+ ### QC 
+ ## Probe degradation
+ all_data_deg <- AffyRNAdeg(all_data)
+ ## Array normalization
+ rawBox <- ggplot(data=melt(exprs(all_data)))+geom_boxplot(aes(x=Var2,y=value))
+ rmaBox <- ggplot(data=melt(exprs(all_eset)))+geom_boxplot(aes(x=Var2,y=value))
+  
  all_eset_final<-all_eset
  pData(all_eset_final)<-all_pData
  # pData(all_eset_final) %>% View
 
  identical(colnames(exprs(all_eset_final)), rownames(pData(all_eset_final)))
 
- # run_tsne(t(exprs(all_eset_final)), pData(all_eset_final))
- ##^ couldn't do this
 
-
- # ok that looks good let's save this now
- ## 2018-04-13
- ## just before saving, there is a problem with the annotation (see below at the call to contrast_matrix)
- ## quick and dirty fix:
-
- # pData(all_eset_final)<-pData(all_eset_final)%>%mutate(tissue=str_replace(tissue,"whole retina","whole.retina"))
-
- save(all_eset_final, file = paste(PATH,"final_processed_data_",timeStamp,".rda",sep='')) # filename should include timestamp
+ save(all_eset_final, all_data_deg, rawBox, rmaBox, file = paste(PATH,"final_processed_data_",timeStamp,".rda",sep='')) # filename should include timestamp
 
  ### DE
 
