@@ -168,8 +168,7 @@ navbarPage("receptoR",
         sidebarLayout(
         sidebarPanel(
             h4("Load Experiment"),
-            selectInput(inputId="user_data",label="Select an experiment for analysis",choices=c("none"="none","Photoreceptors v RPE"="2018-04-13_app_data.rda"),selected="none"),
-            # tags$ul(tags$li(tags$span(style="color:#E41A1C", icon("circle", class="fa-2x")), "photoreceptors"), tags$li("RPE"), tags$li("whole retina")),
+            uiOutput("loadUserExperiments"),
             hr(),
             uiOutput("geneListsUI"),
             br(),

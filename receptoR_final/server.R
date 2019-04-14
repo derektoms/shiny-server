@@ -86,8 +86,16 @@ poolGEO <- dbPool(
   dbname = "./data/GEOmetadb.sqlite"
 )
 
+poolUserData <- dbPool(
+  drv = RSQLite::SQLite(),
+  dbname = "./data/receptoRUserData.sqlite"
+)
+
+userDatasetTable <- loadUserDatasets(poolUserData)
+
 onStop(function() {
   poolClose(poolGEO)
+  poolClose(poolUserData)
 })
 
 ########################################
@@ -267,7 +275,7 @@ observeEvent(input$downloadCEL, {
   observeEvent(input$process, {
       withProgress(
           message = "Downloading and processing GSM",
-          {userID<<-processData(finishedtable(),input$comments,input$gplSelection)})
+          {userID<<-processData(finishedtable(),input$downloadId,input$comments,input$gplSelection,poolUserData)})
   })
 
 
@@ -282,6 +290,11 @@ observeEvent(input$downloadCEL, {
 
 # Load dataset
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+output$loadUserExperiments = renderUI({
+    selectInput(inputId="user_data",label="Select an experiment for analysis",choices=split(userDatasetTable$desc, userDatasetTable$species))
+})
+
+
 observeEvent(input$user_data,{
    if(input$user_data=="none"){
         mapped_probes<<-NULL
@@ -290,15 +303,15 @@ observeEvent(input$user_data,{
         sig_genes_lfc<<-NULL
     }else{
         # withProgress(message="Dataset loading",value=0.4,{load("../2018-04-13_app_data.rda",envir=.GlobalEnv)})
-        # withProgress(message="Dataset loading",value=0.4,{load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-04-13_app_data.rda",envir=.GlobalEnv)})
-        withProgress(message="Dataset loading",value=0.4,{load("~/Desktop/shiny-server/receptoR_final/app_data_20190410-2123.rda",envir=.GlobalEnv)
-        tissue = as.factor(pData(eset)$tissue)
-        groups <<- levels(tissue)
-        updateCheckboxGroupInput(session, "tissues", 
-            choices = groups, selected = groups)
-        updateCheckboxGroupInput(session, "pls_tissues", 
-            choices = groups, selected = groups)
-    })
+        withProgress(message="Dataset loading",value=0.4,{load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-04-13_app_data.rda",envir=.GlobalEnv)})
+        # withProgress(message="Dataset loading",value=0.4,{load("~/Desktop/app_data_20190414.rda",envir=.GlobalEnv)
+        # tissue = as.factor(pData(eset)$tissue)
+        # groups <<- levels(tissue)
+        # updateCheckboxGroupInput(session, "tissues",
+        #     choices = groups, selected = groups)
+        # updateCheckboxGroupInput(session, "pls_tissues",
+        #     choices = groups, selected = groups)
+        # })
     }
     
 })

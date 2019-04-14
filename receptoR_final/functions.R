@@ -21,19 +21,19 @@ desat = function(cols, sat=0.5) {
  #$# Data processing 9 April 2018
  ##  Updates 2018-12-10 to switch between user input and CEL downloads
  
- processData = function(finished_table,userComments,gpl){
+ processData = function(finished_table,datasetID,userComments,gpl,userDB){
  gsm_to_fetch <- finished_table$gsm
  ## timestamp
  timeStamp <- strftime(Sys.time(),"%Y%m%d-%H%M")
 
- PATH = "./data"
+ PATH = "./data/"
  get_files = TRUE
  # get_files = FALSE
  
  if (get_files) {
    # get raw CEL files
 
-   setDir<-paste(PATH,'/',timeStamp,sep='')
+   setDir<-paste(PATH,timeStamp,sep='')
 
    rawFilePaths = lapply(gsm_to_fetch, function(x) {
        dir.create(file.path(setDir), showWarnings = FALSE)
@@ -136,10 +136,14 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
 
    all_genes = featureData(eset)@data[["Symbol"]] %>% as.character() %>% unique()
    groups = levels(tissue)
-
- save(mapped_probes, eset, de_choices, sig_genes_lfc, groups, file = paste(PATH,"app_data_",timeStamp,".rda",sep='')) # filename should include timestamp
-   # save(all_genes, mapped_probes, eset, de_choices, sig_genes_lfc, file = "2018-04-13_app_data.rda")
-   #  save(all_genes, gene_lists, file = " 2018-12_genelists.rda")
+   
+# Save user-generated experiments -----------------------------------   
+   db <- poolCheckout(userDB)
+   data <- data.frame(userID = timeStamp, desc = datasetID, comments = userComments, species = gpl)
+   dbWriteTable(conn=db, name="userData", data, append=T, row.names=F)
+   poolReturn(userDB)
+   
+ save(mapped_probes, eset, de_choices, sig_genes_lfc, groups, file = paste(PATH,"app_data_",timeStamp,".rda",sep='')) 
    return(timeStamp)
 } else {
     save(userComments,finished_table, file = paste("annotated_gsm_",timeStamp,".rda",sep=''))
@@ -148,30 +152,14 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
 
 }
 
- # Save and retrieve user-generated experiments -----------------------------------
- saveUserDataset <- function(data) {
+ loadUserDatasets <- function(userDB) {
      # Connect to the database
-      db <- dbConnect(SQLite(), sqlitePath)
-      # Construct the update query by looping over the data fields
-      query <- sprintf(
-        "INSERT INTO %s (%s) VALUES ('%s')",
-        table, 
-        paste(names(data), collapse = ", "),
-        paste(data, collapse = "', '")
-      )
-      # Submit the update query and disconnect
-      dbGetQuery(db, query)
-      dbDisconnect(db)
- }
-
- loadUserDataset <- function() {
-     # Connect to the database
-     db <- dbConnect(SQLite(), sqlitePath)
+     db <- poolCheckout(userDB)
      # Construct the fetching query
-     query <- sprintf("SELECT * FROM %s", table)
+     query <- sprintf("SELECT * FROM userData")
      # Submit the fetch query and disconnect
      data <- dbGetQuery(db, query)
-     dbDisconnect(db)
+     poolReturn(db)
      data
  }
 
