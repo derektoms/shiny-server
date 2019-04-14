@@ -62,7 +62,7 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
 
  all_eset_final<-all_eset
  pData(all_eset_final)<-all_pData
- pData(all_eset_final) %>% View
+ # pData(all_eset_final) %>% View
 
  identical(colnames(exprs(all_eset_final)), rownames(pData(all_eset_final)))
 
@@ -115,8 +115,8 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
  results_lfc = decideTests(tfit)
 
  # I like these... they should return something in the UI!
- vennDiagram(results, include = c("up", "down"))
- vennDiagram(results_lfc)
+ # vennDiagram(results, include = c("up", "down"))
+ # vennDiagram(results_lfc)
  
   coefs = colnames(contrast_matrix)
   sig_genes = lapply(coefs, function(x) {
