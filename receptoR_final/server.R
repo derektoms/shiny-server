@@ -80,7 +80,7 @@ load("./../2018-12_genelists.rda")
 ## Connection to GEO Metadata DB
 poolGEO <- dbPool(
   drv = RSQLite::SQLite(),
-  dbname = "./../GEOmetadb.sqlite"
+  dbname = "./data/GEOmetadb.sqlite"
 )
 
 onStop(function() {
