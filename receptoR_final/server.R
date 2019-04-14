@@ -291,7 +291,7 @@ observeEvent(input$downloadCEL, {
 # Load dataset
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
 output$loadUserExperiments = renderUI({
-    selectInput(inputId="user_data",label="Select an experiment for analysis",choices=split(userDatasetTable$desc, userDatasetTable$species))
+    selectInput(inputId="user_data",label="Select an experiment for analysis",choices=c("none"="none",split(userDatasetTable$desc, userDatasetTable$species)))
 })
 
 
@@ -302,16 +302,9 @@ observeEvent(input$user_data,{
         de_choices<<-NULL
         sig_genes_lfc<<-NULL
     }else{
-        # withProgress(message="Dataset loading",value=0.4,{load("../2018-04-13_app_data.rda",envir=.GlobalEnv)})
-        withProgress(message="Dataset loading",value=0.4,{load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-04-13_app_data.rda",envir=.GlobalEnv)})
-        # withProgress(message="Dataset loading",value=0.4,{load("~/Desktop/app_data_20190414.rda",envir=.GlobalEnv)
-        # tissue = as.factor(pData(eset)$tissue)
-        # groups <<- levels(tissue)
-        # updateCheckboxGroupInput(session, "tissues",
-        #     choices = groups, selected = groups)
-        # updateCheckboxGroupInput(session, "pls_tissues",
-        #     choices = groups, selected = groups)
-        # })
+         save(mapped_probes, eset, de_choices, sig_genes_lfc, groups, file = paste(PATH,"app_data_",timeStamp,".rda",sep='')) 
+         
+        withProgress(message="Dataset loading",value=0.4,{load(paste("./data/app_data_",userDatasetTable$userID[which(userDatasetTable$desc==input$user_data)],".rda",sep=''))})
     }
     
 })
