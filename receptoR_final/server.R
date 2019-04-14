@@ -9,6 +9,7 @@
 ## Last update: 2019-04-11, Derek Toms
 ## server.R
 
+
 ########################################
 #$#$#$#$#$#$    HEADER     $#$#$#$#$#$#$
 ########################################
@@ -57,7 +58,8 @@ library(pool)
 
 # Microarray platform annotations:
 library(mouse4302.db) 
-library(hgu133plus2.db)
+# library(hgu133plus2.db)
+library(hgu133plus2cdf) # 2019-04-14 updated annotations
 
 source("functions.R")
 ## 2019-03-27 Ran this to get the latest database
@@ -74,7 +76,7 @@ load("./../2018-12_genelists.rda")
 #   drv = RSQLite::SQLite(),
 #   dbname = "/Volumes/ULTRA/across_array/GEOmetadb.sqlite"
 # )
-
+#
 
 # 2019-03-04
 ## Connection to GEO Metadata DB
@@ -93,7 +95,8 @@ onStop(function() {
 
 server <- function(input, output, session) {
 
-# Set up colour environment _,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+# Set up colour environment
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   catCol <- brewer.pal(3, "Set1")
   rowCol <-desat(catCol)
   groups <- NULL
@@ -101,7 +104,8 @@ server <- function(input, output, session) {
   # groups<-c("photoreceptors","RPE","whole.retina") ## what is has to be for the moment
   userID <- NULL
   
-# Search functions _,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+# Search functions 
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   ### 2019-03-04 UPDATE to SQL searching directly
   
   searchGSM <- eventReactive(input$searchButton, {
@@ -125,7 +129,8 @@ server <- function(input, output, session) {
                       "}") 
                       )))) ## typeof data needs to be a string, as a "NA" converted to JS "NULL" breaks things
 
-# Add sample (array) record to the current experiment _,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+# Add sample (array) record to the current experiment 
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   proxy.search = dataTableProxy('searchResultsGSM')
   testTable <- NULL
   gsm_annotated <- eventReactive(input$addButton, {
@@ -138,11 +143,8 @@ server <- function(input, output, session) {
       updateTabsetPanel(session = session, inputId = "searchpanel", selected = "2")
   })
 
-
-#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
-
-  ## Assign categories to each sample (GSM)
-
+# Assign categories to each sample (GSM)
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   ## Set up reactive table to store category data
   samples <- reactiveValues()
   samples$df <- data.frame()
@@ -163,7 +165,7 @@ server <- function(input, output, session) {
       }
   })      
   
-  # ^ don't love this... would like to have the category set without a button click (maybe change to this tab), but it's working for the moment
+  ## ^ don't love this... would like to have the category set without a button click (maybe change to this tab), but it's working for the moment
    
   output$gsm_table <- DT::renderDataTable({
       if(input$assignButton == 0){
@@ -214,10 +216,10 @@ server <- function(input, output, session) {
       )     ### 2018-12-10 I'd like to have a button to add category 3
     )
     )  
-#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 
-## Finished table, to ultimately lead to CEL download
 
+# Finished table, to ultimately lead to CEL download
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   finishedtable <- eventReactive(input$assignButton, {
     dplyr::filter(samples$df, category %in% c(input$cat1, input$cat2, input$cat3))
   })
@@ -267,17 +269,18 @@ observeEvent(input$downloadCEL, {
           {userID<<-processData(finishedtable(),input$comments,input$gplSelection)})
   })
 
-#  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  _  
-# ( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )
-# \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/\ 
-# (_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)
-  
+
+#   .-.-.   .-.-.   .-.-.   .-.-.   .-.-.   .-.-.   .-.-.   .-.-
+#  / / \ \ / / \ \ / / \ \ / / \ \ / / \ \ / / \ \ / / \ \ / / \
+# `-'   `-`-'   `-`-'   `-`-'   `-`-'   `-`-'   `-`-'   `-`-'
+
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 ## This is where the analysis part of the application begins
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 
 
-
+# Load dataset
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
 observeEvent(input$user_data,{
    if(input$user_data=="none"){
         mapped_probes<<-NULL
@@ -299,7 +302,8 @@ observeEvent(input$user_data,{
     
 })
 
-# Load genes tab ------------------------------------------------------------------------------
+# Load genes tab
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
 
   geneList = reactive({
     if (is.null(input$genelist) && is.null(input$gene)) {
@@ -321,13 +325,13 @@ observeEvent(input$user_data,{
     return(unname(genes))
   })
   
-  # gene list UI
+  ## gene list UI
   output$geneListsUI = renderUI({
     checkboxGroupInput("genelist", "Select a receptor type to analyze", 
           choices = names(gene_lists))
   })
   
-  # single gene UI
+  ## single gene UI
   output$geneUI = renderUI({
     withProgress(message="Loading gene lists",value=0.6,{selectInput("gene", "Select gene(s) to show", choices = all_genes, multiple = TRUE)})
   })
@@ -341,6 +345,9 @@ observeEvent(input$user_data,{
     )
    get_expression_summary(eset, geneList())
  })
+
+# QC output
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   
  output$QC = renderUI({
     validate(
@@ -382,8 +389,8 @@ observeEvent(input$user_data,{
     checkboxGroupInput("de", "Choose comparison(s) to show", choices = de_choices, selected = de_choices[1])
   })
 
-# Expression tab ------------------------------------------------------------------------------
-  
+# Expression tab
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   observe({
     toggle("de_choices", anim = TRUE, condition = input$de_state )
   })
@@ -405,8 +412,8 @@ observeEvent(input$user_data,{
   }) 
   
   
-# heatmap plot --------------------------------------------------------------------------------
-  
+# Heatmap plot
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   output$expressionPlot = renderPlot({
     validate(
       need(genesToPlot(), "No genes selected"),
@@ -431,8 +438,8 @@ observeEvent(input$user_data,{
     plotOutput("expressionPlot", height = input$hm_height, width = input$hm_width)
   })
 
-# Overall expression --------------------------------------------------------------------------
-
+# Overall expression
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   output$overallPlot = renderPlot({
     validate(
       need(genesToPlot(), "No genes selected"),
