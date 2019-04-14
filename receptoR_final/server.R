@@ -301,9 +301,7 @@ observeEvent(input$user_data,{
         eset<<-NULL
         de_choices<<-NULL
         sig_genes_lfc<<-NULL
-    }else{
-         save(mapped_probes, eset, de_choices, sig_genes_lfc, groups, file = paste(PATH,"app_data_",timeStamp,".rda",sep='')) 
-         
+    }else{         
         withProgress(message="Dataset loading",value=0.4,{load(paste("./data/app_data_",userDatasetTable$userID[which(userDatasetTable$desc==input$user_data)],".rda",sep=''))})
     }
     
