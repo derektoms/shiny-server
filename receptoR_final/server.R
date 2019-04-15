@@ -307,7 +307,9 @@ observeEvent(input$user_data,{
         sig_genes_lfc<<-NULL
     }else{         
         id <- userDatasetTable$userID[which(userDatasetTable$desc == input$user_data)]
-        species <- userDatasetTable$species[which(userDatasetTable$desc == input$user_data)]
+        assign(
+              x = "species", value = userDatasetTable$species[which(userDatasetTable$desc == input$user_data)], envir = .GlobalEnv
+           )
         datasetToLoad <- paste("./data/app_data_", id, ".rda", sep='')
         withProgress(message="Dataset loading",value=0.4,{
             load(datasetToLoad,envir=.GlobalEnv)
@@ -335,7 +337,7 @@ observeEvent(input$user_data,{
 
     if (!is.null(input$genelist)) {
       for (gene in input$genelist) {
-        genes = c(genes, gene_lists[[species]][[gene]])
+        genes = c(genes, gene_lists[[species]])
       }
     }
 
