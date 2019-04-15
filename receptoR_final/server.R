@@ -337,12 +337,12 @@ observeEvent(input$user_data,{
 
     if (!is.null(input$genelist)) {
       for (gene in input$genelist) {
-        genes = c(genes, gene_lists[[species]])
+        genes = c(genes, gene_lists[[species]][gene])
       }
     }
 
     if (!is.null(input$gene)) {
-      genes = c(genes, input$gene)  
+      genes = c(genes, input$gene)
     }
     
     return(unname(genes))
