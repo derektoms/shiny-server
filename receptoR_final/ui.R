@@ -6,7 +6,7 @@
 #                   |_|
 #
 # March 2019 receptoR v 1.2
-## Last update: 2019-04-11, Derek Toms
+## Last update: 2019-04-14, Derek Toms
 ## ui.R
 
 ########################################
@@ -168,12 +168,12 @@ navbarPage("receptoR",
         sidebarLayout(
         sidebarPanel(
             h4("Load Experiment"),
-            selectInput(inputId="user_data",label="Select an experiment for analysis",choices=c("none"="none","Photoreceptors v RPE"="2018-04-13_app_data.rda"),selected="none"),
-            # tags$ul(tags$li(tags$span(style="color:#E41A1C", icon("circle", class="fa-2x")), "photoreceptors"), tags$li("RPE"), tags$li("whole retina")),
+            uiOutput("loadUserExperiments"),
             hr(),
-            uiOutput("geneListsUI"),
+            checkboxGroupInput("genelist", "Select a receptor type to analyze", 
+                  choices = NULL),
             br(),
-            uiOutput("geneUI")
+            selectInput("gene", "Select gene(s) to show", choices = NULL, multiple = TRUE)
         ),
         mainPanel(
             tabsetPanel(type="tabs",selected="Gene-level expression",
