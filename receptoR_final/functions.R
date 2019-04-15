@@ -213,7 +213,7 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
  #' @export
  gene_heatmap = function(eset, subset_probes, anno_col = 'tissue', probe_level = FALSE, gsm_show = TRUE, ...) {
 
-   mat = exprs(eset)[subset_probes,]
+   mat = exprs(eset)[factor(subset_probes),]
    #mat = t(scale(t(mat)))
    if(species == 'mouse'){
        row_labs = paste(getSYMBOL(rownames(mat), "mouse4302.db"),rownames(mat),sep=":")
