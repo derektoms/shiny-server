@@ -307,7 +307,7 @@ observeEvent(input$user_data,{
         sig_genes_lfc<<-NULL
     }else{         
         id <- userDatasetTable$userID[which(userDatasetTable$desc == input$user_data)]
-        species <<- userDatasetTable$species[which(userDatasetTable$desc == input$user_data)]
+        species <- userDatasetTable$species[which(userDatasetTable$desc == input$user_data)]
         datasetToLoad <- paste("./data/app_data_", id, ".rda", sep='')
         withProgress(message="Dataset loading",value=0.4,{
             load(datasetToLoad,envir=.GlobalEnv)
