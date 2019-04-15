@@ -301,6 +301,7 @@ observeEvent(input$user_data,{
         eset<<-NULL
         de_choices<<-NULL
         sig_genes_lfc<<-NULL
+        groups <<-NULL
     }else{         
         datasetToLoad <- paste("./data/app_data_",userDatasetTable$userID[which(userDatasetTable$desc == input$user_data)], ".rda", sep='')
         cat(file=stderr(), "attempting to load dataset", datasetToLoad, "based on the id", input$user_data, "\n")
@@ -309,6 +310,7 @@ observeEvent(input$user_data,{
         eset<<-eset
         de_choices<<-de_choices
         sig_genes_lfc<<-sig_genes_lfc
+        groups <<- groups
     }
     
 })
