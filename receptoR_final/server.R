@@ -297,6 +297,9 @@ output$loadUserExperiments = renderUI({
 
 
 observeEvent(input$user_data,{
+    id <- NULL
+    datasetToLoad <- NULL
+   
    if(input$user_data=="none"){
         mapped_probes<<-NULL
         eset<<-NULL
