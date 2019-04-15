@@ -82,8 +82,12 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
  ID = featureNames(all_eset_final)
  if(gpl =='human'){
      Symbol = getSYMBOL(ID, "hgu133plus2.db")
+     mapped_probes = as.list(revmap(hgu133plus2ALIAS2PROBE))
+     # reverse map for symbol to probe conversion
+
  } else {
      Symbol = getSYMBOL(ID, "mouse4302.db")
+     mapped_probes = as.list(revmap(mouse4302SYMBOL))
  }
  
  
@@ -129,8 +133,6 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
   sapply(sig_genes, nrow)
   sapply(sig_genes_lfc, nrow)
   
-   # reverse map for symbol to probe conversion
-   mapped_probes = as.list(revmap(mouse4302SYMBOL))
    # get list of DEG
    de_choices = names(sig_genes_lfc)
    # set groups
