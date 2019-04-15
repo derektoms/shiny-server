@@ -66,7 +66,7 @@ library(mouse4302cdf)
 source("functions.R")
 ## 2019-03-27 Ran this to get the latest database
 # if(!file.exists('./../data/GEOmetadb.sqlite')) getSQLiteFile()
-load("./../2018-12_genelists.rda")
+load("./../2019-04_genelists.rda")
 
 ### for local work
 # load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gseGPL570.rda")
@@ -307,15 +307,16 @@ observeEvent(input$user_data,{
         sig_genes_lfc<<-NULL
     }else{         
         id <- userDatasetTable$userID[which(userDatasetTable$desc == input$user_data)]
+        species <- userDatasetTable$species[which(userDatasetTable$desc == input$user_data)]
         datasetToLoad <- paste("./data/app_data_", id, ".rda", sep='')
         withProgress(message="Dataset loading",value=0.4,{
             load(datasetToLoad,envir=.GlobalEnv)
             
             incProgress(0.5, message ="Loading genelists")
-            updateCheckboxGroupInput(session, "genelist", label = NULL, choices = names(gene_lists), selected = NULL, inline = FALSE)
+            updateCheckboxGroupInput(session, "genelist", label = NULL, choices = names(gene_lists$species), selected = NULL, inline = FALSE)
             
             incProgress(0.8, message = "Loading gene names")
-            updateSelectInput(session, "gene", choices = all_genes)
+            updateSelectInput(session, "gene", choices = all_genes$species)
         })
         
     }

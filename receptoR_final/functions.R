@@ -131,10 +131,9 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
   
    # reverse map for symbol to probe conversion
    mapped_probes = as.list(revmap(mouse4302SYMBOL))
-
+   # get list of DEG
    de_choices = names(sig_genes_lfc)
-
-   all_genes = featureData(eset)@data[["Symbol"]] %>% as.character() %>% unique()
+   # set groups
    groups = levels(tissue)
    
 # Save user-generated experiments -----------------------------------   
