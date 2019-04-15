@@ -58,9 +58,10 @@ library(pool)
    #  library(sva)
 
 # Microarray platform annotations:
-library(mouse4302.db) 
+library(mouse4302.db)
 library(hgu133plus2.db)
 library(hgu133plus2cdf) # 2019-04-14 required
+library(mouse4302cdf)
 
 source("functions.R")
 ## 2019-03-27 Ran this to get the latest database

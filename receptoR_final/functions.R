@@ -141,7 +141,7 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
    db <- poolCheckout(userDB)
    data <- data.frame(userID = timeStamp, desc = datasetID, comments = userComments, species = gpl)
    dbWriteTable(conn=db, name="userData", data, append=T, row.names=F)
-   poolReturn(userDB)
+   poolReturn(db)
    
  save(mapped_probes, eset, de_choices, sig_genes_lfc, groups, file = paste(PATH,"app_data_",timeStamp,".rda",sep='')) 
    return(timeStamp)
