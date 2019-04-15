@@ -304,9 +304,10 @@ observeEvent(input$user_data,{
         sig_genes_lfc<<-NULL
         groups <<-NULL
     }else{         
-        datasetToLoad <- paste("./data/app_data_",userDatasetTable$userID[which(userDatasetTable$desc == input$user_data)], ".rda", sep='')
-        cat(file=stderr(), "attempting to load dataset", datasetToLoad, "based on the id", input$user_data, "\n")
-        withProgress(message="Dataset loading",value=0.4,{load(paste("./data/app_data_",userDatasetTable$userID[which(userDatasetTable$desc == input$user_data)], ".rda", sep=''),envir=.GlobalEnv)})
+        id <- userDatasetTable$userID[which(userDatasetTable$desc == input$user_data)]
+        datasetToLoad <- paste("./data/app_data_", id, ".rda", sep='')
+        cat(file=stderr(), "attempting to load dataset", datasetToLoad, "based on the id", id, "and user description:", input$user_data, "\n")
+        withProgress(message="Dataset loading",value=0.4,{load(datasetToLoad,envir=.GlobalEnv)})
     }
     
 })
