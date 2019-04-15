@@ -212,8 +212,13 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
 
    mat = exprs(eset)[subset_probes,]
    #mat = t(scale(t(mat)))
-   row_labs = paste(getSYMBOL(rownames(mat), "mouse4302.db"),rownames(mat),sep=":")
-   rownames(mat) = getSYMBOL(rownames(mat), "mouse4302.db")
+   if(species == 'mouse'){
+       row_labs = paste(getSYMBOL(rownames(mat), "mouse4302.db"),rownames(mat),sep=":")
+       rownames(mat) = getSYMBOL(rownames(mat), "mouse4302.db")
+   } else {
+       row_labs = paste(getSYMBOL(rownames(mat), "hgu133plus2.db"),rownames(mat),sep=":")
+       rownames(mat) = getSYMBOL(rownames(mat), "hgu133plus2.db")
+   }
    mat = mat[order(rownames(mat)),]
    
    if (!probe_level) {
@@ -244,13 +249,23 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
  get_gene_data = function(eset, gene_list) {
    ph = pData(eset) %>% tibble::rownames_to_column("Sample")
    ph$Sample <- colnames(exprs(eset)) # 2018-04-17 fix missing row names
-   exprs(eset) %>% 
-     as.data.frame() %>% 
-     tibble::rownames_to_column("probe") %>% 
-     mutate(Symbol = getSYMBOL(probe, "mouse4302.db")) %>% 
-     filter(Symbol %in% gene_list) %>% 
-     gather(Sample, expression, starts_with("GSM")) %>% 
-     left_join(ph, by = "Sample")
+   if(species=='mouse'){
+       exprs(eset) %>% 
+         as.data.frame() %>% 
+         tibble::rownames_to_column("probe") %>% 
+         mutate(Symbol = getSYMBOL(probe, "mouse4302.db")) %>% 
+         filter(Symbol %in% gene_list) %>% 
+         gather(Sample, expression, starts_with("GSM")) %>% 
+         left_join(ph, by = "Sample")
+   } else {
+     exprs(eset) %>% 
+       as.data.frame() %>% 
+       tibble::rownames_to_column("probe") %>% 
+       mutate(Symbol = getSYMBOL(probe, "hgu133plus2.db")) %>% 
+       filter(Symbol %in% gene_list) %>% 
+       gather(Sample, expression, starts_with("GSM")) %>% 
+       left_join(ph, by = "Sample")
+   }
  }
 
  # Create a top N gene list by abs LFC ---------------------------------------------------------
@@ -323,9 +338,17 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
      }
     
      exp = t(exp)
-     return(list(
-       result = splsda(exp, tissue, ncomp = 2),
-       tissue_grps = tissue_grps,
-       varNames = getSYMBOL(colnames(exp), "mouse4302.db")
-     ))
+     if(species=='mouse'){
+         return(list(
+           result = splsda(exp, tissue, ncomp = 2),
+           tissue_grps = tissue_grps,
+           varNames = getSYMBOL(colnames(exp), "mouse4302.db")
+         ))
+     } else {
+         return(list(
+           result = splsda(exp, tissue, ncomp = 2),
+           tissue_grps = tissue_grps,
+           varNames = getSYMBOL(colnames(exp), "hgu133plus2.db")
+         ))
+     }
  } 
