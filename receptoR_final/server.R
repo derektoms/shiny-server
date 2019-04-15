@@ -306,12 +306,7 @@ observeEvent(input$user_data,{
     }else{         
         datasetToLoad <- paste("./data/app_data_",userDatasetTable$userID[which(userDatasetTable$desc == input$user_data)], ".rda", sep='')
         cat(file=stderr(), "attempting to load dataset", datasetToLoad, "based on the id", input$user_data, "\n")
-        withProgress(message="Dataset loading",value=0.4,{load(datasetToLoad)})
-        mapped_probes<<-mapped_probes
-        eset<<-eset
-        de_choices<<-de_choices
-        sig_genes_lfc<<-sig_genes_lfc
-        groups <<- groups
+        withProgress(message="Dataset loading",value=0.4,{load(datasetToLoad,envir=.GlobalEnv)})
     }
     
 })
