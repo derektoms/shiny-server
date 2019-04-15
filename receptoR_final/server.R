@@ -109,7 +109,7 @@ server <- function(input, output, session) {
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   catCol <- brewer.pal(3, "Set1")
   rowCol <-desat(catCol)
-  groups <- NULL
+  # groups <- NULL
   # groups <- c("group1","group2","group3") ## Use these in all following code! They should have a "name" variable for user-assigned names 2018-12-10
   # groups<-c("photoreceptors","RPE","whole.retina") ## what is has to be for the moment
   userID <- NULL
