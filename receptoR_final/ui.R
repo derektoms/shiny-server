@@ -170,9 +170,10 @@ navbarPage("receptoR",
             h4("Load Experiment"),
             uiOutput("loadUserExperiments"),
             hr(),
-            uiOutput("geneListsUI"),
+            checkboxGroupInput("genelist", "Select a receptor type to analyze", 
+                  choices = NULL),
             br(),
-            uiOutput("geneUI")
+            selectInput("gene", "Select gene(s) to show", choices = NULL, multiple = TRUE),
         ),
         mainPanel(
             tabsetPanel(type="tabs",selected="Gene-level expression",

@@ -310,13 +310,12 @@ observeEvent(input$user_data,{
         datasetToLoad <- paste("./data/app_data_", id, ".rda", sep='')
         withProgress(message="Dataset loading",value=0.4,{
             load(datasetToLoad,envir=.GlobalEnv)
-            incProgress(0.7, message ="Loading genelists")
-            output$geneListsUI = renderUI({
-              checkboxGroupInput("genelist", "Select a receptor type to analyze", 
-                    choices = names(gene_lists))
-            })
-            cat(file=stderr(), "done loading genelist", "\n")
-            tissues <<- groups
+            
+            incProgress(0.5, message ="Loading genelists")
+            updateCheckboxGroupInput(session, "genelist", label = NULL, choices = names(gene_lists), selected = NULL, inline = FALSE)
+            
+            incProgress(0.8, message = "Loading gene names")
+            updateSelectInput(session, "gene", choices = all_genes)
         })
         
     }
@@ -346,16 +345,9 @@ observeEvent(input$user_data,{
     return(unname(genes))
   })
   
-  ## gene list UI
-  output$geneListsUI = renderUI({
-    checkboxGroupInput("genelist", "Select a receptor type to analyze", 
-          choices = names(gene_lists))
-  })
+
   
-  ## single gene UI
-  output$geneUI = renderUI({
-    withProgress(message="Loading gene lists",value=0.6,{selectInput("gene", "Select gene(s) to show", choices = all_genes, multiple = TRUE)})
-  })
+ 
 #### This was key to loading the output before we get to this page. All that remains now is either loading both human and mouse, or loading just one depending on the species button. I think loading both at the beginning will help it be snappier overall...
   outputOptions(output, "geneUI", suspendWhenHidden = TRUE)
   
