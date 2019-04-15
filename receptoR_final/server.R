@@ -315,7 +315,7 @@ observeEvent(input$user_data,{
             
             updateCheckboxGroupInput(session, "tissues", choices = groups, selected = groups)
             updateCheckboxGroupInput(session, "pls_tissues", choices = groups, selected = groups)
-            updatecheckboxGroupInput(session, "de", choices = de_choices, selected = de_choices[1])
+            updateCheckboxGroupInput(session, "de", choices = de_choices, selected = de_choices[1])
             
             incProgress(0.5, message ="Loading genelists")
             updateCheckboxGroupInput(session, "genelist", label = NULL, choices = names(gene_lists[[species]]), selected = NULL, inline = FALSE)
