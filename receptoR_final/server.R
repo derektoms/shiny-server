@@ -337,7 +337,7 @@ observeEvent(input$user_data,{
 
     if (!is.null(input$genelist)) {
       for (gene in input$genelist) {
-        genes = c(genes, gene_lists[[species]][gene])
+        genes = c(genes, gene_lists[[species]][[gene]])
       }
     }
 
