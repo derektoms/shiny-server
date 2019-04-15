@@ -313,8 +313,10 @@ observeEvent(input$user_data,{
             
             incProgress(0.3, message = "Loading contrasts")
             
-            updateCheckboxGroupInput(session, "tissues", choices = groups)
-            updateCheckboxGroupInput(session, "pls_tissues", choices = groups)
+            updateCheckboxGroupInput(session, "tissues", choices = groups, selected = groups)
+            updateCheckboxGroupInput(session, "pls_tissues", choices = groups, selected = groups)
+            updatecheckboxGroupInput(session, "de", choices = de_choices, selected = de_choices[1])
+            })
             
             incProgress(0.5, message ="Loading genelists")
             updateCheckboxGroupInput(session, "genelist", label = NULL, choices = names(gene_lists[[species]]), selected = NULL, inline = FALSE)
@@ -394,11 +396,6 @@ observeEvent(input$user_data,{
     by_gene_violplot(gene_data,tissues=groups)
     
     
-  })
-
-  # DE choices UI
-  output$de_choices = renderUI({
-    checkboxGroupInput("de", "Choose comparison(s) to show", choices = de_choices, selected = de_choices[1])
   })
 
 # Expression tab
