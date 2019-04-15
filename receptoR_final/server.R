@@ -315,8 +315,8 @@ observeEvent(input$user_data,{
             load(datasetToLoad,envir=.GlobalEnv)
             
             incProgress(0.3, message = "Loading contrasts")
-            # updateCheckboxGroupInput("tissues", choices = groups, selected = groups[1])
-            # updateCheckboxGroupInput("pls_tissues", choices = groups, selected = groups[1])
+            updateCheckboxGroupInput("tissues", choices = groups, selected = groups)
+            updateCheckboxGroupInput("pls_tissues", choices = groups, selected = groups)
             
             incProgress(0.5, message ="Loading genelists")
             updateCheckboxGroupInput(session, "genelist", label = NULL, choices = names(gene_lists[[species]]), selected = NULL, inline = FALSE)
