@@ -291,7 +291,7 @@ observeEvent(input$downloadCEL, {
 # Load dataset
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
 output$loadUserExperiments = renderUI({
-    selectInput(inputId="user_data",label="Select an experiment for analysis",choices=c("none"="none",split(userDatasetTable$desc, userDatasetTable$species)))
+    selectizeInput(inputId="user_data",label="Select an experiment for analysis",choices=c("none"="none",split(userDatasetTable$desc, userDatasetTable$species)),selected="none")
 })
 
 
