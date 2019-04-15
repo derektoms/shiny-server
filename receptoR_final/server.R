@@ -345,12 +345,6 @@ observeEvent(input$user_data,{
     return(unname(genes))
   })
   
-
-  
- 
-#### This was key to loading the output before we get to this page. All that remains now is either loading both human and mouse, or loading just one depending on the species button. I think loading both at the beginning will help it be snappier overall...
-  outputOptions(output, "geneUI", suspendWhenHidden = TRUE)
-  
  summary_gene_data = reactive({
    validate(
       need(geneList(), "No genes selected"),
