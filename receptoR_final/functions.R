@@ -216,7 +216,7 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
        row_labs = paste(getSYMBOL(rownames(mat), "mouse4302.db"),rownames(mat),sep=":")
        rownames(mat) = getSYMBOL(rownames(mat), "mouse4302.db")
    } else {
-       row_labs = paste(getSYMBOL(rownames(mat), "hgu133plus2.db"),rownames(mat),sep=":")
+       row_labs = paste(getSYMBOL(na.omit(rownames(mat)), "hgu133plus2.db"),na.omit(rownames(mat)),sep=":")
        rownames(mat) = getSYMBOL(rownames(mat), "hgu133plus2.db")
    }
    mat = mat[order(rownames(mat)),]
