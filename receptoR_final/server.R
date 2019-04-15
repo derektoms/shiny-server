@@ -313,7 +313,7 @@ observeEvent(input$user_data,{
             load(datasetToLoad,envir=.GlobalEnv)
             
             incProgress(0.5, message ="Loading genelists")
-            updateCheckboxGroupInput(session, "genelist", label = NULL, choices = names(gene_lists$species), selected = NULL, inline = FALSE)
+            updateCheckboxGroupInput(session, "genelist", label = NULL, choices = names(gene_lists$human), selected = NULL, inline = FALSE)
             
             incProgress(0.8, message = "Loading gene names")
             updateSelectInput(session, "gene", choices = all_genes$species)
