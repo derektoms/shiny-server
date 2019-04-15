@@ -302,7 +302,9 @@ observeEvent(input$user_data,{
         de_choices<<-NULL
         sig_genes_lfc<<-NULL
     }else{         
-        withProgress(message="Dataset loading",value=0.4,{load(paste("./data/app_data_",userDatasetTable$userID[which(userDatasetTable$desc==input$user_data)],".rda",sep=''))})
+        datasetToLoad <- paste("./data/app_data_",userDatasetTable$userID[which(userDatasetTable$desc == input$user_data)], ".rda", sep='')
+        cat(file=stderr(), "attempting to load dataset", datasetToLoad, "based on the id", input$user_data "\n")
+        withProgress(message="Dataset loading",value=0.4,{load(datasetToLoad)})
     }
     
 })
