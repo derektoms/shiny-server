@@ -176,7 +176,8 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
  # Convert gene symbols back to probes --------------------------------------------------------
 
  gene2probe = function(gene_list, mapped_probes) {
-   na.omit(unlist(mapped_probes[gene_list]))
+   g <- rep(seq_along(mapped_probes),sapply(mapped_probes, length))
+   names(mapped_probes)[!is.na(g[match(gene_list, unlist(mapped_probes))])]
  }
 
 
