@@ -6,7 +6,7 @@
 #                   |_|
 #
 # March 2019 receptoR v 1.2
-## Last update: 2019-04-14, Derek Toms
+## Last update: 2019-04-11, Derek Toms
 ## ui.R
 
 ########################################
@@ -168,12 +168,12 @@ navbarPage("receptoR",
         sidebarLayout(
         sidebarPanel(
             h4("Load Experiment"),
-            uiOutput("loadUserExperiments"),
+            selectInput(inputId="user_data",label="Select an experiment for analysis",choices=c("none"="none","Photoreceptors v RPE"="2018-04-13_app_data.rda"),selected="none"),
+            # tags$ul(tags$li(tags$span(style="color:#E41A1C", icon("circle", class="fa-2x")), "photoreceptors"), tags$li("RPE"), tags$li("whole retina")),
             hr(),
-            checkboxGroupInput("genelist", "Select a receptor type to analyze", 
-                  choices = NULL),
+            uiOutput("geneListsUI"),
             br(),
-            selectInput("gene", "Select gene(s) to show", choices = NULL, multiple = TRUE)
+            uiOutput("geneUI")
         ),
         mainPanel(
             tabsetPanel(type="tabs",selected="Gene-level expression",
@@ -201,8 +201,7 @@ navbarPage("receptoR",
             p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
             # style = "position:fixed",
             checkboxGroupInput("tissues", label = "Select tissues to inclued",
-            choices = c("photoreceptors","RPE","whole.retina"), selected = c("photoreceptors","RPE","whole.retina")
-            ),
+            choices = NULL, selected = NULL),
             br(),
             checkboxInput("de_state", label = "Show differential expressed only", value = TRUE),
             uiOutput("de_choices"),
@@ -237,8 +236,7 @@ navbarPage("receptoR",
             h4("Relative expression"),
             p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
             checkboxGroupInput("pls_tissues", label = "Select tissues to inclued",
-            choices = c("photoreceptors","RPE","whole.retina"), selected = c("photoreceptors","RPE","whole.retina")
-            ),
+            choices = NULL, selected = NULL),
             checkboxInput("pls_probe", "Perform PLS-DA at probe level", value = FALSE),
             br(),
             h4("Gene contribution plot"),

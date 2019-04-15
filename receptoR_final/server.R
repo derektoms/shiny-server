@@ -311,8 +311,12 @@ observeEvent(input$user_data,{
               x = "species", value = userDatasetTable$species[which(userDatasetTable$desc == input$user_data)], envir = .GlobalEnv
            )
         datasetToLoad <- paste("./data/app_data_", id, ".rda", sep='')
-        withProgress(message="Dataset loading",value=0.4,{
+        withProgress(message="Loading dataset",value=0.2,{
             load(datasetToLoad,envir=.GlobalEnv)
+            
+            incProgress(0.3, message = "Loading contrasts")
+            updateCheckboxGroupInput("tissues", choices = groups, selected = groups[1])
+            updateCheckboxGroupInput("pls_tissues", choices = groups, selected = groups[1])
             
             incProgress(0.5, message ="Loading genelists")
             updateCheckboxGroupInput(session, "genelist", label = NULL, choices = names(gene_lists[[species]]), selected = NULL, inline = FALSE)
