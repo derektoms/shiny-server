@@ -161,7 +161,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$assignButton, {
   
-      groups <<- c(input$cat1,input$cat2,input$cat3) ## Use these in all following code! They should have a "name" variable for user-assigned names 2018-12-10
+      # groups <<- c(input$cat1,input$cat2,input$cat3) ## Use these in all following code! They should have a "name" variable for user-assigned names 2018-12-10
  
       if (input$assignButton == 1) {
         gsm_selected <- gsm_annotated()
