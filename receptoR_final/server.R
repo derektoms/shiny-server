@@ -109,9 +109,6 @@ server <- function(input, output, session) {
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   catCol <- brewer.pal(3, "Set1")
   rowCol <-desat(catCol)
-  # groups <- NULL
-  # groups <- c("group1","group2","group3") ## Use these in all following code! They should have a "name" variable for user-assigned names 2018-12-10
-  # groups<-c("photoreceptors","RPE","whole.retina") ## what is has to be for the moment
   userID <- NULL
   
 # Search functions 
@@ -315,8 +312,9 @@ observeEvent(input$user_data,{
             load(datasetToLoad,envir=.GlobalEnv)
             
             incProgress(0.3, message = "Loading contrasts")
-            updateCheckboxGroupInput("tissues", choices = data.frame(groups))
-            updateCheckboxGroupInput("pls_tissues", choices = data.frame(groups))
+            
+            updateCheckboxGroupInput(session, "tissues", choices = groups)
+            updateCheckboxGroupInput(session, "pls_tissues", choices = groups)
             
             incProgress(0.5, message ="Loading genelists")
             updateCheckboxGroupInput(session, "genelist", label = NULL, choices = names(gene_lists[[species]]), selected = NULL, inline = FALSE)
