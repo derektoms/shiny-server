@@ -17,26 +17,6 @@ input[type="text"] {
   box-shadow: 0 0 8px 0 dodgerBlue;
 }*/
 
-/* Style the form icons */
-.icon {
-  padding: 10px;
-  background: dodgerblue;
-  color: white;
-  min-width: 50px;
-  text-align: center;
-}
-/* Style the input fields */
-.input-field {
-  width: 100%;
-  padding: 10px;
-  outline: none;
-}
-
-.input-field:focus {
-  border: 2px solid dodgerblue;
-}
-
-
 .inputWithIcon input[type="text"] {
   padding-left: 40px;
 }
@@ -45,12 +25,12 @@ input[type="text"] {
   position: relative;
 }
 
-.inputWithIcon i {
+.inputWithIcon i{
   position: absolute;
   left: 0;
   top: 0;
   padding: 4px 8px;
-  transition: 3s;
+  transition: 0.3s;
 }
 
 /* Not sure this will work; it doesn't with the way the ui.R is currently set up
