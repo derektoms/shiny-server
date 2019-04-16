@@ -22,7 +22,7 @@ input[type="text"] {
 }
 
 .inputWithIcon {
-  position: absolute;
+  position: relative;
 }
 
 .inputWithIcon i {
@@ -30,7 +30,7 @@ input[type="text"] {
   left: 0;
   top: 0;
   padding: 4px 8px;
-  transition: 0.3s;
+  transition: 3s;
 }
 
 /* Not sure this will work; it doesn't with the way the ui.R is currently set up
