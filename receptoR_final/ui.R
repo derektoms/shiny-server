@@ -113,7 +113,7 @@ navbarPage("receptoR",
            # tags$span(style="color:#377EB8",icon("circle",class="fa-2x"))
            ),
            
-           tags$div(class="inputWithIcon",textInput("cat3", label=NULL, placeholder="Category 3 (optional)"),
+           tags$div(class="inputWithIcon",textInput("cat3", label=NULL, placeholder="Category 3 (optional)")
            # tags$span(style="color:#4DAF4A",icon("circle",class="fa-2x"))
            ),
 
