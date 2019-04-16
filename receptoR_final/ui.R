@@ -105,11 +105,17 @@ navbarPage("receptoR",
            h4("Define the categories that you wish to assign each sample (GSM) for comparison."),
            p("Each sample of interest should be assigned to a category. In this way, experimental comparisons can be performed to determine differential expression between categories."),
 
-           tags$div(class="inputWithIcon",textInput("cat1", label=NULL, placeholder="Category 1"),tags$span(style="color:#E41A1C",icon("circle",class="fa-2x"))),
+           tags$div(class="inputWithIcon",textInput("cat1", label=NULL, placeholder="Category 1")
+           # tags$span(style="color:#E41A1C",icon("circle",class="fa-2x"))
+           ),
            
-           tags$div(class="inputWithIcon",textInput("cat2", label=NULL, placeholder="Category 2"),tags$span(style="color:#377EB8",icon("circle",class="fa-2x"))),
+           tags$div(class="inputWithIcon",textInput("cat2", label=NULL, placeholder="Category 2")
+           # tags$span(style="color:#377EB8",icon("circle",class="fa-2x"))
+           ),
            
-           tags$div(class="inputWithIcon",textInput("cat3", label=NULL, placeholder="Category 3 (optional)"),tags$span(style="color:#4DAF4A",icon("circle",class="fa-2x"))),
+           tags$div(class="inputWithIcon",textInput("cat3", label=NULL, placeholder="Category 3 (optional)"),
+           # tags$span(style="color:#4DAF4A",icon("circle",class="fa-2x"))
+           ),
 
            ### https://www.aridhia.com/blog/the-sky-is-not-the-limit-embedding-raw-html-and-javascript-to-create-dynamic-ui-elements-in-shiny-applications/   
            ### ^ this should help with dynamically adding/subtracting categories
