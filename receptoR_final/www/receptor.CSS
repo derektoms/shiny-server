@@ -17,6 +17,26 @@ input[type="text"] {
   box-shadow: 0 0 8px 0 dodgerBlue;
 }*/
 
+/* Style the form icons */
+.icon {
+  padding: 10px;
+  background: dodgerblue;
+  color: white;
+  min-width: 50px;
+  text-align: center;
+}
+/* Style the input fields */
+.input-field {
+  width: 100%;
+  padding: 10px;
+  outline: none;
+}
+
+.input-field:focus {
+  border: 2px solid dodgerblue;
+}
+
+
 .inputWithIcon input[type="text"] {
   padding-left: 40px;
 }
