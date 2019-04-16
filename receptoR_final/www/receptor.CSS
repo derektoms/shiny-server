@@ -17,7 +17,7 @@ input[type="text"] {
   box-shadow: 0 0 8px 0 dodgerBlue;
 }*/
 
-.inputWithIcon input[type="text"] {
+.inputWithIcon form-group[type="shiny-input-container"] {
   padding-left: 40px;
 }
 
