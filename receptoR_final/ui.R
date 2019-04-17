@@ -185,7 +185,8 @@ navbarPage("receptoR",
         mainPanel(
             tabsetPanel(type="tabs",selected="Gene-level expression",
             tabPanel("Quality control",
-            uiOutput("QC")
+            uiOutput("QC"),
+            plotOutput("degPlot")
         ),
             tabPanel("Experimental design",h4("Category definitions and contrasts"),p("Coming soon!")),
             tabPanel("Gene-level expression",

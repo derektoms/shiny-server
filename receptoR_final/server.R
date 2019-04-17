@@ -328,7 +328,7 @@ rvDEG <- reactiveValues(download_flag = 0)
 
   # proxy.finishedtable = dataTableProxy('finishedtable')
   output$reportDEG <- downloadHandler(
-      filename = paste("DEG_report.xls",sep="_"),
+      filename = paste(input$user_data,"DEG_report.xlsx",sep="_"),
       # filename = paste(input$user_data,"DEG_report.csv",sep="_"),
       content = function(file){
           write_xlsx(sig_genes_lfc, path=file)
@@ -377,6 +377,12 @@ rvDEG <- reactiveValues(download_flag = 0)
     tags$img(src="RNA-deg.png",width="100%"))
   })
   
+  output$degPlot = renderPlot({
+      validate(
+        need(input$user_data!="none","No dataset selected")
+      )
+      plotAffyRNAdeg(deg,cols=catCol)
+  })
   
   output$genes = DT::renderDataTable({
     validate(
