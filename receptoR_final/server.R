@@ -46,6 +46,7 @@ library(mixOmics)
 library(cowplot)
 
 library(pool)
+library(writexl)
 
 ## 2018-12-02 not currently needed:
     # library(genefilter)
@@ -330,8 +331,7 @@ rvDEG <- reactiveValues(download_flag = 0)
       filename = paste("DEG_report.xls",sep="_"),
       # filename = paste(input$user_data,"DEG_report.csv",sep="_"),
       content = function(file){
-          for i in length(sig_genes_lfc)
-          write.csv(sig_genes_lfc[i],file)
+          write_xlsx(sig_genes_lfc, path=file)
           rvDEG$download_flag <- rvDEG$download_flag + 1
       })
       
