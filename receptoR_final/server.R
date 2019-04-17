@@ -245,15 +245,7 @@ rv <- reactiveValues(download_flag = 0)
       filename = paste(input$downloadId,userID,"GSM_report.csv",sep="_"),
       content = function(file){
           write.csv(finishedtable(),file)
-#           tempReport <- file.path(tempdir(),"report.Rmd")
-#           file.copy("report.Rmd",tempReport,overwrite=TRUE)
-#           params <- list(annotatedGSM = finishedtable())
-#
-#           rmarkdown::render(tempReport,output_file = file,
-#               params = params,
-#               envir = new.env(parent=globalenv())
-#               )
-rv$download_flag <- rv$download_flag + 1
+          rv$download_flag <- rv$download_flag + 1
       })
       
 observeEvent(input$downloadCEL, {
@@ -335,18 +327,11 @@ rvDEG <- reactiveValues(download_flag = 0)
 
   # proxy.finishedtable = dataTableProxy('finishedtable')
   output$reportDEG <- downloadHandler(
-      filename = paste(input$user_data,"DEG_report.csv",sep="_"),
+      filename = paste("DEG_report.csv",sep="_"),
+      # filename = paste(input$user_data,"DEG_report.csv",sep="_"),
       content = function(file){
-          write.csv(sig_genes_lfc,file)
-#           tempReport <- file.path(tempdir(),"report.Rmd")
-#           file.copy("report.Rmd",tempReport,overwrite=TRUE)
-#           params <- list(annotatedGSM = finishedtable())
-#
-#           rmarkdown::render(tempReport,output_file = file,
-#               params = params,
-#               envir = new.env(parent=globalenv())
-#               )
-rvDEG$download_flag <- rvDEG$download_flag + 1
+          write.csv(sig_genes_lfc[1],file)
+          rvDEG$download_flag <- rvDEG$download_flag + 1
       })
       
 # Load genes tab
