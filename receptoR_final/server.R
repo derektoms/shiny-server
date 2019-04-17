@@ -328,6 +328,27 @@ observeEvent(input$user_data,{
     
 })
 
+# Download DEG
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+
+rvDEG <- reactiveValues(download_flag = 0)
+
+  # proxy.finishedtable = dataTableProxy('finishedtable')
+  output$reportDEG <- downloadHandler(
+      filename = paste(input$user_data,"DEG_report.csv",sep="_"),
+      content = function(file){
+          write.csv(sig_genes_lfc,file)
+#           tempReport <- file.path(tempdir(),"report.Rmd")
+#           file.copy("report.Rmd",tempReport,overwrite=TRUE)
+#           params <- list(annotatedGSM = finishedtable())
+#
+#           rmarkdown::render(tempReport,output_file = file,
+#               params = params,
+#               envir = new.env(parent=globalenv())
+#               )
+rvDEG$download_flag <- rvDEG$download_flag + 1
+      })
+      
 # Load genes tab
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
 
