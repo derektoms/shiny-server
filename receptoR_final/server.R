@@ -327,10 +327,11 @@ rvDEG <- reactiveValues(download_flag = 0)
 
   # proxy.finishedtable = dataTableProxy('finishedtable')
   output$reportDEG <- downloadHandler(
-      filename = paste("DEG_report.csv",sep="_"),
+      filename = paste("DEG_report.xls",sep="_"),
       # filename = paste(input$user_data,"DEG_report.csv",sep="_"),
       content = function(file){
-          write.csv(sig_genes_lfc[1],file)
+          for i in length(sig_genes_lfc)
+          write.csv(sig_genes_lfc[i],file)
           rvDEG$download_flag <- rvDEG$download_flag + 1
       })
       
