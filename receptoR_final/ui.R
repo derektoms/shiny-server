@@ -134,7 +134,7 @@ navbarPage("receptoR",
                textInput("downloadId","Download ID"),
                downloadButton("report","Download Report"),
                actionButton("downloadCEL","Process")),
-               hr(),
+               hr()
                # Help banner on the bottom -------------------------
                # h4("Help me!"),
                # p("Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tippork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle.",style="color:#D8BFD8")
