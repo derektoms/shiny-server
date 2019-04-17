@@ -69,8 +69,8 @@ navbarPage("receptoR",
                p("There are two ways to begin using receptor, either by searching for expression data to design your own experiment, or by loading and analysing an existing experiment."),
                # To proceed, click \'Search for datasets\', above"),
                hr(),
-               p("(C) 2019 Derek Toms"),
-               p("License")
+               p("code created by Derek Toms, Qing Yun Tong and Matthew Workentine"),
+               p("Copyright (C) 2019, code licensed under GPLv3")
                #/div
                ),
            mainPanel(
