@@ -22,6 +22,7 @@ desat = function(cols, sat=0.5) {
  ##  Updates 2018-12-10 to switch between user input and CEL downloads
  
  processData = function(finished_table,datasetID,userComments,gpl,userDB){
+     levels(finished_table$category) <- make.names(levels(finished_table$category),unique=TRUE)
  gsm_to_fetch <- finished_table$gsm
  ## timestamp
  timeStamp <- strftime(Sys.time(),"%Y%m%d-%H%M")
@@ -176,9 +177,9 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
  # Convert gene symbols back to probes --------------------------------------------------------
 
  gene2probe = function(gene_list, mapped_probes) {
-     
+
      if(species=='mouse'){
-         return(unlist(mapped_probes[gene_list]))
+         return(na.omit(unlist(mapped_probes[gene_list])))
      } else {
          g <- rep(seq_along(mapped_probes),sapply(mapped_probes, length))
          names(mapped_probes)[!is.na(g[match(mapped_probes,gene_list)])]
@@ -337,8 +338,13 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
  # Perform sPLS-DA on selected genes -----------------------------------------------------------
 
  get_plsda = function(eset, genes, probe) {
-    
-     exp = exprs(eset)[genes,]
+     
+     if(species=='mouse'){
+         exp = exprs(eset)[c(genes),]
+     } else {
+         exp = exprs(eset)[genes,]
+     }
+     
      tissue = factor(pData(eset)$tissue)
      tissue_grps = pData(eset)$tissue
     
