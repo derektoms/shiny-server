@@ -223,10 +223,12 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
    #mat = t(scale(t(mat)))
    if(species == 'mouse'){
        mat = exprs(eset)[c(subset_probes),]
+       cat(file=stderr(), "attempting to load ", length(rownames(mat)), " mouse genes\n")
        row_labs = paste(getSYMBOL(rownames(mat), "mouse4302.db"),rownames(mat),sep=":")
        rownames(mat) = getSYMBOL(rownames(mat), "mouse4302.db")
    } else {
        mat = exprs(eset)[factor(subset_probes),]
+       cat(file=stderr(), "attempting to load ", length(rownames(mat)), " human genes\n")
        row_labs = paste(getSYMBOL(rownames(mat), "hgu133plus2.db"),rownames(mat),sep=":")
        rownames(mat) = getSYMBOL(rownames(mat), "hgu133plus2.db")
        row_labs = row_labs[!is.na(rownames(mat))]
