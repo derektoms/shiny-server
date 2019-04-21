@@ -436,6 +436,9 @@ rvDEG <- reactiveValues(download_flag = 0)
 # Heatmap plot
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   output$expressionPlot = renderPlot({
+    
+    genes = gene2probe(genesToPlot(), mapped_probes)
+    
     validate(
       need(genesToPlot(), "No genes selected"),
       need(input$tissues, "No tissues selected"),
@@ -444,7 +447,7 @@ rvDEG <- reactiveValues(download_flag = 0)
    
     selected_tissues = input$tissues
     sub_eset = eset[, eset$tissue %in% selected_tissues]
-    genes = gene2probe(genesToPlot(), mapped_probes)
+    
     
     gene_heatmap(sub_eset, genes, scale = "row",
                   probe_level = input$hm_probes,
