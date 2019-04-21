@@ -439,7 +439,7 @@ rvDEG <- reactiveValues(download_flag = 0)
     validate(
       need(genesToPlot(), "No genes selected"),
       need(input$tissues, "No tissues selected"),
-      need(length(genesToPlot())!=0, "No differential expression, try unselecting that option.") ## somewhere in here I'll need to see if sig_genes_lfc == 0
+      need(!is.null(genesToPlot())), "No differential expression, try unselecting that option.") ## somewhere in here I'll need to see if sig_genes_lfc == 0
     )
    
     selected_tissues = input$tissues
