@@ -442,7 +442,7 @@ rvDEG <- reactiveValues(download_flag = 0)
     validate(
       need(genesToPlot(), "No genes selected"),
       need(input$tissues, "No tissues selected"),
-      need(length(genes)>10, if(input$de_state){"No differential expression, try unselecting that option."}else{"No genes to plot."}) ## somewhere in here I'll need to see if sig_genes_lfc == 0
+      need(length(genes)>10, if(input$de_state){"No differential expression, try unselecting that option."}else{"No genes to plot. This dataset has few significantly different genes."}) 
     )
    
     selected_tissues = input$tissues
@@ -532,7 +532,7 @@ rvDEG <- reactiveValues(download_flag = 0)
 
   output$numGenesUI = renderUI({
     numericInput("pls_num_genes", "Select number of genes to show contributions for", 
-                 value = 10, min = 1, max = length(geneList()), step = 1)
+                 value = 25, min = 1, max = length(geneList()), step = 1)
   })
   
 # Loadings plot ----------------------------------------------------------------------------
@@ -542,13 +542,11 @@ rvDEG <- reactiveValues(download_flag = 0)
       need(input$pls_num_genes, "")
     )
     
-    grps = plsdaData()$result$names$Y
-    cols = brewer.pal(3, "Set1")[1:length(grps)]
-     
+    grps = plsdaData()$result$names$colnames$Y
     ndisplay = input$pls_num_genes
     comp = as.integer(input$pls_ncomp)
     plotLoadings(plsdaData()$result, name.var = plsdaData()$varNames, ndisplay = ndisplay,
-                comp = comp, legend.color = c(1:2))
+                comp = comp, contrib='max', method='mean',legend.color = catCol[1:length(grps)])
      
   })
   
