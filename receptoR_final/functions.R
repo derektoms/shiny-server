@@ -179,7 +179,7 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
  gene2probe = function(gene_list, mapped_probes) {
 
      if(species=='mouse'){
-         return(unlist(mapped_probes[gene_list]))
+         return(na.omit(unlist(mapped_probes[gene_list])))
      } else {
          g <- rep(seq_along(mapped_probes),sapply(mapped_probes, length))
          names(mapped_probes)[!is.na(g[match(mapped_probes,gene_list)])]
