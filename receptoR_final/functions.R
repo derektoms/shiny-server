@@ -219,7 +219,7 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
  #' @export
  gene_heatmap = function(eset, subset_probes, anno_col = 'tissue', probe_level = FALSE, gsm_show = TRUE, ...) {
 
-   
+   cat(file=stderr(), "incoming ", length(subset_probes), " probes\n")
    #mat = t(scale(t(mat)))
    if(species == 'mouse'){
        mat = exprs(eset)[c(subset_probes),]
