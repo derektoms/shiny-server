@@ -222,7 +222,7 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
    
    #mat = t(scale(t(mat)))
    if(species == 'mouse'){
-       mat = exprs(eset)[c(genes),]
+       mat = exprs(eset)[c(subset_probes),]
        row_labs = paste(getSYMBOL(rownames(mat), "mouse4302.db"),rownames(mat),sep=":")
        rownames(mat) = getSYMBOL(rownames(mat), "mouse4302.db")
    } else {
