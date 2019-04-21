@@ -6,7 +6,7 @@
 #                   |_|
 #
 # March 2019 receptoR v 1.2
-## Last update: 2019-04-14, Derek Toms
+## Last update: 2019-04-20, Derek Toms
 ## server.R
 
 
@@ -258,15 +258,17 @@ observeEvent(input$downloadCEL, {
   })
 
 
-  observeEvent(input$process, {
-      removeModal()
-   })
+  # observeEvent(input$process, {
+  #     removeModal()
+  #  })
 
 
   observeEvent(input$process, {
       withProgress(
           message = "Downloading and processing GSM",
-          {userID<<-processData(finishedtable(),input$downloadId,input$comments,input$gplSelection,poolUserData)})
+          {userID <<- processData(finishedtable(), input$downloadId, input$comments, input$gplSelection, poolUserData)}
+          )
+          removeModal()
   })
 
 
@@ -526,7 +528,7 @@ rvDEG <- reactiveValues(download_flag = 0)
       need(plsdaData(), "No PLS-DA to plot")
     )
 
-    plotVar(plsdaData()$result, var.names = list(plsdaData()$varNames), cex = 3,overlap=FALSE)
+    plotVar(plsdaData()$result, var.names = list(plsdaData()$varNames), cex = 3, overlap=FALSE)
     
   })
 

@@ -6,7 +6,7 @@
 #                   |_|
 #
 # March 2019 receptoR v 1.2
-## Last update: 2019-04-14, Derek Toms
+## Last update: 2019-04-20, Derek Toms
 ## functions.R
 
 
@@ -75,7 +75,7 @@ gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names
  identical(colnames(exprs(all_eset_final)), rownames(pData(all_eset_final)))
 
 
- save(all_eset_final, all_data_deg, rawBox, rmaBox, file = paste(PATH,"final_processed_data_",timeStamp,".rda",sep='')) # filename should include timestamp
+ save(all_eset_final, all_data_deg, rawBox, rmaBox, file = paste(PATH,"final_processed_data_",timeStamp,".rda",sep=''))
 
  ### DE
 

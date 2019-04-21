@@ -113,28 +113,46 @@ dataPlots<-reactive({
           )
   })      
   output$wellPlot <- renderPlot({
+      validate(
+        need(dataPlots(),"Please wait.")
+      )
         dataPlots()
         well
   })
 
   output$piePlot <- renderPlot({
+      validate(
+        need(dataPlots(),"Please wait.")
+      )
         dataPlots()
         O2
     })
     
   output$Qcell <- renderText({
+      validate(
+        need(dataPlots(),"Please wait.")
+      )
       dataPlots()
       paste(input$Qmet/1e7)
   })  
   output$atmo <- renderText({
+      validate(
+        need(dataPlots(),"Please wait.")
+      )
       dataPlots()
       paste("Atmosphere (atm) = ",input$elev)
   })
   output$depth <- renderText({
+      validate(
+        need(dataPlots(),"Please wait.")
+      )
       dataPlots()
       paste("Depth (mm) = ",media.depth)
   })
   output$oxy <- renderText({
+      validate(
+        need(dataPlots(),"Please wait.")
+      )
       dataPlots()
       paste("Oxygen at cell surface (mM) = ",format(cell.oxygen,digits=6))
   })
