@@ -6,7 +6,7 @@
 #                   |_|
 #
 # March 2019 receptoR v 1.2
-## Last update: 2019-04-20, Derek Toms
+## Last update: 2019-05-20, Derek Toms
 ## ui.R
 
 ########################################
@@ -200,12 +200,12 @@ navbarPage("receptoR",
     
     # Magnitude expression tab ------------------------------------------------------------------------------
     
-    tabPanel("Absolute Expression",
-        h3("Compare genes based on absolute expression"),
+    tabPanel("Gene-level Expression",
+        h3("Compare genes based on absolute expression and differential expression between experimental groups"),
         hr(),
         sidebarLayout(
         sidebarPanel(
-            h4("Absolute expression"),
+            h4("Gene expression"),
             # p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
             # style = "position:fixed",
             checkboxGroupInput("tissues", label = "Select tissues to inclued",
@@ -236,12 +236,12 @@ navbarPage("receptoR",
     ),
 
     # Mixomics tab ---------------------------------------------
-    tabPanel("Relative Expression",
-        h3("Compare genes based on relative expression between experimental groups"),
+    tabPanel("Sample-level Expression",
+        h3("Compare trends in samples based on experimental groups"),
         hr(),
         sidebarLayout(
         sidebarPanel(
-            h4("Relative expression"),
+            h4("Sample expression"),
             # p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
             checkboxGroupInput("pls_tissues", label = "Select tissues to inclued",
             choices = NULL, selected = NULL),

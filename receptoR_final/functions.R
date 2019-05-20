@@ -6,7 +6,7 @@
 #                   |_|
 #
 # March 2019 receptoR v 1.2
-## Last update: 2019-04-20, Derek Toms
+## Last update: 2019-05-19, Derek Toms
 ## functions.R
 
 
@@ -21,140 +21,153 @@ desat = function(cols, sat=0.5) {
  #$# Data processing 9 April 2018
  ##  Updates 2018-12-10 to switch between user input and CEL downloads
  
- processData = function(finished_table,datasetID,userComments,gpl,userDB){
-     levels(finished_table$category) <- make.names(levels(finished_table$category),unique=TRUE)
- gsm_to_fetch <- finished_table$gsm
- ## timestamp
- timeStamp <- strftime(Sys.time(),"%Y%m%d-%H%M")
+processData = function(finished_table,datasetID,userComments,gpl,userDB){
+    ## categories need to have R-safe names so we'll store the user input as a new column
+    finished_table$category.labels <- finished_table$category
+    levels(finished_table$category) <- make.names(levels(finished_table$category),unique=TRUE)
+    ## colours
+    finshed_table$colours <- finished_table$category
+    levels(finished_table$colours) <- brewer.pal(9,"Set1")[1:length(levels(finished_table$category))],stringsAsFactors=FALSE)
+    
+    ## timestamp
+    timeStamp <- strftime(Sys.time(),"%Y%m%d-%H%M")
 
- PATH = "./data/"
- get_files = TRUE
- # get_files = FALSE
- 
- if (get_files) {
-   # get raw CEL files
+    PATH = "./data/"
+    get_files = TRUE
+    # get_files = FALSE
 
-   setDir<-paste(PATH,timeStamp,sep='')
+    gsm_to_fetch <- finished_table$gsm
+    
+    if (get_files) {
+        # get raw CEL files
 
-   rawFilePaths = lapply(gsm_to_fetch, function(x) {
-       dir.create(file.path(setDir), showWarnings = FALSE)
-       getGEOSuppFiles(x,baseDir=setDir)
-   })
- 
-gsm_dirs = list.files(path=setDir, pattern = "GSM", full.names=TRUE)
+        setDir<-paste(PATH,timeStamp,sep='')
 
-gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names = TRUE)
+        rawFilePaths = lapply(gsm_to_fetch, function(x) {
+            dir.create(file.path(setDir), showWarnings = FALSE)
+            getGEOSuppFiles(x,baseDir=setDir)
+        })
 
- # New approach: Normalize together ------------------------------------------------------------
- all_data = ReadAffy(filenames = unlist(gsm_files))
- all_eset = rma(all_data)
- all_pData = pData(all_eset)
+        gsm_dirs = list.files(path=setDir, pattern = "GSM", full.names=TRUE)
 
- gsm = str_match(rownames(all_pData), "(GSM[[:alnum:]]+)")[,2]
+        gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names = TRUE)
 
- ## missing CEL files (2018-04-13) required the fix below
- gsm <- tibble(gsm)
- dlSamples <- inner_join(gsm,finished_table)
+        # New approach: Normalize together ------------------------------------------------------------
+        all_data = ReadAffy(filenames = unlist(gsm_files))
+        all_eset = rma(all_data)
+        all_pData = pData(all_eset)
 
- all_pData<-tibble("tissue"=dlSamples$category)
- colnames(all_eset)<-dlSamples$gsm
- rownames(all_pData)<-dlSamples$gsm # Warning: setting row names on a tibble is deprecated
- ## end fix
- 
- ### QC 
- ## Probe degradation
- all_data_deg <- AffyRNAdeg(all_data)
- ## Array normalization
- rawBox <- ggplot(data=melt(exprs(all_data)))+geom_boxplot(aes(x=Var2,y=value))
- rmaBox <- ggplot(data=melt(exprs(all_eset)))+geom_boxplot(aes(x=Var2,y=value))
-  
- all_eset_final<-all_eset
- pData(all_eset_final)<-all_pData
- # pData(all_eset_final) %>% View
+        gsm = str_match(rownames(all_pData), "(GSM[[:alnum:]]+)")[,2]
 
- identical(colnames(exprs(all_eset_final)), rownames(pData(all_eset_final)))
+        ## missing CEL files (2018-04-13) required the fix below
+        gsm <- tibble(gsm)
+        dlSamples <- inner_join(gsm,finished_table)
+
+        all_pData<-tibble("tissue"=dlSamples$category)
+        colnames(all_eset)<-dlSamples$gsm
+        rownames(all_pData)<-dlSamples$gsm # Warning: setting row names on a tibble is deprecated
+        ## end fix
+
+        ### QC – save PNG files for degradation and normalization
+        ## Probe degradation
+        all_data_deg <- AffyRNAdeg(all_data)
+        ggsave(file = paste(PATH, "probe_degradation_", timeStamp, ".png", sep=''), plot =  plotAffyRNAdeg(all_data_deg, cols=finished_table$colours))
+        
+        ## Array normalization
+        mat<-matrix(c(1,2),2)
+        png(filename = paste(PATH, "array_normalization_", timeStamp, ".png", sep=''),)
+        layout(mat,widths=c(1,1),heights=c(2,3))
+        par(mar=c(1,3,1,1))
+        boxplot(all_data,las=2,main="Raw expression data",xaxt="n",col=finished_table$colours)
+        par(mar=c(7,3,1,1))
+        boxplot(exprs(all_eset),las=2,main="Expression set data",col=finished_table$colours)
+        dev.off()
+        
+        ## Change of object name
+        all_eset_final<-all_eset
+        pData(all_eset_final)<-all_pData
+
+        ## Save data files before 
+        save(all_eset_final, all_data_deg, file = paste(PATH, "final_processed_data_", timeStamp, ".rda", sep=''))
+
+        # Differentially Expressed Gene (DEG) Analysis
+
+        ## Set gene symbols based on species
+        ID = featureNames(all_eset_final)
+        if(gpl =='human'){
+            Symbol = getSYMBOL(ID, "hgu133plus2.db")
+            mapped_probes = as.list(revmap(hgu133plus2ALIAS2PROBE))
+            # reverse map for symbol to probe conversion
+
+        } else {
+            Symbol = getSYMBOL(ID, "mouse4302.db")
+            mapped_probes = as.list(revmap(mouse4302SYMBOL))
+        }
 
 
- save(all_eset_final, all_data_deg, rawBox, rmaBox, file = paste(PATH,"final_processed_data_",timeStamp,".rda",sep=''))
+        fData(all_eset_final) = data.frame(Symbol = Symbol)
 
- ### DE
+        eset = all_eset_final
 
- ## Set gene symbols based on species
- ID = featureNames(all_eset_final)
- if(gpl =='human'){
-     Symbol = getSYMBOL(ID, "hgu133plus2.db")
-     mapped_probes = as.list(revmap(hgu133plus2ALIAS2PROBE))
-     # reverse map for symbol to probe conversion
+        tissue = as.factor(pData(eset)$tissue)
+        design = model.matrix(~0 + tissue)
+        colnames(design) = levels(tissue)
 
- } else {
-     Symbol = getSYMBOL(ID, "mouse4302.db")
-     mapped_probes = as.list(revmap(mouse4302SYMBOL))
- }
- 
- 
- fData(all_eset_final) = data.frame(Symbol = Symbol)
+        fit = lmFit(eset, design)
+        matrices<-t(combn(levels(tissue),2))
+        contrasts <- paste(matrices[,1],matrices[,2],sep='-')
 
- eset = all_eset_final
+        ## 2018-04-13
+        ## Ran into more issues at the contrast matrix because the levels need to by syntatically allowed (i.e. no spaces)
+        ## adding code higher up to avoid this
+        contrast_matrix = makeContrasts(contrasts=contrasts, levels = design)
 
- tissue = as.factor(pData(eset)$tissue)
- design = model.matrix(~0 + tissue)
- colnames(design) = levels(tissue)
- 
- fit = lmFit(eset, design)
- matrices<-t(combn(levels(tissue),2))
- contrasts <- paste(matrices[,1],matrices[,2],sep='-')
- 
- ## 2018-04-13
- ## Ran into more issues at the contrast matrix because the levels need to by syntatically allowed (i.e. no spaces)
- ## adding code higher up to avoid this
- contrast_matrix = makeContrasts(contrasts=contrasts, levels = design)
- 
- fit2 = contrasts.fit(fit, contrast_matrix)
- efit = eBayes(fit2)
- tfit = treat(fit2, lfc = 1)
+        fit2 = contrasts.fit(fit, contrast_matrix)
+        efit = eBayes(fit2)
+        tfit = treat(fit2, lfc = 1)
 
- results = decideTests(efit)
- results_lfc = decideTests(tfit)
+        results = decideTests(efit)
+        results_lfc = decideTests(tfit)
 
- # I like these... they should return something in the UI!
- # vennDiagram(results, include = c("up", "down"))
- # vennDiagram(results_lfc)
- 
-  coefs = colnames(contrast_matrix)
-  sig_genes = lapply(coefs, function(x) {
-    topTable(efit, coef = x, number = Inf, p.value = 0.01, sort.by = "p")
-  })
+        # I like these... they should return something in the UI!
+        # vennDiagram(results, include = c("up", "down"))
+        # vennDiagram(results_lfc)
 
-  sig_genes_lfc = lapply(coefs, function(x) {
-    topTreat(tfit, coef = x, number = Inf, p.value = 0.01, sort.by = "p")
-  })
-  names(sig_genes) = coefs
-  names(sig_genes_lfc) = coefs
+        coefs = colnames(contrast_matrix)
+        sig_genes = lapply(coefs, function(x) {
+            topTable(efit, coef = x, number = Inf, p.value = 0.01, sort.by = "p")
+        })
 
-  sapply(sig_genes, nrow)
-  sapply(sig_genes_lfc, nrow)
-  
-   # get list of DEG
-   de_choices = names(sig_genes_lfc)
-   # set groups
-   groups = levels(tissue)
-   
-# Save user-generated experiments -----------------------------------   
-   db <- poolCheckout(userDB)
-   data <- data.frame(userID = timeStamp, desc = datasetID, comments = userComments, species = gpl)
-   dbWriteTable(conn=db, name="userData", data, append=T, row.names=F)
-   poolReturn(db)
-   
- save(mapped_probes, eset, de_choices, sig_genes_lfc, groups, file = paste(PATH,"app_data_",timeStamp,".rda",sep='')) 
-   return(timeStamp)
-} else {
-    save(userComments,finished_table, file = paste("annotated_gsm_",timeStamp,".rda",sep=''))
-    return(timeStamp)
+        sig_genes_lfc = lapply(coefs, function(x) {
+            topTreat(tfit, coef = x, number = Inf, p.value = 0.01, sort.by = "p")
+        })
+        names(sig_genes) = coefs
+        names(sig_genes_lfc) = coefs
+
+        sapply(sig_genes, nrow)
+        sapply(sig_genes_lfc, nrow)
+
+        # get list of DEG
+        de_choices = names(sig_genes_lfc)
+        # set groups
+        groups = levels(tissue)
+
+        # Save user-generated experiments -----------------------------------   
+        db <- poolCheckout(userDB)
+        data <- data.frame(userID = timeStamp, desc = datasetID, comments = userComments, species = gpl)
+        dbWriteTable(conn=db, name="userData", data, append=T, row.names=F)
+        poolReturn(db)
+
+        save(mapped_probes, eset, de_choices, sig_genes_lfc, groups, file = paste(PATH,"app_data_",timeStamp,".rda",sep='')) 
+        return(timeStamp)
+    } else {
+        save(userComments,finished_table, file = paste("annotated_gsm_",timeStamp,".rda",sep=''))
+        return(timeStamp)
+    }
+
 }
 
-}
-
- loadUserDatasets <- function(userDB) {
+loadUserDatasets <- function(userDB) {
      # Connect to the database
      db <- poolCheckout(userDB)
      # Construct the fetching query
