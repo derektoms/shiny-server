@@ -52,7 +52,7 @@ processData = function(finished_table,datasetID,userComments,gpl,userDB){
 
         gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names = TRUE)
 
-        # New approach: Normalize together ------------------------------------------------------------
+# New approach: Normalize together ------------------------------------------------------------
         all_data = ReadAffy(filenames = unlist(gsm_files))
         all_eset = rma(all_data)
         all_pData = pData(all_eset)
@@ -88,7 +88,7 @@ processData = function(finished_table,datasetID,userComments,gpl,userDB){
         pData(all_eset_final)<-all_pData
 
         ## Save data files before 
-        save(all_eset_final, all_data_deg, file = paste(PATH, "final_processed_data_", timeStamp, ".rda", sep=''))
+        save(all_eset_final, all_data, file = paste(PATH, "final_processed_data_", timeStamp, ".rda", sep=''))
 
         # Differentially Expressed Gene (DEG) Analysis
 
