@@ -5,8 +5,8 @@
 # |_|  \___|\___\___| .__/ \__\___/|_| \_\
 #                   |_|
 #
-# March 2019 receptoR v 1.2
-## Last update: 2019-04-20, Derek Toms
+# May 2019 receptoR v 1.3
+## Last update: 2019-05-31, Derek Toms
 ## server.R
 
 
@@ -362,8 +362,8 @@ rvDEG <- reactiveValues(download_flag = 0)
   
  summary_gene_data = reactive({
    validate(
-      need(geneList(), "No genes selected"),
-      need(!is.null(eset),"No dataset selected")
+      need(input$user_data!="none","No dataset selected"),
+      need(geneList(), "No genes selected")
     )
    get_expression_summary(eset, geneList())
  })
@@ -388,6 +388,7 @@ rvDEG <- reactiveValues(download_flag = 0)
   
   output$genes = DT::renderDataTable({
     validate(
+      need(input$user_data!="none","No dataset selected"),
       need(geneList(), "No genes selected")
     )
     
@@ -400,6 +401,7 @@ rvDEG <- reactiveValues(download_flag = 0)
  output$singleGenePlot = renderPlot({
   # output$singleGenePlot = renderTable({
     validate(
+      need(input$user_data!="none","No dataset selected"),
       need(input$genes_rows_selected >= 1, "No genes selected")
     )
     
@@ -420,6 +422,7 @@ rvDEG <- reactiveValues(download_flag = 0)
   
   genesToPlot = reactive({
     validate(
+      need(input$user_data!="none","No dataset selected"),
       need(geneList(), "No genes selected")
     )
 
@@ -438,10 +441,8 @@ rvDEG <- reactiveValues(download_flag = 0)
 # Heatmap plot
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   output$expressionPlot = renderPlot({
-    
-    genes = gene2probe(genesToPlot(), mapped_probes)
-    
-    validate(
+      validate(
+      need(input$user_data!="none","No dataset selected"),
       need(genesToPlot(), "No genes selected"),
       need(input$tissues, "No tissues selected"),
       need(length(genes)>10, if(input$de_state){"No differential expression, try unselecting that option."}else{"No genes to plot. This dataset has few significantly different genes."}) 
@@ -449,8 +450,7 @@ rvDEG <- reactiveValues(download_flag = 0)
    
     selected_tissues = input$tissues
     sub_eset = eset[, eset$tissue %in% selected_tissues]
-    
-    
+    genes = gene2probe(genesToPlot(), mapped_probes)
     gene_heatmap(sub_eset, genes, scale = "row",
                   probe_level = input$hm_probes,
                   gsm_show = input$hm_gsm,
@@ -458,8 +458,7 @@ rvDEG <- reactiveValues(download_flag = 0)
                   cluster_rows = input$hm_row_cluster,
                   cluster_cols = input$hm_col_cluster,
                   border_color = NA)
-    
-  })
+    })
   
   output$heatmap_ui = renderUI({
     plotOutput("expressionPlot", height = input$hm_height, width = input$hm_width)
@@ -469,6 +468,7 @@ rvDEG <- reactiveValues(download_flag = 0)
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   output$overallPlot = renderPlot({
     validate(
+      need(input$user_data!="none","No dataset selected"),
       need(genesToPlot(), "No genes selected"),
       need(input$tissues, "No tissues selected")
     )
@@ -483,6 +483,7 @@ rvDEG <- reactiveValues(download_flag = 0)
 
   output$byGenePlot = renderPlot({
     validate(
+      need(input$user_data!="none","No dataset selected"),
       need(genesToPlot(), "No genes selected"),
       need(input$tissues, "No tissues selected")
     )
@@ -514,6 +515,7 @@ rvDEG <- reactiveValues(download_flag = 0)
 # PCA plot ----------------------------------------------------------------------------
   output$indPlot = renderPlot({
     validate(
+      need(input$user_data!="none","No dataset selected"),
       need(plsdaData(), "No PLS-DA to plot"),
       need(length(input$pls_tissues) >= 2, "Please select at least two tissues")
     )
@@ -525,6 +527,7 @@ rvDEG <- reactiveValues(download_flag = 0)
 # Correlation Circle plot ----------------------------------------------------------------------------  
   output$varPlot = renderPlot({
      validate(
+      need(input$user_data!="none","No dataset selected"),
       need(plsdaData(), "No PLS-DA to plot")
     )
 
@@ -540,6 +543,7 @@ rvDEG <- reactiveValues(download_flag = 0)
 # Loadings plot ----------------------------------------------------------------------------
   output$contribPlot = renderPlot({
     validate(
+      need(input$user_data!="none","No dataset selected"),
       need(plsdaData(), "No PLS-DA to plot"),
       need(input$pls_num_genes, "")
     )

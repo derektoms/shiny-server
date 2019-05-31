@@ -5,8 +5,8 @@
 # |_|  \___|\___\___| .__/ \__\___/|_| \_\
 #                   |_|
 #
-# March 2019 receptoR v 1.2
-## Last update: 2019-05-20, Derek Toms
+# May 2019 receptoR v 1.3
+## Last update: 2019-05-31, Derek Toms
 ## ui.R
 
 ########################################
@@ -188,7 +188,7 @@ navbarPage("receptoR",
             uiOutput("QC"),
             plotOutput("degPlot")
         ),
-            tabPanel("Experimental design",h4("Category definitions and contrasts"),p("Coming soon!")),
+            # tabPanel("Experimental design",h4("Category definitions and contrasts"),p("Coming soon!")),
             tabPanel("Gene-level expression",
                 fluidRow(
                 column(6, h4("Average Expression"), DT::dataTableOutput("genes")),

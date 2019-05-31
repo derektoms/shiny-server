@@ -5,8 +5,8 @@
 # |_|  \___|\___\___| .__/ \__\___/|_| \_\
 #                   |_|
 #
-# March 2019 receptoR v 1.2
-## Last update: 2019-05-19, Derek Toms
+# May 2019 receptoR v 1.3
+## Last update: 2019-05-31, Derek Toms
 ## functions.R
 
 
@@ -27,7 +27,7 @@ processData = function(finished_table,datasetID,userComments,gpl,userDB){
     levels(finished_table$category) <- make.names(levels(finished_table$category),unique=TRUE)
     ## colours
     finshed_table$colours <- finished_table$category
-    levels(finished_table$colours) <- brewer.pal(9,"Set1")[1:length(levels(finished_table$category))],stringsAsFactors=FALSE)
+    levels(finished_table$colours) <- brewer.pal(9,"Set1")[1:length(levels(finished_table$category),stringsAsFactors=FALSE)]
     
     ## timestamp
     timeStamp <- strftime(Sys.time(),"%Y%m%d-%H%M")
