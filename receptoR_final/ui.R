@@ -181,9 +181,9 @@ navbarPage("receptoR",
                   choices = NULL),
             br(),
             selectInput("gene", "Select additional non-receptor coding gene(s) to include in the analysis.", choices = NULL, multiple = TRUE),
-            helptext("Search by gene symbol; availability of a given gene is based on microarray probe annotations."),
+            helpText("Search by gene symbol; availability of a given gene is based on microarray probe annotations."),
             downloadButton("reportDEG","Download differential gene expression analysis"),
-            helptext("This Microsoft Excel file (.XSLX) contains all differentially expressed genes among these tissues. It can be further used for downstream analyses including functional enrichment analysis.")
+            helpText("This Microsoft Excel file (.XSLX) contains all differentially expressed genes among these tissues. It can be further used for downstream analyses including functional enrichment analysis.")
         ),
         mainPanel(
             tabsetPanel(type="tabs",selected="Gene-by-gene Expression",
