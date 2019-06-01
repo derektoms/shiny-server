@@ -256,8 +256,10 @@ navbarPage("receptoR",
         mainPanel(
             tabsetPanel(type = "tabs",
             tabPanel("Principle component analysis", h4("Principle component analysis (PCA) to visualize relatedness among tissues."), p("Observations are orthogonally transformed and each component accounts for as much variability in the data as possible. The first two principle components for this genelist are graphed below."), plotOutput("indPlot", height = 800)),
-            tabPanel("Circle variance", h4("Circle variance projections onto the Y-variate."), p("Strongly correlated variables are projected in the same direction from the origin; the greater the distance the stronger the association."), plotOutput("varPlot", height = 800)),
-            tabPanel("Loadings plot", h4("Gene contribution to each principle component."), p("The longer the bar (in either direction) the more that gene contributes to that component."), plotOutput("contribPlot", height = 800))
+            
+            tabPanel("Component loadings plot", h4("Gene contribution to each principle component."), p("The longer the bar (in either direction) the more that gene contributes to that component."), plotOutput("contribPlot", height = 800)),
+            
+            tabPanel("Circle variance", h4("Circle variance projections onto the Y-variate."), p("Strongly correlated variables are projected in the same direction from the origin; the greater the distance the stronger the association."), plotOutput("varPlot", height = 800),textOutput("circle"))
         ),
         position = c("right","left"),
         fluid = TRUE
