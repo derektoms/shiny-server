@@ -259,7 +259,7 @@ navbarPage("receptoR",
             
             tabPanel("Component loadings plot", h4("Gene contribution to each principle component."), p("The longer the bar (in either direction) the more that gene contributes to that component."), plotOutput("contribPlot", height = 800)),
             
-            tabPanel("Circle variance", h4("Circle variance projections onto the Y-variate."), p("Strongly correlated variables are projected in the same direction from the origin; the greater the distance the stronger the association."), plotOutput("varPlot", height = 800),textOutput("circle"))
+            tabPanel("Circle variance", h4("Circle variance projections onto tissue."), p("Strongly correlated genes are projected in the same direction from the origin; the greater the distance the stronger the association."), plotOutput("varPlot", height = 800),textOutput("circle"))
         ),
         position = c("right","left"),
         fluid = TRUE

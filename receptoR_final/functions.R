@@ -374,13 +374,13 @@ loadUserDatasets <- function(userDB) {
      exp = t(exp)
      if(species=='mouse'){
          return(list(
-           result = splsda(exp, tissue, ncomp = 3),
+           result = splsda(exp, tissue, ncomp = 2),
            tissue_grps = tissue_grps,
            varNames = getSYMBOL(colnames(exp), "mouse4302.db")
          ))
      } else {
          return(list(
-           result = splsda(exp, tissue, ncomp = 3),
+           result = splsda(exp, tissue, ncomp = 2),
            tissue_grps = tissue_grps,
            varNames = getSYMBOL(colnames(exp), "hgu133plus2.db")
          ))

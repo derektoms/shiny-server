@@ -533,8 +533,8 @@ rvDEG <- reactiveValues(download_flag = 0)
           need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
          need(length(input$pls_tissues) >= 2, "Please select at least two tissues for a Correlation circle plot.")
       )
-
-    plotVar(plsdaData()$result, var.names = list(plsdaData()$varNames), cex = 3, overlap=FALSE)
+      comp = as.integer(input$pls_ncomp)
+    plotVar(plsdaData()$result, var.names = list(plsdaData()$varNames), comp.select=comp, cex = 3, overlap=FALSE, col="grey")
     
   })
 
