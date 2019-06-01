@@ -400,8 +400,9 @@ rvDEG <- reactiveValues(download_flag = 0)
   # single gene plot
  output$singleGenePlot = renderPlot({
      validate(
-       need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
-       need(input$genes_rows_selected >= 1, "No genes selected. Please select one or more genes from the 'Average Expression' table to inspect expression by tissue type.")
+       need(input$user_data!="none","No dataset selected."),
+       need(geneList(), "No genes selected."),
+       need(input$genes_rows_selected >= 1, "Please select one or more genes from the 'Average Expression' table to inspect expression by tissue type.")
      )
     
     rows = as.integer(input$genes_rows_selected)
@@ -470,7 +471,8 @@ rvDEG <- reactiveValues(download_flag = 0)
     validate(
         need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
         need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
-    need(input$tissues, "No tissues selected. Please choose at least one tissue to plot receptor heatmap.")
+    need(input$tissues, "No tissues selected. Please choose at least one tissue to plot receptor heatmap."),
+    need(length(genesToPlot())>1, if(input$de_state){paste("Based on the genes selected in 'Load Data', ", length(genesToPlot())," genes were differentially expressed in these tissues (",paste(input$tissues, collapse = ", "), "); try unselecting that option in the side menu.",sep="")}else{paste("No genes to plot. Try including more receptor types in 'Load Data'.")}) 
     )
     
     gene_data = get_gene_data(eset, genesToPlot())
@@ -485,7 +487,8 @@ rvDEG <- reactiveValues(download_flag = 0)
       validate(
           need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
           need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
-      need(input$tissues, "No tissues selected. Please choose at least one tissue to plot receptor heatmap.")
+      need(input$tissues, "No tissues selected. Please choose at least one tissue to plot receptor heatmap."),
+      need(length(genesToPlot())>1, if(input$de_state){paste("Based on the genes selected in 'Load Data', ", length(genesToPlot())," genes were differentially expressed in these tissues (",paste(input$tissues, collapse = ", "), "); try unselecting that option in the side menu.",sep="")}else{paste("No genes to plot. Try including more receptor types in 'Load Data'.")}) 
       )    
     gene_data = get_gene_data(eset, genesToPlot())
     by_gene_boxplot(gene_data, tissues = input$tissues)
