@@ -445,7 +445,7 @@ rvDEG <- reactiveValues(download_flag = 0)
       need(input$user_data!="none","No dataset selected"),
       need(genesToPlot(), "No genes selected"),
       need(input$tissues, "No tissues selected"),
-      need(length(genes)>10, if(input$de_state){"No differential expression, try unselecting that option."}else{"No genes to plot. This dataset has few significantly different genes."}) 
+      need(length(genesToPlot())>10, if(input$de_state){"No differential expression, try unselecting that option."}else{"No genes to plot. This dataset has few significantly different genes."}) 
     )
    
     selected_tissues = input$tissues
