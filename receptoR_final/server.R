@@ -534,7 +534,7 @@ rvDEG <- reactiveValues(download_flag = 0)
          need(length(input$pls_tissues) >= 2, "Please select at least two tissues for a Correlation circle plot.")
       )
 
-    plotVar(plsdaData()$result, var.names = list(plsdaData()$varNames), cex = 3, overlap=FALSE)
+    plotVar(plsdaData()$result, var.names = list(plsdaData()$varNames), col = plsdaData()$tissue_grps, cex = 3, overlap=FALSE)
     
   })
 

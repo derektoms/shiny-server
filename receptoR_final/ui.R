@@ -94,6 +94,7 @@ navbarPage("receptoR",
            br(),
            radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1261)" = "mouse", "Human (GPL570)" = "human")),
            tagAppendAttributes(textInput("searchText", "Enter search terms:", value = ""),`data-proxy-click` = "searchButton"),
+           helpText("Search for multiple keywords using the boolean operators 'AND','OR','NOT'"),
            actionButton("searchButton", "Search for arrays"),
            hr(),
            # HTML(paste("These experiments, each containing multiple biological samples, are refered to as ",span("G",style="font-weight:bold"),"EO data ",span("se",style="font-weight:bold"),"ries (GSE). Each ",span("G",style="font-weight:bold"),"EO ",span("s",style="font-weight:bold"), "a",span("m",style="font-weight:bold"),"ple (GSM) represents a digitized transcriptional snapshot.",sep="")),
@@ -179,11 +180,13 @@ navbarPage("receptoR",
             checkboxGroupInput("genelist", "Select a receptor type to analyze", 
                   choices = NULL),
             br(),
-            selectInput("gene", "Select gene(s) to show", choices = NULL, multiple = TRUE),
-            downloadButton("reportDEG","Download differential gene expression analysis")
+            selectInput("gene", "Select additional non-receptor coding gene(s) to include in the analysis.", choices = NULL, multiple = TRUE),
+            helptext("Search by gene symbol; availability of a given gene is based on microarray probe annotations."),
+            downloadButton("reportDEG","Download differential gene expression analysis"),
+            helptext("This Microsoft Excel file (.XSLX) contains all differentially expressed genes among these tissues. It can be further used for downstream analyses including functional enrichment analysis.")
         ),
         mainPanel(
-            tabsetPanel(type="tabs",selected="Gene-level expression",
+            tabsetPanel(type="tabs",selected="Gene-by-gene Expression",
             tabPanel("Quality control",
             uiOutput("QC"),
             plotOutput("degPlot")
@@ -224,9 +227,9 @@ navbarPage("receptoR",
         ),
         mainPanel(
             tabsetPanel(type = "tabs",
-            tabPanel("Heatmap", value=1, uiOutput("heatmap_ui")),
-            tabPanel("Summary boxplots", plotOutput("overallPlot", height = 600)),
-            tabPanel("By-gene boxplots", plotOutput("byGenePlot", height = 600)),
+            tabPanel("Heatmap", value=1, h4("Cluster analysis and a heatmap representation of gene expression."), p("Genes with similar expression patterns will cluster as rows, while individual microarrays cluster as columns."), uiOutput("heatmap_ui")),
+            tabPanel("Summary boxplots", h4("Boxplots of expression data by tissue."), plotOutput("overallPlot", height = 600)),
+            tabPanel("By-gene boxplots", h4("Boxplots of expression data by gene."), plotOutput("byGenePlot", height = 600)),
             id = "absexpanel"
         )
         )
@@ -252,9 +255,9 @@ navbarPage("receptoR",
         ),
         mainPanel(
             tabsetPanel(type = "tabs",
-            tabPanel("PCA Analysis", plotOutput("indPlot", height = 800)),
-            tabPanel("Circle variance", plotOutput("varPlot", height = 800)),
-            tabPanel("Loadings plot", plotOutput("contribPlot", height = 800))
+            tabPanel("Principle component analysis", h4("Principle component analysis (PCA) to visualize relatedness among tissues."), p("Observations are orthogonally transformed and each component accounts for as much variability in the data as possible. The first two principle components for this genelist are graphed below."), plotOutput("indPlot", height = 800)),
+            tabPanel("Circle variance", h4("Circle variance projections onto the Y-variate."), p("Strongly correlated variables are projected in the same direction from the origin; the greater the distance the stronger the association."), plotOutput("varPlot", height = 800)),
+            tabPanel("Loadings plot", h4("Gene contribution to each principle component."), p("The longer the bar (in either direction) the more that gene contributes to that component."), plotOutput("contribPlot", height = 800))
         ),
         position = c("right","left"),
         fluid = TRUE
