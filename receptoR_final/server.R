@@ -361,10 +361,10 @@ rvDEG <- reactiveValues(download_flag = 0)
   })
   
  summary_gene_data = reactive({
-   validate(
-      need(input$user_data!="none","No dataset selected"),
-      need(geneList(), "No genes selected")
-    )
+     validate(
+       need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
+       need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'.")
+     )
    get_expression_summary(eset, geneList())
  })
 
@@ -387,10 +387,10 @@ rvDEG <- reactiveValues(download_flag = 0)
   })
   
   output$genes = DT::renderDataTable({
-    validate(
-      need(input$user_data!="none","No dataset selected"),
-      need(geneList(), "No genes selected")
-    )
+      validate(
+        need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
+        need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'.")
+      )
     
      summary_gene_data() %>% datatable() %>% 
       formatRound(2:4)
@@ -399,11 +399,10 @@ rvDEG <- reactiveValues(download_flag = 0)
   
   # single gene plot
  output$singleGenePlot = renderPlot({
-  # output$singleGenePlot = renderTable({
-    validate(
-      need(input$user_data!="none","No dataset selected"),
-      need(input$genes_rows_selected >= 1, "No genes selected")
-    )
+     validate(
+       need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
+       need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'.")
+     )
     
     rows = as.integer(input$genes_rows_selected)
     genes_to_plot = summary_gene_data()$Symbol[rows]
@@ -422,8 +421,8 @@ rvDEG <- reactiveValues(download_flag = 0)
   
   genesToPlot = reactive({
     validate(
-      need(input$user_data!="none","No dataset selected"),
-      need(geneList(), "No genes selected")
+      need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
+      need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'.")
     )
 
     genes = geneList()
@@ -436,18 +435,19 @@ rvDEG <- reactiveValues(download_flag = 0)
    
     return(genes) 
   }) 
+
   
   
 # Heatmap plot
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   output$expressionPlot = renderPlot({
       validate(
-      need(input$user_data!="none","No dataset selected"),
-      need(genesToPlot(), "No genes selected"),
-      need(input$tissues, "No tissues selected"),
-      need(length(genesToPlot())>10, if(input$de_state){"No differential expression, try unselecting that option."}else{"No genes to plot. This dataset has few significantly different genes."}) 
+          need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
+          need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
+      need(input$tissues, "No tissues selected. Please choose at least one tissue to plot receptor heatmap."),
+      need(length(genesToPlot())>10, if(input$de_state){paste("Based on the genes selected in 'Load Data', ", length(genesToPlot())," genes were differentially expressed in these tissues (",input$tissues, "); try unselecting that option in the side menu.",sep="")}else{paste("No genes to plot as a heatmap (minimum = 10). Try including more receptor types in 'Load Data'.")}) 
     )
-   
+       
     selected_tissues = input$tissues
     sub_eset = eset[, eset$tissue %in% selected_tissues]
     genes = gene2probe(genesToPlot(), mapped_probes)
@@ -468,9 +468,9 @@ rvDEG <- reactiveValues(download_flag = 0)
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   output$overallPlot = renderPlot({
     validate(
-      need(input$user_data!="none","No dataset selected"),
-      need(genesToPlot(), "No genes selected"),
-      need(input$tissues, "No tissues selected")
+        need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
+        need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
+    need(input$tissues, "No tissues selected. Please choose at least one tissue to plot receptor heatmap.")
     )
     
     gene_data = get_gene_data(eset, genesToPlot())
@@ -482,12 +482,11 @@ rvDEG <- reactiveValues(download_flag = 0)
 # By gene boxplots ----------------------------------------------------------------------------
 
   output$byGenePlot = renderPlot({
-    validate(
-      need(input$user_data!="none","No dataset selected"),
-      need(genesToPlot(), "No genes selected"),
-      need(input$tissues, "No tissues selected")
-    )
-    
+      validate(
+          need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
+          need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
+      need(input$tissues, "No tissues selected. Please choose at least one tissue to plot receptor heatmap.")
+      )    
     gene_data = get_gene_data(eset, genesToPlot())
     by_gene_boxplot(gene_data, tissues = input$tissues)
   })
@@ -515,9 +514,9 @@ rvDEG <- reactiveValues(download_flag = 0)
 # PCA plot ----------------------------------------------------------------------------
   output$indPlot = renderPlot({
     validate(
-      need(input$user_data!="none","No dataset selected"),
-      need(plsdaData(), "No PLS-DA to plot"),
-      need(length(input$pls_tissues) >= 2, "Please select at least two tissues")
+        need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
+        need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
+       need(length(input$pls_tissues) >= 2, "Please select at least two tissues for a PCA plot.")
     )
     
     plotIndiv(plsdaData()$result, ind.names = FALSE, group = plsdaData()$tissue_grps, pch = 16, 
@@ -526,10 +525,11 @@ rvDEG <- reactiveValues(download_flag = 0)
 
 # Correlation Circle plot ----------------------------------------------------------------------------  
   output$varPlot = renderPlot({
-     validate(
-      need(input$user_data!="none","No dataset selected"),
-      need(plsdaData(), "No PLS-DA to plot")
-    )
+      validate(
+          need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
+          need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
+         need(length(input$pls_tissues) >= 2, "Please select at least two tissues for a Correlation circle plot.")
+      )
 
     plotVar(plsdaData()$result, var.names = list(plsdaData()$varNames), cex = 3, overlap=FALSE)
     
@@ -542,11 +542,12 @@ rvDEG <- reactiveValues(download_flag = 0)
   
 # Loadings plot ----------------------------------------------------------------------------
   output$contribPlot = renderPlot({
-    validate(
-      need(input$user_data!="none","No dataset selected"),
-      need(plsdaData(), "No PLS-DA to plot"),
-      need(input$pls_num_genes, "")
-    )
+      validate(
+          need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
+          need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
+         need(length(input$pls_tissues) >= 2, "Please select at least two tissues for a Loadings plot.")
+      )
+
     
     grps = plsdaData()$result$names$colnames$Y
     ndisplay = input$pls_num_genes

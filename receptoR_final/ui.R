@@ -81,7 +81,7 @@ navbarPage("receptoR",
 
 # Search for GSM  ------------------------------------------------------------------------------
 
-    tabPanel("Search Expression Data",
+    tabPanel("Search Microarray Database",
        h3("Organize publicly available expression data"),
        hr(),
        sidebarLayout(
@@ -168,7 +168,7 @@ navbarPage("receptoR",
     ),
     
     # Load Gene Expression Data tab -------------------------------------
-    tabPanel("Load Experiment",
+    tabPanel("Load Expression Datasets",
         h3("Pick from user-defined experiments to perform analyses"),
         hr(),
         sidebarLayout(
@@ -206,8 +206,6 @@ navbarPage("receptoR",
         sidebarLayout(
         sidebarPanel(
             h4("Gene expression"),
-            # p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
-            # style = "position:fixed",
             checkboxGroupInput("tissues", label = "Select tissues to include",
             choices = NULL, selected = NULL),
             br(),
@@ -242,7 +240,6 @@ navbarPage("receptoR",
         sidebarLayout(
         sidebarPanel(
             h4("Sample expression"),
-            # p("Bacon ipsum dolor amet chuck tongue flank bresaola corned beef hamburger leberkas pig bacon pork loin. Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tip pork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle. Andouille hamburger strip steak ground round, ham filet mignon swine kielbasa pork chop jerky.",style="color:#D8BFD8"),
             checkboxGroupInput("pls_tissues", label = "Select tissues to inclued",
             choices = NULL, selected = NULL),
             checkboxInput("pls_probe", "Perform PLS-DA at probe level", value = FALSE),
