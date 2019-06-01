@@ -189,10 +189,10 @@ navbarPage("receptoR",
             plotOutput("degPlot")
         ),
             # tabPanel("Experimental design",h4("Category definitions and contrasts"),p("Coming soon!")),
-            tabPanel("Gene-level expression",
+            tabPanel("Gene-by-gene Expression",
                 fluidRow(
                 column(6, h4("Average Expression"), DT::dataTableOutput("genes")),
-                column(6, h4("Gene Boxplot"), plotOutput("singleGenePlot"))
+                column(6, h4("Gene Violin Plot"), plotOutput("singleGenePlot"))
             )))
         )
         )

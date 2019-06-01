@@ -362,8 +362,8 @@ rvDEG <- reactiveValues(download_flag = 0)
   
  summary_gene_data = reactive({
      validate(
-       need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
-       need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'.")
+       need(input$user_data!="none","No dataset selected. Please select an experiment for analysis."),
+       need(geneList(), "No genes selected. Please select receptor type(s) to analyse.")
      )
    get_expression_summary(eset, geneList())
  })
@@ -401,7 +401,7 @@ rvDEG <- reactiveValues(download_flag = 0)
  output$singleGenePlot = renderPlot({
      validate(
        need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
-       need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'.")
+       need(input$genes_rows_selected >= 1, "No genes selected. Please select one or more genes from the 'Average Expression' table to inspect expression by tissue type.")
      )
     
     rows = as.integer(input$genes_rows_selected)
