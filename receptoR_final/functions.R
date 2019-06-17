@@ -26,9 +26,9 @@ processData = function(finished_table,datasetID,userComments,gpl,userDB){
     finished_table$category.labels <- finished_table$category
     levels(finished_table$category) <- make.names(levels(finished_table$category),unique=TRUE)
     ## colours
-    catCol<-factor(brewer.pal(9,"Set1")[1:length(levels(finished_table$category))])
+    catCol <- factor(brewer.pal(9,"Set1")[1:length(levels(finished_table$category))])
     finished_table$colours <- finished_table$category
-    levels(finished_table$colours) <- levels(catCol)
+    finished_table$colours <- factor(finished_table$colours,levels=levels(finished_table$category),labels=catCol)
     
     ## timestamp
     timeStamp <- strftime(Sys.time(),"%Y%m%d-%H%M")
