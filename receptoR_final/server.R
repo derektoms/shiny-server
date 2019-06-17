@@ -5,8 +5,8 @@
 # |_|  \___|\___\___| .__/ \__\___/|_| \_\
 #                   |_|
 #
-# May 2019 receptoR v 1.3
-## Last update: 2019-05-31, Derek Toms
+# June 2019 receptoR v 1.3
+## Last update: 2019-06-15, Derek Toms
 ## server.R
 
 
@@ -128,7 +128,15 @@ server <- function(input, output, session) {
   })
 
   output$searchResultsGSM <- DT::renderDataTable({
-          searchGSM()}, options=list(searching=TRUE, pageLength=50, scrollY='60vh', columnDefs=list(list(
+          searchGSM()}, options=list(
+              searching=TRUE, 
+              paging=FALSE,
+              scrollX=TRUE, 
+              scrollY='60vh', 
+              scrollCollapse=TRUE,
+              fixedHeader=TRUE,
+              autoWidth=TRUE,
+              columnDefs=list(list(
               targets = c(8),
               render = JS(
                   "function(data, type, row, meta) {",
@@ -177,8 +185,15 @@ server <- function(input, output, session) {
    
   output$gsm_table <- DT::renderDataTable({
       if(input$assignButton == 0){
-         return (datatable(gsm_annotated(),options=list(searching=TRUE, pageLength=50, scrollY='60vh',## 2018-12-10 Pick which columns are necessary ^
-             columnDefs=list(list(
+         return (datatable(gsm_annotated(),options=list(
+               searching=TRUE, 
+               paging=FALSE,
+               scrollX=TRUE, 
+               scrollY='60vh', 
+               scrollCollapse=TRUE,
+               fixedHeader=TRUE,
+               autoWidth=TRUE,
+               columnDefs=list(list(
              targets = "_all",
              render = JS(
                  "function(data, type, row, meta) {",
@@ -187,7 +202,14 @@ server <- function(input, output, session) {
                      "}")
                      )))))
       } else {
-         return (datatable(samples$df,options=list(searching=TRUE, pageLength=50, scrollY='60vh',
+         return (datatable(samples$df,options=list(
+             searching=TRUE, 
+             paging=FALSE,
+             scrollX=TRUE, 
+             scrollY='60vh', 
+             scrollCollapse=TRUE,
+             fixedHeader=TRUE,
+             autoWidth=TRUE,
              columnDefs=list(list(
              targets = "_all",
              render = JS(

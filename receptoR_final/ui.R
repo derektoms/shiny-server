@@ -5,8 +5,8 @@
 # |_|  \___|\___\___| .__/ \__\___/|_| \_\
 #                   |_|
 #
-# May 2019 receptoR v 1.3
-## Last update: 2019-05-31, Derek Toms
+# June 2019 receptoR v 1.3
+## Last update: 2019-06-15, Derek Toms
 ## ui.R
 
 ########################################
@@ -94,7 +94,7 @@ navbarPage("receptoR",
            br(),
            radioButtons("gplSelection", "Choose species:", choices = c("Mouse (GPL1261)" = "mouse", "Human (GPL570)" = "human")),
            tagAppendAttributes(textInput("searchText", "Enter search terms:", value = ""),`data-proxy-click` = "searchButton"),
-           helpText("Search for multiple keywords using the boolean operators 'AND','OR','NOT'"),
+           helpText("Search for multiple keywords using the boolean operators 'AND','OR','NOT'. For example, 'liver AND hepa* NOT brain'."),
            actionButton("searchButton", "Search for arrays"),
            hr(),
            # HTML(paste("These experiments, each containing multiple biological samples, are refered to as ",span("G",style="font-weight:bold"),"EO data ",span("se",style="font-weight:bold"),"ries (GSE). Each ",span("G",style="font-weight:bold"),"EO ",span("s",style="font-weight:bold"), "a",span("m",style="font-weight:bold"),"ple (GSM) represents a digitized transcriptional snapshot.",sep="")),
