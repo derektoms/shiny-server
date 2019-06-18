@@ -24,7 +24,7 @@ desat = function(cols, sat=0.5) {
 processData = function(finished_table,datasetID,userComments,gpl,userDB){
     ## categories need to have R-safe names so we'll store the user input as a new column
     finished_table$category.labels <- finished_table$category
-    levels(finished_table$category) <- make.names(levels(finished_table$category),unique=TRUE)
+    finished_table$category <- make.names(levels(finished_table$category),unique=TRUE)
     ## colours
     catCol <- factor(brewer.pal(9,"Set1")[1:length(levels(finished_table$category))])
     finished_table$colours <- finished_table$category
