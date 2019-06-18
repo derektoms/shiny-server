@@ -90,7 +90,7 @@ processData = function(finished_table,datasetID,userComments,gpl,userDB){
         pData(all_eset_final)<-all_pData
 
         ## Save data files before 
-        save(all_eset_final, all_data, file = paste(PATH, "final_processed_data_", timeStamp, ".rda", sep=''))
+        save(all_eset_final, all_data, finished_table, file = paste(PATH, "final_processed_data_", timeStamp, ".rda", sep=''))
 
         # Differentially Expressed Gene (DEG) Analysis
 
