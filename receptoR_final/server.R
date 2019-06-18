@@ -397,16 +397,20 @@ rvDEG <- reactiveValues(download_flag = 0)
     validate(
       need(input$user_data!="none","No dataset selected")
     )
-    fluidRow(h4("Expression normalization (array intensity, before and after)"), tags$img(src="array-processing.png",width="100%"), h4("RNA degradation plot (probe position vs intensity)"),
-    tags$img(src="RNA-deg.png",width="100%"))
+    
+    id <- userDatasetTable$userID[which(userDatasetTable$desc == input$user_data)]
+    
+    fluidRow(
+        h4("Experimental samples"),
+        tags$img(src=paste("./data/legend_", id, ".png", sep=''),width="100%"),
+        h4("Expression normalization (array intensity, before and after)"), 
+        tags$img(src=paste("./data/array_normalization_", id, ".png", sep=''),width="100%"),
+        h4("RNA degradation plot (probe position along transcript vs intensity)"),
+        tags$img(src=paste("./data/probe_degradation_", id, ".png", sep=''),width="100%"))
   })
-  
-  output$degPlot = renderPlot({
-      validate(
-        need(input$user_data!="none","No dataset selected")
-      )
-      plotAffyRNAdeg(deg,cols=catCol)
-  })
+
+# Gene outputs
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   
   output$genes = DT::renderDataTable({
       validate(

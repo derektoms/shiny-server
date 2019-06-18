@@ -188,8 +188,7 @@ navbarPage("receptoR",
         mainPanel(
             tabsetPanel(type="tabs",selected="Gene-by-gene Expression",
             tabPanel("Quality control",
-            uiOutput("QC"),
-            plotOutput("degPlot")
+            uiOutput("QC")
         ),
             # tabPanel("Experimental design",h4("Category definitions and contrasts"),p("Coming soon!")),
             tabPanel("Gene-by-gene Expression",

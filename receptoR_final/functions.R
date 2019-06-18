@@ -29,7 +29,7 @@ processData = function(finished_table,datasetID,userComments,gpl,userDB){
     ## colours
     catCol <- factor(brewer.pal(9,"Set1")[1:length(levels(factor(finished_table$category)))])
     finished_table$colours <- finished_table$category
-    finished_table$colours <- factor(finished_table$colours, levels=levels(finished_table$category), labels=catCol)
+    finished_table$colours <- factor(finished_table$colours, levels=levels(factor(finished_table$category)), labels=catCol)
     
     ## timestamp
     timeStamp <- strftime(Sys.time(),"%Y%m%d-%H%M")
@@ -71,18 +71,24 @@ processData = function(finished_table,datasetID,userComments,gpl,userDB){
         ## end fix
 
         ### QC – save PNG files for degradation and normalization
+        ## Experimental samples
+        png(filename = paste(PATH, "legend_", timeStamp, ".png", sep=''),)
+        plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
+        legend("topleft", legend =levels(factor(finished_table$category.labels)), pch=15, pt.cex=3, cex=1.5, bty='n', col = levels(finished_table$colours))
+        dev.off()
+        
         ## Probe degradation
         all_data_deg <- AffyRNAdeg(all_data)
-        ggsave(file = paste(PATH, "probe_degradation_", timeStamp, ".png", sep=''), plot =  plotAffyRNAdeg(all_data_deg, cols=finished_table$colours))
+        ggsave(file = paste(PATH, "probe_degradation_", timeStamp, ".png", sep=''), plot =  plotAffyRNAdeg(all_data_deg, cols=paste(finished_table$colours)))
         
         ## Array normalization
         mat<-matrix(c(1,2),2)
         png(filename = paste(PATH, "array_normalization_", timeStamp, ".png", sep=''),)
         layout(mat,widths=c(1,1),heights=c(2,3))
         par(mar=c(1,3,1,1))
-        boxplot(all_data,las=2,main="Raw expression data",xaxt="n",col=finished_table$colours)
+        boxplot(all_data,las=2,main="Raw expression data",xaxt="n",col=paste(finished_table$colours))
         par(mar=c(7,3,1,1))
-        boxplot(exprs(all_eset),las=2,main="Expression set data",col=finished_table$colours)
+        boxplot(exprs(all_eset),las=2,main="Expression set data",col=paste(finished_table$colours))
         dev.off()
         
         ## Change of object name
