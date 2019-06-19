@@ -70,32 +70,34 @@ processData = function(finished_table,datasetID,userComments,gpl,userDB){
         rownames(all_pData)<-dlSamples$gsm # Warning: setting row names on a tibble is deprecated
         ## end fix
 
-        ### QC – save PNG files for degradation and normalization
-        ## Experimental samples
-        png(filename = paste(PATH, "legend_", timeStamp, ".png", sep=''),)
+        ## QC – save PNG files for degradation and normalization
+        ### save pictures of processed data
+        
+        finished_table <- finished_table[order(match(all_pData$tissue,finished_table$category)),] # order the two tables the same way
+                        
+        ## Array normalization
+        mat<-matrix(c(1,2,3),3)
+        png(filename = paste("./www/array_normalization_", timeStamp, ".png", sep=''),)
+        layout(mat,widths=c(1,1,1),heights=c(1,2,3))
+        par(mar=c(1,3,1,1))
+                ## Experimental samples (NULL plot, legend only)
         plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
         legend("topleft", legend =levels(factor(finished_table$category.labels)), pch=15, pt.cex=3, cex=1.5, bty='n', col = levels(finished_table$colours))
-        dev.off()
-        
-        ## Probe degradation
-        all_data_deg <- AffyRNAdeg(all_data)
-        ggsave(file = paste(PATH, "probe_degradation_", timeStamp, ".png", sep=''), plot =  plotAffyRNAdeg(all_data_deg, cols=paste(finished_table$colours)))
-        
-        ## Array normalization
-        mat<-matrix(c(1,2),2)
-        png(filename = paste(PATH, "array_normalization_", timeStamp, ".png", sep=''),)
-        layout(mat,widths=c(1,1),heights=c(2,3))
         par(mar=c(1,3,1,1))
         boxplot(all_data,las=2,main="Raw expression data",xaxt="n",col=paste(finished_table$colours))
         par(mar=c(7,3,1,1))
-        boxplot(exprs(all_eset),las=2,main="Expression set data",col=paste(finished_table$colours))
+        boxplot(exprs(all_eset),las=2,main="Normalized expression data",col=paste(finished_table$colours))
         dev.off()
+
+        ## Probe degradation
+        all_data_deg <- AffyRNAdeg(all_data)
+        ggsave(file = paste("./www/probe_degradation_", timeStamp, ".png", sep=''), plot =  plotAffyRNAdeg(all_data_deg, cols=paste(finished_table$colours)))
         
         ## Change of object name
         all_eset_final<-all_eset
         pData(all_eset_final)<-all_pData
 
-        ## Save data files before 
+        ## Save data files 
         save(all_eset_final, all_data, finished_table, file = paste(PATH, "final_processed_data_", timeStamp, ".rda", sep=''))
 
         # Differentially Expressed Gene (DEG) Analysis

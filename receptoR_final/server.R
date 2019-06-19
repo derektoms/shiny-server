@@ -401,8 +401,6 @@ rvDEG <- reactiveValues(download_flag = 0)
     id <- userDatasetTable$userID[which(userDatasetTable$desc == input$user_data)]
     
     fluidRow(
-        h4("Experimental samples"),
-        tags$img(src=paste("legend_", id, ".png", sep=''),width="100%"),
         h4("Expression normalization (array intensity, before and after)"), 
         tags$img(src=paste("array_normalization_", id, ".png", sep=''),width="100%"),
         h4("RNA degradation plot (probe position along transcript vs intensity)"),
@@ -472,7 +470,7 @@ rvDEG <- reactiveValues(download_flag = 0)
           need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
           need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
       need(input$tissues, "No tissues selected. Please choose at least one tissue to plot receptor heatmap."),
-      need(length(genesToPlot())>10, if(input$de_state){paste("Based on the genes selected in 'Load Data', ", length(genesToPlot())," genes were differentially expressed in these tissues (",input$tissues, "); try unselecting that option in the side menu.",sep="")}else{paste("No genes to plot as a heatmap (minimum = 10). Try including more receptor types in 'Load Data'.")}) 
+      need(length(genesToPlot())>10, if(input$de_state){paste("Based on the genes selected in 'Load Data', ", length(genesToPlot())," genes were differentially expressed in these tissues (",paste(input$tissues, collapse = ", "), "); try unselecting that option in the side menu.",sep="")}else{paste("No genes to plot as a heatmap (minimum = 10). Try including more receptor types in 'Load Data'.")}) 
     )
        
     selected_tissues = input$tissues
