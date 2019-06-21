@@ -51,11 +51,13 @@ tags$head(tags$link(rel = "stylesheet", href = "https://use.fontawesome.com/rele
 # tags$script(HTML("$('body').addClass('fixed);")),
 shinyjs::useShinyjs(),
 navbarPage("receptoR",
+    id = "receptorMain",
     theme = shinytheme("spacelab"),
 
 # Start page  ------------------------------------------------------------------------------
 
     tabPanel("Start here",
+       value ="startPanel",
        h3("Welcome to receptoR!"),
        hr(),
        sidebarLayout(
@@ -66,7 +68,10 @@ navbarPage("receptoR",
                hr(),
                
                #div
-               p("There are two ways to begin using receptor, either by searching for expression data to design your own experiment, or by loading and analysing an existing experiment."),
+               p("There are two ways to begin using receptor, either by ",
+               actionLink("linkSearch","searching for expression data"),
+               " to design your own experiment, or by ",
+               actionLink("linkLoad","loading and analysing an existing experiment.")),
                # To proceed, click \'Search for datasets\', above"),
                hr(),
                p("code created by Derek Toms, Qing Yun Tong and Matthew Workentine"),
@@ -82,6 +87,7 @@ navbarPage("receptoR",
 # Search for GSM  ------------------------------------------------------------------------------
 
     tabPanel("Search Microarray Database",
+       value = "searchPanel",
        h3("Organize publicly available expression data"),
        hr(),
        sidebarLayout(
@@ -106,21 +112,16 @@ navbarPage("receptoR",
            h4("Define the categories that you wish to assign each sample (GSM) for comparison."),
            p("Each sample of interest should be assigned to a category. In this way, experimental comparisons can be performed to determine differential expression between categories."),
 
-           tags$div(class="inputWithIcon",textInput("cat1", label=NULL, placeholder="Category 1")
-           # tags$span(style="color:#E41A1C",icon("circle",class="fa-2x"))
-           ),
+           tags$div(class="inputWithIcon",textInput("cat1", label=NULL, placeholder="Category 1"),
+           tags$span(style="color:#E41A1C",icon("circle",class="fa-2x"))),
            
-           tags$div(class="inputWithIcon",textInput("cat2", label=NULL, placeholder="Category 2")
-           # tags$span(style="color:#377EB8",icon("circle",class="fa-2x"))
-           ),
+           tags$div(class="inputWithIcon",textInput("cat2", label=NULL, placeholder="Category 2"),
+           tags$span(style="color:#377EB8",icon("circle",class="fa-2x"))),
            
-           tags$div(class="inputWithIcon",textInput("cat3", label=NULL, placeholder="Category 3 (optional)")
-           # tags$span(style="color:#4DAF4A",icon("circle",class="fa-2x"))
+           tags$div(class="inputWithIcon",textInput("cat3", label=NULL, placeholder="Category 3 (optional)"),
+           tags$span(style="color:#4DAF4A",icon("circle",class="fa-2x"))
            ),
-
-           ### https://www.aridhia.com/blog/the-sky-is-not-the-limit-embedding-raw-html-and-javascript-to-create-dynamic-ui-elements-in-shiny-applications/   
-           ### ^ this should help with dynamically adding/subtracting categories
-           
+                      
            hr(),
            h4("Highlight samples, then click to Assign them to the specificed category."),
            p("Using the table at right and the drop down menu below, click on samples and \'Assign\' them to different categories. Samples can be filtered using the search bar. \nPLEASE NOTE: once you have clicked the \'Assign\' button you will no longer be able to add arrays to your experiment."),
@@ -135,10 +136,10 @@ navbarPage("receptoR",
                textInput("downloadId","Download ID"),
                downloadButton("report","Download Report"),
                actionButton("downloadCEL","Process")),
-               hr()
+           hr(),
                # Help banner on the bottom -------------------------
-               # h4("Help me!"),
-               # p("Turducken leberkas t-bone tongue, tail frankfurter corned beef strip steak buffalo picanha beef tri-tippork belly rump flank. Chicken cupim sausage, spare ribs prosciutto beef pork corned beef salami leberkas shankle.",style="color:#D8BFD8")
+           # h4("Help me!"),
+           p("Click ",actionLink("linkReset","here "),"to start again.")
        ),
        
        mainPanel(
@@ -170,6 +171,7 @@ navbarPage("receptoR",
     
     # Load Gene Expression Data tab -------------------------------------
     tabPanel("Load Expression Datasets",
+        value="expressionPanel",
         h3("Pick from user-defined experiments to perform analyses"),
         hr(),
         sidebarLayout(

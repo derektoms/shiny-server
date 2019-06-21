@@ -105,13 +105,26 @@ onStop(function() {
 ########################################
 
 server <- function(input, output, session) {
+    
+#   .-.-.   .-.-.   .-.-.   .-.-.   .-.-.   .-.-.   .-.-.   .-.-
+#  / / \ \ / / \ \ / / \ \ / / \ \ / / \ \ / / \ \ / / \ \ / / \
+# `-'   `-`-'   `-`-'   `-`-'   `-`-'   `-`-'   `-`-'   `-`-'
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+## This is the database search begins
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+
+# Quick link from the main page
+observeEvent(input$linkSearch, {
+  updateNavbarPage(session, "receptorMain", selected="searchPanel")
+})
+
 
 # Set up colour environment
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   catCol <- brewer.pal(3, "Set1")
   rowCol <-desat(catCol)
   userID <- NULL
-  
+ 
 # Search functions 
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   ### 2019-03-04 UPDATE to SQL searching directly
@@ -124,6 +137,7 @@ server <- function(input, output, session) {
       }
       query<-sqlInterpolate(poolGEO,sql,id1=input$searchText)
       queryGSM<-dbGetQuery(poolGEO,query)
+      shinyjs::disable("gplSelection")
       return(queryGSM)
   })
 
@@ -145,47 +159,36 @@ server <- function(input, output, session) {
                       "}") 
                       )))) ## typeof data needs to be a string, as a "NA" converted to JS "NULL" breaks things
 
+# Set up tables to store user-selected data
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+
+  proxy.search = dataTableProxy('searchResultsGSM')
+
+  ## Set up reactive table to store experimental samples
+  userSamples <- reactiveValues()
+  userSamples$df <- data.frame()
+    
 # Add sample (array) record to the current experiment 
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
-  proxy.search = dataTableProxy('searchResultsGSM')
-  testTable <- NULL
-  gsm_annotated <- eventReactive(input$addButton, {
-      testTable <<- rbind(testTable,searchGSM()[input$searchResultsGSM_rows_selected,])
-      proxy.search %>% selectRows(NULL)
-      return(testTable)
-  })
-  
+ 
   observeEvent(input$addButton, {
+      gsm_selected <- searchGSM()[input$searchResultsGSM_rows_selected,]
+      gsm_selected$category <- rep("Not yet assigned", nrow(gsm_selected))
+      userSamples$df <<- rbind(userSamples$df,gsm_selected)
+      proxy.search %>% selectRows(NULL)
       updateTabsetPanel(session = session, inputId = "searchpanel", selected = "2")
   })
 
 # Assign categories to each sample (GSM)
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
-  ## Set up reactive table to store category data
-  samples <- reactiveValues()
-  samples$df <- data.frame()
   
   observeEvent(input$assignButton, {
-  
-      # groups <<- c(input$cat1,input$cat2,input$cat3) ## Use these in all following code! They should have a "name" variable for user-assigned names 2018-12-10
- 
-      if (input$assignButton == 1) {
-        gsm_selected <- gsm_annotated()
-        gsm_selected$category <- rep("Not yet assigned", nrow(gsm_selected))
-        gsm_selected[input$gsm_table_rows_selected,"category"] <- input$selection
-        samples$df <<- gsm_selected
-      }
-      else
-      {
-        samples$df[input$gsm_table_rows_selected,"category"] <<- input$selection
-      }
+        userSamples$df[input$gsm_table_rows_selected,"category"] <<- input$selection
   })      
-  
-  ## ^ don't love this... would like to have the category set without a button click (maybe change to this tab), but it's working for the moment
    
   output$gsm_table <- DT::renderDataTable({
       if(input$assignButton == 0){
-         return (datatable(gsm_annotated(),options=list(
+         return (datatable(userSamples$df,options=list(
                searching=TRUE, 
                paging=FALSE,
                scrollX=TRUE, 
@@ -202,7 +205,7 @@ server <- function(input, output, session) {
                      "}")
                      )))))
       } else {
-         return (datatable(samples$df,options=list(
+         return (datatable(userSamples$df,options=list(
              searching=TRUE, 
              paging=FALSE,
              scrollX=TRUE, 
@@ -223,14 +226,12 @@ server <- function(input, output, session) {
   })
                  
   proxy.gsm = dataTableProxy('gsm_table')
+ 
   observeEvent(input$assignButton,{
       proxy.gsm %>% selectRows(NULL)
   }) 
   
-
-  # outputOptions(output, "searchResultsGSM", suspendWhenHidden = FALSE)
-  # outputOptions(output, "gsm_table", suspendWhenHidden = FALSE)
-
+  
   ## UI output
 
     output$categorySelect <- renderUI(
@@ -251,15 +252,22 @@ server <- function(input, output, session) {
 # Finished table, to ultimately lead to CEL download
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   finishedtable <- eventReactive(input$assignButton, {
-    dplyr::filter(samples$df, category %in% c(input$cat1, input$cat2, input$cat3))
+    dplyr::filter(userSamples$df, category %in% c(input$cat1, input$cat2, input$cat3))
   })
  
   output$finishedtable <- DT::renderDataTable({datatable(finishedtable(),
-      options=list(searching=FALSE,pageLength=100, scrollY='60vh')) %>%
+      options=list(
+          searching=FALSE, 
+          paging=FALSE,
+          scrollX=TRUE, 
+          scrollY='60vh', 
+          scrollCollapse=TRUE,
+          fixedHeader=TRUE,
+          autoWidth=TRUE
+          )) %>%
       formatStyle('category',target="row",
       backgroundColor=styleEqual(c(input$cat1,input$cat2,input$cat3),c(rowCol[1],rowCol[2],rowCol[3]))
   )})
-
 
 rv <- reactiveValues(download_flag = 0)
 
@@ -270,22 +278,32 @@ rv <- reactiveValues(download_flag = 0)
           write.csv(finishedtable(),file)
           rv$download_flag <- rv$download_flag + 1
       })
-      
+
+# Modal confirming CEL download, and processing function
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_     
 observeEvent(input$downloadCEL, {
-    
-    showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.","April 11th, 2019: App should be working now. Please click below to begin processing the data.",
-    footer = tagList(
-        modalButton("Cancel"),
-        actionButton("process","Proceed"))))      
+    finishedtable() %>% group_by(category) %>% summarise(n.gse = n_distinct(series_id)) -> gse.check
+    warning <- "Please click below to begin processing the data."
+    numCat <- length(gse.check$category)>1
+    if(length(which(gse.check$n.gse==1))!=0){
+        catAlert <- paste(gse.check$category[which(gse.check$n.gse==1)], collapse = ", ")
+        warning <- paste("WARNING: The following categories contain samples from a single experiment (GSE) and as such they will be confounded by batch effects: ",catAlert,".<br>Please proceed with caution or cancel and select additional samples to add to these categories.",sep="")
+    }
+    if(!numCat){
+        showModal(modalDialog(title="Error! A minimum of two categories are needed.","Experimental samples need to be organized into 2 or 3 categories for appropriate downstream analysis. If you are interested in only one type of sample, we suggest choosing samples to act as 'background', which will allow for differential analysis to identify which receptor genes are enriched or depleted in your sample of interest.",
+        easyClose = TRUE,
+        footer = tagList(
+            modalButton("Cancel")))) 
+    } else {
+        showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.",HTML(paste("June 20th, 2019<br>",warning)),
+        easyClose = TRUE,
+        footer = tagList(
+            modalButton("Cancel"),
+            actionButton("process","Proceed"))))      
+    }
   })
 
-
-  # observeEvent(input$process, {
-  #     removeModal()
-  #  })
-
-
-  observeEvent(input$process, {
+observeEvent(input$process, {
       withProgress(
           message = "Downloading and processing GSM",
           {userID <<- processData(finishedtable(), input$downloadId, input$comments, input$gplSelection, poolUserData)}
@@ -293,15 +311,43 @@ observeEvent(input$downloadCEL, {
           removeModal()
   })
 
+# Reset button, modal confirmation
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+  observeEvent(input$linkReset, {
+      showModal(modalDialog(title="Important! Are you sure you want to reset everything?","All searches and categorized samples will be lost. This can not be undone.",
+      footer = tagList(
+          modalButton("Cancel"),
+          actionButton("buttonReset","Yes, reset."))))# modal
+      # confirm reset (all categories, sample search, gone)
+      observeEvent(input$buttonReset, {
+          shinyjs::enable("gplSelection")
+          userSamples$df <<- userSamples$df[0,]
+          reset("searchText")
+          reset("cat1")
+          reset("cat2")
+          reset("cat3")
+          replaceData(proxy.search, NULL)
+          replaceData(proxy.gsm, NULL)
+          removeModal()
+          updateTabsetPanel(session = session, inputId = "searchpanel", selected = "1")
+        })
+
+    
+  })
+  
+
 
 #   .-.-.   .-.-.   .-.-.   .-.-.   .-.-.   .-.-.   .-.-.   .-.-
 #  / / \ \ / / \ \ / / \ \ / / \ \ / / \ \ / / \ \ / / \ \ / / \
 # `-'   `-`-'   `-`-'   `-`-'   `-`-'   `-`-'   `-`-'   `-`-'
 
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
-## This is where the analysis part of the application begins
+## This is where the analysis begins
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
-
+# Quick link from the main page
+observeEvent(input$linkLoad, {
+  updateNavbarPage(session, "receptorMain", selected="expressionPanel")
+})
 
 # Load dataset
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
