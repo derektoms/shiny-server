@@ -280,7 +280,7 @@ rv <- reactiveValues(download_flag = 0)
 
 
   output$report <- downloadHandler(
-      filename = function(){paste(input$downloadId,"GSM_report.csv",sep="_"),}
+      filename = function(){paste(input$downloadId,"GSM_report.csv",sep="_")},
       content = function(file){
           write.csv(userSamples$finishedtable,file)
           rv$download_flag <- rv$download_flag + 1
