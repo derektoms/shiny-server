@@ -6,7 +6,7 @@
 #                   |_|
 #
 # June 2019 receptoR v 1.3
-## Last update: 2019-06-15, Derek Toms
+## Last update: 2019-06-22, Derek Toms
 ## server.R
 
 
@@ -48,16 +48,6 @@ library(cowplot)
 library(pool)
 library(writexl)
 
-## 2018-12-02 not currently needed:
-    # library(genefilter)
-   #  library(ComplexHeatmap)
-   #
-   #  library(MergeMaid)
-   #  library(testthat)
-   #  library(metaArray)
-   #  library(Rtsne)
-   #  library(sva)
-
 # Microarray platform annotations:
 library(mouse4302.db)
 library(hgu133plus2.db)
@@ -70,11 +60,11 @@ source("functions.R")
 load("./../2019-04_genelists.rda")
 
 ### for local work
-# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gseGPL570.rda")
-# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gsmGPL570.rda")
-# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gseGPL1261.rda")
-# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/gsmGPL1261.rda")
-# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-12_genelists.rda")
+# load("~/Bioinformatics/gseGPL570.rda")
+# load("~/Bioinformatics/gsmGPL570.rda")
+# load("~/Bioinformatics/gseGPL1261.rda")
+# load("~/Bioinformatics/gsmGPL1261.rda")
+# load("~/Bioinformatics/2018-12_genelists.rda")
 # poolGEO <- dbPool(
 #   drv = RSQLite::SQLite(),
 #   dbname = "/Volumes/ULTRA/across_array/GEOmetadb.sqlite"
@@ -93,12 +83,13 @@ poolUserData <- dbPool(
   dbname = "./data/receptoRUserData.sqlite"
 )
 
-userDatasetTable <- loadUserDatasets(poolUserData)
-
 onStop(function() {
   poolClose(poolGEO)
   poolClose(poolUserData)
 })
+
+## Initialize user experiments to load
+global <- reactiveValues (DatasetTable = loadUserDatasets(poolUserData))
 
 ########################################
 #$#$#$#$#$#$#    SERVER    #$#$#$#$#$#$#
@@ -127,7 +118,6 @@ observeEvent(input$linkSearch, {
  
 # Search functions 
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
-  ### 2019-03-04 UPDATE to SQL searching directly
   
   searchGSM <- eventReactive(input$searchButton, {
       if(input$gplSelection=='human'){
@@ -142,7 +132,9 @@ observeEvent(input$linkSearch, {
   })
 
   output$searchResultsGSM <- DT::renderDataTable({
-          searchGSM()}, options=list(
+          searchGSM()}, extensions = 'Buttons', options=list(
+              dom = 'Bfrtip',
+              buttons = list(list(extend = 'colvis')),
               searching=TRUE, 
               paging=FALSE,
               scrollX=TRUE, 
@@ -151,7 +143,7 @@ observeEvent(input$linkSearch, {
               fixedHeader=TRUE,
               autoWidth=TRUE,
               columnDefs=list(list(
-              targets = c(8),
+              targets = "_all",
               render = JS(
                   "function(data, type, row, meta) {",
                       "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
@@ -188,7 +180,9 @@ observeEvent(input$linkSearch, {
    
   output$gsm_table <- DT::renderDataTable({
       if(input$assignButton == 0){
-         return (datatable(userSamples$df,options=list(
+         return (datatable(userSamples$df, extensions = 'Buttons', options=list(
+               dom = 'Bfrtip',
+               buttons = list(list(extend = 'colvis')),
                searching=TRUE, 
                paging=FALSE,
                scrollX=TRUE, 
@@ -205,7 +199,9 @@ observeEvent(input$linkSearch, {
                      "}")
                      )))))
       } else {
-         return (datatable(userSamples$df,options=list(
+         return (datatable(userSamples$df, extensions = 'Buttons', options=list(
+             dom = 'Bfrtip',
+             buttons = list(list(extend = 'colvis')),
              searching=TRUE, 
              paging=FALSE,
              scrollX=TRUE, 
@@ -251,11 +247,15 @@ observeEvent(input$linkSearch, {
 
 # Finished table, to ultimately lead to CEL download
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
-  finishedtable <- eventReactive(input$assignButton, {
-    dplyr::filter(userSamples$df, category %in% c(input$cat1, input$cat2, input$cat3))
-  })
+userSamples$finishedtable <- NULL
+
+observeEvent(input$assignButton, {
+    userSamples$finishedtable <<- dplyr::filter(userSamples$df, category %in% c(input$cat1, input$cat2, input$cat3))
+})
  
-  output$finishedtable <- DT::renderDataTable({datatable(finishedtable(),
+  output$finishedtable <- DT::renderDataTable({
+      if(!is.null(userSamples$finishedtable)){
+      datatable(userSamples$finishedtable,
       options=list(
           searching=FALSE, 
           paging=FALSE,
@@ -263,26 +263,33 @@ observeEvent(input$linkSearch, {
           scrollY='60vh', 
           scrollCollapse=TRUE,
           fixedHeader=TRUE,
-          autoWidth=TRUE
-          )) %>%
+          autoWidth=TRUE,
+          columnDefs=list(list(
+          targets = "_all",
+          render = JS(
+              "function(data, type, row, meta) {",
+                  "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
+                  "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
+                  "}")
+          )))) %>%
       formatStyle('category',target="row",
       backgroundColor=styleEqual(c(input$cat1,input$cat2,input$cat3),c(rowCol[1],rowCol[2],rowCol[3]))
-  )})
+  )}})
 
 rv <- reactiveValues(download_flag = 0)
 
-  # proxy.finishedtable = dataTableProxy('finishedtable')
+
   output$report <- downloadHandler(
-      filename = paste(input$downloadId,userID,"GSM_report.csv",sep="_"),
+      filename = function(){paste(input$downloadId,"GSM_report.csv",sep="_"),}
       content = function(file){
-          write.csv(finishedtable(),file)
+          write.csv(userSamples$finishedtable,file)
           rv$download_flag <- rv$download_flag + 1
       })
 
 # Modal confirming CEL download, and processing function
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_     
 observeEvent(input$downloadCEL, {
-    finishedtable() %>% group_by(category) %>% summarise(n.gse = n_distinct(series_id)) -> gse.check
+    userSamples$finishedtable %>% group_by(category) %>% summarise(n.gse = n_distinct(series_id)) -> gse.check
     warning <- "Please click below to begin processing the data."
     numCat <- length(gse.check$category)>1
     if(length(which(gse.check$n.gse==1))!=0){
@@ -304,11 +311,14 @@ observeEvent(input$downloadCEL, {
   })
 
 observeEvent(input$process, {
-      withProgress(
-          message = "Downloading and processing GSM",
-          {userID <<- processData(finishedtable(), input$downloadId, input$comments, input$gplSelection, poolUserData)}
-          )
-          removeModal()
+    shinyjs::disable("process")
+    userID <<- processData(userSamples$finishedtable, input$downloadId, input$comments, input$gplSelection, poolUserData)
+    global$DatasetTable <<- loadUserDatasets(poolUserData)
+    removeModal()
+    showModal(modalDialog(title="Your dataset was successfully processed!","Analyse your data in the 'Load Expression Datasets' tab. You can also download a report from this page.",
+    easyClose = TRUE,
+    footer = tagList(
+        modalButton("OK"))))# modal
   })
 
 # Reset button, modal confirmation
@@ -326,8 +336,10 @@ observeEvent(input$process, {
           reset("cat1")
           reset("cat2")
           reset("cat3")
+          reset("downloadId")
           replaceData(proxy.search, NULL)
           replaceData(proxy.gsm, NULL)
+          userSamples$finishedtable <<- NULL
           removeModal()
           updateTabsetPanel(session = session, inputId = "searchpanel", selected = "1")
         })
@@ -344,6 +356,7 @@ observeEvent(input$process, {
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 ## This is where the analysis begins
 #$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+
 # Quick link from the main page
 observeEvent(input$linkLoad, {
   updateNavbarPage(session, "receptorMain", selected="expressionPanel")
@@ -352,7 +365,7 @@ observeEvent(input$linkLoad, {
 # Load dataset
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
 output$loadUserExperiments = renderUI({
-    selectizeInput(inputId="user_data",label="Select an experiment for analysis",choices=c("none"="none",split(userDatasetTable$desc, userDatasetTable$species)),selected="none")
+    selectizeInput(inputId="user_data",label="Select an experiment for analysis",choices=c("none"="none",split(global$DatasetTable$desc, global$DatasetTable$species)),selected="none")
 })
 
 
@@ -366,9 +379,9 @@ observeEvent(input$user_data,{
         de_choices<<-NULL
         sig_genes_lfc<<-NULL
     }else{         
-        id <- userDatasetTable$userID[which(userDatasetTable$desc == input$user_data)]
+        id <- global$DatasetTable$userID[which(global$DatasetTable$desc == input$user_data)]
         assign(
-              x = "species", value = userDatasetTable$species[which(userDatasetTable$desc == input$user_data)], envir = .GlobalEnv
+              x = "species", value = global$DatasetTable$species[which(global$DatasetTable$desc == input$user_data)], envir = .GlobalEnv
            )
         datasetToLoad <- paste("./data/app_data_", id, ".rda", sep='')
         withProgress(message="Loading dataset",value=0.2,{
@@ -380,10 +393,10 @@ observeEvent(input$user_data,{
             updateCheckboxGroupInput(session, "pls_tissues", choices = groups, selected = groups)
             updateCheckboxGroupInput(session, "de", choices = de_choices, selected = de_choices[1])
             
-            incProgress(0.5, message ="Loading genelists")
+            incProgress(0.3, message ="Loading genelists")
             updateCheckboxGroupInput(session, "genelist", label = NULL, choices = names(gene_lists[[species]]), selected = NULL, inline = FALSE)
             
-            incProgress(0.8, message = "Loading gene names")
+            incProgress(0.2, message = "Loading gene names")
             updateSelectInput(session, "gene", choices = all_genes[species])
         })
         
@@ -444,7 +457,7 @@ rvDEG <- reactiveValues(download_flag = 0)
       need(input$user_data!="none","No dataset selected")
     )
     
-    id <- userDatasetTable$userID[which(userDatasetTable$desc == input$user_data)]
+    id <- global$DatasetTable$userID[which(global$DatasetTable$desc == input$user_data)]
     
     fluidRow(
         h4("Expression normalization (array intensity, before and after)"), 
@@ -607,8 +620,6 @@ rvDEG <- reactiveValues(download_flag = 0)
     plotVar(plsdaData()$result, var.names = list(plsdaData()$varNames), comp.select=comp, cex = 3, overlap=FALSE, col="grey")
     
   })
-
-  output$circle = renderText({col = plsdaData()$tissue_grps})
 
   output$numGenesUI = renderUI({
     numericInput("pls_num_genes", "Select number of genes to show contributions for", 

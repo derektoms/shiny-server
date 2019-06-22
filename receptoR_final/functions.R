@@ -6,7 +6,7 @@
 #                   |_|
 #
 # June 2019 receptoR v 1.3
-## Last update: 2019-06-15, Derek Toms
+## Last update: 2019-06-22, Derek Toms
 ## functions.R
 
 
@@ -44,17 +44,22 @@ processData = function(finished_table,datasetID,userComments,gpl,userDB){
         # get raw CEL files
 
         setDir<-paste(PATH,timeStamp,sep='')
-
-        rawFilePaths = lapply(gsm_to_fetch, function(x) {
-            dir.create(file.path(setDir), showWarnings = FALSE)
-            getGEOSuppFiles(x,baseDir=setDir)
-        })
-
+          
+withProgress(
+   message = "Downloading and processing GSM", value = 0,
+   {    
+# Download expression files ------------------------------------------------------------
+      rawFilePaths = lapply(gsm_to_fetch, function(x) {
+        incProgress(0.5/length(gsm_to_fetch), message = "Downloading expression data")
+        dir.create(file.path(setDir), showWarnings = FALSE)
+        getGEOSuppFiles(x,baseDir=setDir)    
+      })
+        
         gsm_dirs = list.files(path=setDir, pattern = "GSM", full.names=TRUE)
-
         gsm_files = lapply(gsm_dirs, list.files, pattern = "[Cc][Ee][Ll].gz", full.names = TRUE)
 
-# New approach: Normalize together ------------------------------------------------------------
+# Normalize together ------------------------------------------------------------
+        incProgress(0.1, message = "Performing normalization")
         all_data = ReadAffy(filenames = unlist(gsm_files))
         all_eset = rma(all_data)
         all_pData = pData(all_eset)
@@ -100,7 +105,8 @@ processData = function(finished_table,datasetID,userComments,gpl,userDB){
         ## Save data files 
         save(all_eset_final, all_data, finished_table, file = paste(PATH, "final_processed_data_", timeStamp, ".rda", sep=''))
 
-        # Differentially Expressed Gene (DEG) Analysis
+# Differentially Expressed Gene (DEG) Analysis ------------------------------------------------------------
+        incProgress(0.1, message = "Determining differential gene expression")
 
         ## Set gene symbols based on species
         ID = featureNames(all_eset_final)
@@ -122,7 +128,8 @@ processData = function(finished_table,datasetID,userComments,gpl,userDB){
         tissue = as.factor(pData(eset)$tissue)
         design = model.matrix(~0 + tissue)
         colnames(design) = levels(tissue)
-
+        
+        incProgress(0.1, message = "Fitting model")
         fit = lmFit(eset, design)
         matrices<-t(combn(levels(tissue),2))
         contrasts <- paste(matrices[,1],matrices[,2],sep='-')
@@ -138,10 +145,6 @@ processData = function(finished_table,datasetID,userComments,gpl,userDB){
 
         results = decideTests(efit)
         results_lfc = decideTests(tfit)
-
-        # I like these... they should return something in the UI!
-        # vennDiagram(results, include = c("up", "down"))
-        # vennDiagram(results_lfc)
 
         coefs = colnames(contrast_matrix)
         sig_genes = lapply(coefs, function(x) {
@@ -162,14 +165,20 @@ processData = function(finished_table,datasetID,userComments,gpl,userDB){
         # set groups
         groups = levels(tissue)
 
-        # Save user-generated experiments -----------------------------------   
+# Save user-generated experiments -----------------------------------   
+        incProgress(0.1, message = "Saving processed data")
         db <- poolCheckout(userDB)
         data <- data.frame(userID = timeStamp, desc = datasetID, comments = userComments, species = gpl)
         dbWriteTable(conn=db, name="userData", data, append=T, row.names=F)
         poolReturn(db)
 
-        save(mapped_probes, eset, de_choices, sig_genes_lfc, groups, file = paste(PATH,"app_data_",timeStamp,".rda",sep='')) 
+        save(mapped_probes, eset, de_choices, sig_genes_lfc, groups, file = paste(PATH,"app_data_",timeStamp,".rda",sep=''))
+        
+        incProgress(0.1, message = "Success!")
+}) # end withProgress
+    
         return(timeStamp)
+    
     } else {
         save(userComments,finished_table, file = paste("annotated_gsm_",timeStamp,".rda",sep=''))
         return(timeStamp)
