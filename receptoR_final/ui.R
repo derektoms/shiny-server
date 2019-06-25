@@ -88,7 +88,7 @@ navbarPage("receptoR",
 
     tabPanel("Search Microarray Database",
        value = "searchPanel",
-       includeCSS("www/receptor.css"),
+       includeCSS("www/receptor.CSS"),
        h3("Organize publicly available expression data"),
        hr(),
        sidebarLayout(
