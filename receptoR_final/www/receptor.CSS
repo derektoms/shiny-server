@@ -11,14 +11,16 @@ input[type="text"] {
   transition: 0.3s;
 }
 
-/* Change the colour on focus
-.inputWithIcon input[type="text"]:focus {
-  border-color: dodgerBlue;
-  box-shadow: 0 0 8px 0 dodgerBlue;
-}*/
 
-.inputWithIcon form-group[type="shiny-input-container"] {
-  padding-left: 40px;
+/* Change the colour on focus */
+.inputWithIcon input[type="text"]:focus {
+/*  border-color: tomato;
+    box-shadow: 0 0 8px 0 tomato; 
+  text-indent: 35px;*/
+}
+
+.inputWithIcon input[type="text"] {
+  text-indent: 30px;
 }
 
 .inputWithIcon {

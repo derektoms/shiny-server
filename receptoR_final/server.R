@@ -59,17 +59,19 @@ source("functions.R")
 # if(!file.exists('./../data/GEOmetadb.sqlite')) getSQLiteFile()
 load("./../2019-04_genelists.rda")
 
+#------------------------------------------------------------------------------------+
 ### for local work
-# load("~/Bioinformatics/gseGPL570.rda")
-# load("~/Bioinformatics/gsmGPL570.rda")
-# load("~/Bioinformatics/gseGPL1261.rda")
-# load("~/Bioinformatics/gsmGPL1261.rda")
-# load("~/Bioinformatics/2018-12_genelists.rda")
+# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-12_genelists.rda")
 # poolGEO <- dbPool(
 #   drv = RSQLite::SQLite(),
 #   dbname = "/Volumes/ULTRA/across_array/GEOmetadb.sqlite"
 # )
-#
+
+# poolUserData <- dbPool(
+#   drv = RSQLite::SQLite(),
+#   dbname = "~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2019-06-15 v1.3 Update/receptoRUserData.sqlite"
+# )
+#------------------------------------------------------------------------------------+
 
 # 2019-03-04
 ## Connection to GEO Metadata DB
