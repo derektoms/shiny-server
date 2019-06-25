@@ -44,7 +44,6 @@ $(function() {
 ########################################
 
 ui <- fluidPage(
-    # includeCSS("receptor.css"),
 tags$head(tags$script(HTML(jscode))),
 tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "receptor.CSS")),
 tags$head(tags$link(rel = "stylesheet", href = "https://use.fontawesome.com/releases/v5.6.3/css/all.css",  integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/", crossorigin="anonymous")
@@ -89,6 +88,7 @@ navbarPage("receptoR",
 
     tabPanel("Search Microarray Database",
        value = "searchPanel",
+       includeCSS("www/receptor.css"),
        h3("Organize publicly available expression data"),
        hr(),
        sidebarLayout(

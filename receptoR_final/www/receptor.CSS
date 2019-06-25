@@ -16,7 +16,7 @@ input[type="text"] {
 .inputWithIcon input[type="text"]:focus {
 /*  border-color: tomato;
     box-shadow: 0 0 8px 0 tomato; 
-  text-indent: 35px !important;*/
+  text-indent: 35px;*/
 }
 
 .inputWithIcon input[type="text"] {
