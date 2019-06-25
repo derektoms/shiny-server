@@ -52,7 +52,7 @@ tags$head(tags$link(rel = "stylesheet", href = "https://use.fontawesome.com/rele
 shinyjs::useShinyjs(),
 navbarPage("receptoR",
     id = "receptorMain",
-    theme = shinytheme("spacelab"),
+    # theme = shinytheme("spacelab"),
 
 # Start page  ------------------------------------------------------------------------------
 
