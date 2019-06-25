@@ -57,33 +57,33 @@ library(mouse4302cdf)
 source("functions.R")
 ## 2019-03-27 Ran this to get the latest database
 # if(!file.exists('./../data/GEOmetadb.sqlite')) getSQLiteFile()
-load("./../2019-04_genelists.rda")
+# load("./../2019-04_genelists.rda")
 
 #------------------------------------------------------------------------------------+
 ### for local work
-# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-12_genelists.rda")
-# poolGEO <- dbPool(
-#   drv = RSQLite::SQLite(),
-#   dbname = "/Volumes/ULTRA/across_array/GEOmetadb.sqlite"
-# )
-
-# poolUserData <- dbPool(
-#   drv = RSQLite::SQLite(),
-#   dbname = "~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2019-06-15 v1.3 Update/receptoRUserData.sqlite"
-# )
-#------------------------------------------------------------------------------------+
-
-# 2019-03-04
-## Connection to GEO Metadata DB
+load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-12_genelists.rda")
 poolGEO <- dbPool(
   drv = RSQLite::SQLite(),
-  dbname = "./data/GEOmetadb.sqlite"
+  dbname = "/Volumes/ULTRA/across_array/GEOmetadb.sqlite"
 )
 
 poolUserData <- dbPool(
   drv = RSQLite::SQLite(),
-  dbname = "./data/receptoRUserData.sqlite"
+  dbname = "~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2019-06-15 v1.3 Update/receptoRUserData.sqlite"
 )
+#------------------------------------------------------------------------------------+
+
+# 2019-03-04
+## Connection to GEO Metadata DB
+# poolGEO <- dbPool(
+#   drv = RSQLite::SQLite(),
+#   dbname = "./data/GEOmetadb.sqlite"
+# )
+#
+# poolUserData <- dbPool(
+#   drv = RSQLite::SQLite(),
+#   dbname = "./data/receptoRUserData.sqlite"
+# )
 
 onStop(function() {
   poolClose(poolGEO)
