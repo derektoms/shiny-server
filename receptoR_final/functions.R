@@ -264,9 +264,13 @@ loadUserDatasets <- function(userDB) {
        row_labs = paste(getSYMBOL(rownames(mat), "hgu133plus2.db"),rownames(mat),sep=":")
        rownames(mat) = getSYMBOL(rownames(mat), "hgu133plus2.db")
        row_labs = row_labs[!is.na(rownames(mat))]
-       mat = mat[which(!is.na(rownames(mat))),]
+       mat = mat[which(!is.na(rownames(mat))),] ## the few DEG don't match to any genes (i.e. rownames = NA)
        
    }
+   
+   # debug
+if (length(rownames(mat))<10) {cat(file=stderr(), "'Error in order' because these are the genes to plot: ", rownames(mat),"\n")}
+   
    mat = mat[order(rownames(mat)),]
    
    if (!probe_level) {

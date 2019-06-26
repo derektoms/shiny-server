@@ -463,9 +463,9 @@ rvDEG <- reactiveValues(download_flag = 0)
     
     fluidRow(
         h4("Expression normalization (array intensity, before and after)"), 
-        tags$img(src=paste("array_normalization_", id, ".png", sep=''),width="100%"),
+        tags$img(src=paste("array_normalization_", id, ".png", sep=''),width="480", height="480"),
         h4("RNA degradation plot (probe position along transcript vs intensity)"),
-        tags$img(src=paste("probe_degradation_", id, ".png", sep=''),width="100%"))
+        tags$img(src=paste("probe_degradation_", id, ".png", sep=''),width="480", height="480"))
   })
 
 # Gene outputs
