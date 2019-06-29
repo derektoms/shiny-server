@@ -419,6 +419,24 @@ rvDEG <- reactiveValues(download_flag = 0)
           write_xlsx(sig_genes_lfc, path=file)
           rvDEG$download_flag <- rvDEG$download_flag + 1
       })
+
+# QC output
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+
+output$QC = renderUI({
+  validate(
+    need(input$user_data!="none","No dataset selected")
+  )
+
+  id <- global$DatasetTable$userID[which(global$DatasetTable$desc == input$user_data)]
+
+  fluidRow(
+      h4("Expression normalization (array intensity, before and after)"), 
+      tags$img(src=paste("array_normalization_", id, ".png", sep=''),width="480", height="480"),
+      h4("RNA degradation plot (probe position along transcript vs intensity)"),
+      tags$img(src=paste("probe_degradation_", id, ".png", sep=''),width="480", height="480"))
+})
+
       
 # Load genes tab
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
@@ -451,22 +469,6 @@ rvDEG <- reactiveValues(download_flag = 0)
    get_expression_summary(eset, geneList())
  })
 
-# QC output
-#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
-  
- output$QC = renderUI({
-    validate(
-      need(input$user_data!="none","No dataset selected")
-    )
-    
-    id <- global$DatasetTable$userID[which(global$DatasetTable$desc == input$user_data)]
-    
-    fluidRow(
-        h4("Expression normalization (array intensity, before and after)"), 
-        tags$img(src=paste("array_normalization_", id, ".png", sep=''),width="480", height="480"),
-        h4("RNA degradation plot (probe position along transcript vs intensity)"),
-        tags$img(src=paste("probe_degradation_", id, ".png", sep=''),width="480", height="480"))
-  })
 
 # Gene outputs
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_

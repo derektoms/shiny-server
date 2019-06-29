@@ -213,8 +213,7 @@ loadUserDatasets <- function(userDB) {
      if(species=='mouse'){
          return(na.omit(unlist(mapped_probes[gene_list])))
      } else {
-         g <- rep(seq_along(mapped_probes),sapply(mapped_probes, length))
-         names(mapped_probes)[!is.na(g[match(mapped_probes,gene_list)])]
+         return(names(mapped_probes)[sapply(mapped_probes, function(pr) any(gene_list %in% pr))])
      }
  }
 
@@ -233,10 +232,7 @@ loadUserDatasets <- function(userDB) {
    get_gene_data(eset, gene_list) %>% 
     group_by(Symbol, tissue) %>% 
     summarise(expression = mean(expression)) %>% 
-    spread(tissue, expression) # %>% rowwise() %>%
-    # mutate(mean = mean(tissue2,tissue1,tissue3)) %>%
-    # ^ this code was never right; only photoreceptor mean was calculated
-    # arrange(desc(mean))
+    spread(tissue, expression)
   
  }
 
