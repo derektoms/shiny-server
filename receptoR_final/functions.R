@@ -264,7 +264,7 @@ loadUserDatasets <- function(userDB) {
        row_labs = paste(getSYMBOL(rownames(mat), "hgu133plus2.db"),rownames(mat),sep=":")
        rownames(mat) = getSYMBOL(rownames(mat), "hgu133plus2.db")
        row_labs = row_labs[!is.na(rownames(mat))]
-       mat = mat[which(!is.na(rownames(mat))),] ## the few DEG don't match to any genes (i.e. rownames = NA)
+       mat = mat[which(!is.na(rownames(mat))),]
        
    }
    
