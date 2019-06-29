@@ -541,7 +541,7 @@ rvDEG <- reactiveValues(download_flag = 0)
     sub_eset = eset[, eset$tissue %in% selected_tissues]
     genes = gene2probe(genesToPlot(), mapped_probes)
     
-    cat(file=stderr(), "Preparing heatmap:\n Tissues:", paste(input$tissues, collapse = ", "), "\n subset eset: ",paste(sub_eset,collapse=", "), "\n genes: ", paste(genes,collapse=", "),"\n")
+    cat(file=stderr(), "Preparing heatmap:\n Tissues:", paste(input$tissues, collapse = ", "), "\n subset eset: ","\n genes: ", paste(genes,collapse=", "),"\n")
     
     gene_heatmap(sub_eset, genes, scale = "row",
                   probe_level = input$hm_probes,
