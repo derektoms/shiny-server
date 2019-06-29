@@ -600,10 +600,9 @@ output$QC = renderUI({
     sub_eset = eset[, eset$tissue %in% selected_tissues]
     genes = gene2probe(geneList(), mapped_probes)
     
-    probe = input$pls_probe
-    #ncomp = input$pls_ncomp
+    # probe = input$pls_probe
     
-    get_plsda(sub_eset, genes, probe) 
+    get_plsda(sub_eset, genes, probe = FALSE) 
     
   })
 

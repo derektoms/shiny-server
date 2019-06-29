@@ -265,7 +265,7 @@ loadUserDatasets <- function(userDB) {
    }
    
    # debug
-if (length(rownames(mat))<10) {cat(file=stderr(), "'Error in order' because these are the genes to plot: ", rownames(mat),"\n")}
+    cat(file=stderr(), "These are the genes to plot: ", rownames(mat),"\n")
    
    mat = mat[order(rownames(mat)),]
    
