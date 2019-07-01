@@ -48,7 +48,8 @@ tags$head(tags$script(HTML(jscode))),
 tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "receptor.CSS")),
 tags$head(tags$link(rel = "stylesheet", href = "https://use.fontawesome.com/releases/v5.6.3/css/all.css",  integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/", crossorigin="anonymous"),
 tags$head(tags$style(
-        type="text/css", "#norm img {max-width: 100%; width: 100%; height: auto}"
+        type="text/css",
+        "#QC img {max-width: 100%; width: 100%; height: auto}"
     ))
 
 ),
