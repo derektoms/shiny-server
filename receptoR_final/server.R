@@ -617,7 +617,7 @@ output$QC = renderUI({
     
     
     sub_eset = eset[, eset$tissue %in% selected_tissues]
-    genes = gene2probe(geneList(), mapped_probes)
+    genes = gene2probe(, mapped_probes)
     
     # probe = input$pls_probe
     
@@ -634,7 +634,7 @@ output$QC = renderUI({
     )
     
     plotIndiv(plsdaData()$result, ind.names = FALSE, group = factor(plsdaData()$tissue_grps), pch = 16, 
-              col.per.group = brewer.pal(3, "Set1")[1:length(input$pls_tissues)], legend = TRUE, cex = 2, ellipse=TRUE,style="3d")
+              col.per.group = brewer.pal(3, "Set1")[1:length(input$pls_tissues)], legend = TRUE, cex = 2, ellipse=TRUE, title="Plot of individual arrays",style="graphics")
   })
 
 # Correlation Circle plot ----------------------------------------------------------------------------  
