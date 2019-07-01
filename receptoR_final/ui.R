@@ -27,9 +27,7 @@ library(shinyjs)
 jscode <- '
 $(function() {
   var $els = $("[data-proxy-click]");
-  $(#receptorMain li a[data-value="Gene-level Expression"]).hide();
-  $(#receptorMain li a[data-value="Sample-level Expression"]).hide();
-  $.each(
+    $.each(
     $els,
     function(idx, el) {
       var $el = $(el);
@@ -44,12 +42,22 @@ $(function() {
 });
 '
 
+jscode2 <- '
+$(function() {
+    $(#receptorMain li a[data-value="Gene-level Expression"]).hide();
+    $(#receptorMain li a[data-value="Sample-level Expression"]).hide();
+    
+});
+'
+
+
 ########################################
 #$#$#$#$#$#$#$    UI     $#$#$#$#$#$#$#$
 ########################################
 
 ui <- fluidPage(
 tags$head(tags$script(HTML(jscode))),
+tags$head(tags$script(HTML(jscode2))),
 tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "receptor.CSS")),
 tags$head(tags$link(rel = "stylesheet", href = "https://use.fontawesome.com/releases/v5.6.3/css/all.css",  integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/", crossorigin="anonymous"),
 tags$head(tags$style(
