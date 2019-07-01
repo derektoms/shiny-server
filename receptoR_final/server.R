@@ -645,7 +645,7 @@ output$QC = renderUI({
          need(length(input$pls_tissues) >= 2, "Please select at least two tissues for a Correlation circle plot.")
       )
       comp = as.integer(input$pls_ncomp)
-    plotVar(plsdaData()$result, var.names = list(plsdaData()$varNames), comp.select=comp, cex = 3, overlap=FALSE, col="grey")
+    plotVar(plsdaData()$result, var.names = list(plsdaData()$varNames), comp.select=comp, cex = 3, overlap=FALSE, col="grey",title="Correlation circle between genes and discriminant components", style="graphics")
     
   })
 
@@ -666,8 +666,7 @@ output$QC = renderUI({
     grps = plsdaData()$result$names$colnames$Y
     ndisplay = input$pls_num_genes
     comp = as.integer(input$pls_ncomp)
-    plotLoadings(plsdaData()$result, name.var = plsdaData()$varNames, ndisplay = ndisplay,
-                comp = comp, contrib='max', method='mean',legend.color = catCol[1:length(grps)])
+    plotLoadings(plsdaData()$result, name.var = plsdaData()$varNames, ndisplay = ndisplay, comp = comp, contrib='max', method='mean',legend.color = catCol[1:length(grps)],title=paste("Weight of the top ", ndisplay, " genes contributing to discriminant component ", comp, sep=""))
      
   })
   
