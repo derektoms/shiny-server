@@ -82,7 +82,7 @@ withProgress(
                         
         ## Array normalization
         mat<-matrix(c(1,2,3),3)
-        png(filename = paste("./www/array_normalization_", timeStamp, ".png", sep=''),)
+        png(filename = paste("./www/array_normalization_", timeStamp, ".png", sep=''), width=2400, height=1800, units="px")
         layout(mat,widths=c(1,1,1),heights=c(1,2,3))
         par(mar=c(1,3,1,1))
                 ## Experimental samples (NULL plot, legend only)
