@@ -617,7 +617,7 @@ output$QC = renderUI({
     
     
     sub_eset = eset[, eset$tissue %in% selected_tissues]
-    genes = gene2probe(, mapped_probes)
+    genes = gene2probe(geneList(), mapped_probes)
     
     # probe = input$pls_probe
     
