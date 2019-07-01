@@ -431,6 +431,7 @@ output$QC = renderUI({
   id <- global$DatasetTable$userID[which(global$DatasetTable$desc == input$user_data)]
 
   fluidRow(
+      inlineCSS("#norm img {max-width: 100%; width: 100%; height: auto}"),
       h4("Expression normalization (array intensity, before and after)"),
       tags$img(src=paste("array_normalization_", id="norm", ".png", sep=''),width="480", height="480"),
       h4("RNA degradation plot (probe position along transcript vs intensity)"),
