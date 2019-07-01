@@ -633,8 +633,8 @@ output$QC = renderUI({
        need(length(input$pls_tissues) >= 2, "Please select at least two tissues for a PLS-DA plot.")
     )
     
-    plotIndiv(plsdaData()$result, ind.names = FALSE, group = plsdaData()$tissue_grps, pch = 16, 
-              col.per.group = brewer.pal(3, "Set1")[1:length(plsdaData()$tissue_grps)], legend = TRUE, cex = 2, ellipse=TRUE)
+    plotIndiv(plsdaData()$result, ind.names = FALSE, group = factor(plsdaData()$tissue_grps), pch = 16, 
+              col.per.group = brewer.pal(3, "Set1")[1:length(input$pls_tissues)], legend = TRUE, cex = 2, ellipse=TRUE)
   })
 
 # Correlation Circle plot ----------------------------------------------------------------------------  
