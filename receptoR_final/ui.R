@@ -46,11 +46,11 @@ $(function() {
 ui <- fluidPage(
 tags$head(tags$script(HTML(jscode))),
 tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "receptor.CSS")),
-tags$head(tags$link(rel = "stylesheet", href = "https://use.fontawesome.com/releases/v5.6.3/css/all.css",  integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/", crossorigin="anonymous")
+tags$head(tags$link(rel = "stylesheet", href = "https://use.fontawesome.com/releases/v5.6.3/css/all.css",  integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/", crossorigin="anonymous"),
 tags$head(tags$style(
         type="text/css",
         "#QC img {max-width: 100%; width: 100%; height: auto}"
-    )),
+    ))
 
 ),
 # tags$script(HTML("$('body').addClass('fixed);")),
@@ -259,7 +259,7 @@ navbarPage("receptoR",
         ),
         mainPanel(
             tabsetPanel(type = "tabs",
-            tabPanel("Discriminant Analysis", h4("Sparse Partial Least Squares Discriminant Analysis (sPLS-DA)  selects genes that are informative about a specific group. "), p("Observations are orthogonally transformed and each component accounts for as much variability in the data as possible. The first two principle components for this genelist are graphed below."), plotOutput("indPlot", height = 800)),
+            tabPanel("Discriminant Analysis", h4("Sparse Partial Least Squares Discriminant Analysis (sPLS-DA)  selects genes that are informative about a specific group. "), plotOutput("indPlot", height = 800)),
             
             tabPanel("Component loadings plot", h4("Gene contribution to each principle component."), p("The longer the bar (in either direction) the more that gene contributes to that component."), plotOutput("contribPlot", height = 800)),
             
