@@ -666,7 +666,7 @@ output$QC = renderUI({
     grps = plsdaData()$result$names$colnames$Y
     ndisplay = input$pls_num_genes
     comp = as.integer(input$pls_ncomp)
-    plotLoadings(plsdaData()$result, name.var = plsdaData()$varNames, ndisplay = ndisplay, comp = comp, contrib='max', method='mean',legend.color = catCol[1:length(grps)],title=paste("Weight of the top ", ndisplay, " genes contributing to discriminant component ", comp, sep=""))
+    plotLoadings(plsdaData()$result, name.var = plsdaData()$varNames, ndisplay = ndisplay, comp = comp, contrib='max', method='mean',legend.color = catCol[1:length(grps)],title=paste("Weight of the top ", ndisplay, " genes contributing to discriminant component ", comp, sep=""),size.title=0.5)
      
   })
   
