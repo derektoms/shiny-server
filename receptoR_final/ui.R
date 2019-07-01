@@ -17,7 +17,11 @@ library(shiny)
 library(shinythemes)
 library(shinyjs)
 
-## Javascript
+
+########################################
+#$#$#$#$#$#$  Javascript   $#$#$#$#$#$#$
+########################################
+
 
 # this codes for the 'enter/return' key as an action button
 jscode <- '
@@ -38,6 +42,11 @@ $(function() {
 });
 '
 
+# this codes for hiding the second panels initially
+shinyjs.init = function(){
+  $('#receptorMain li a[data-value="Gene-level Expression"]').hide();
+  $('#receptorMain li a[data-value="Sample-level Expression"]').hide();
+}
 
 ########################################
 #$#$#$#$#$#$#$    UI     $#$#$#$#$#$#$#$
@@ -55,6 +64,7 @@ tags$head(tags$style(
 ),
 # tags$script(HTML("$('body').addClass('fixed);")),
 shinyjs::useShinyjs(),
+extendShinyjs(script=shinyjs.init),
 navbarPage("receptoR",
     id = "receptorMain",
     theme = shinytheme("spacelab"),
