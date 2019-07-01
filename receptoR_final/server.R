@@ -630,11 +630,11 @@ output$QC = renderUI({
     validate(
         need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
         need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
-       need(length(input$pls_tissues) >= 2, "Please select at least two tissues for a PCA plot.")
+       need(length(input$pls_tissues) >= 2, "Please select at least two tissues for a PLS-DA plot.")
     )
     
     plotIndiv(plsdaData()$result, ind.names = FALSE, group = plsdaData()$tissue_grps, pch = 16, 
-              col.per.group = brewer.pal(3, "Set1")[1:length(input$pls_tissues)], legend = TRUE, cex = 2, ellipse=TRUE)
+              col.per.group = brewer.pal(3, "Set1")[1:length(plsdaData()$tissue_grps)], legend = TRUE, cex = 2, ellipse=TRUE)
   })
 
 # Correlation Circle plot ----------------------------------------------------------------------------  
