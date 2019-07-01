@@ -93,7 +93,7 @@ withProgress(
         par(mar=c(7,3,1,1))
         boxplot(exprs(all_eset),las=2,main="Normalized expression data",col=paste(finished_table$colours))
         dev.off()
-
+    
         ## Probe degradation
         all_data_deg <- AffyRNAdeg(all_data)
         ggsave(file = paste("./www/probe_degradation_", timeStamp, ".png", sep=''), plot =  plotAffyRNAdeg(all_data_deg, cols=paste(finished_table$colours)))

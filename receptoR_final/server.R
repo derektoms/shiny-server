@@ -364,6 +364,21 @@ observeEvent(input$linkLoad, {
   updateNavbarPage(session, "receptorMain", selected="expressionPanel")
 })
 
+# Conditional nav tabs
+hideTab(inputId = "receptorMain", target = "Gene-level Expression")
+hideTab(inputId = "receptorMain", target = "Sample-level Expression")
+
+observeEvent(input$user_data,{
+    if(input$user_data!="none"){
+        showTab(inputId = "receptorMain", target = "Gene-level Expression")
+        showTab(inputId = "receptorMain", target = "Sample-level Expression")
+    } else {
+        hideTab(inputId = "receptorMain", target = "Gene-level Expression")
+        hideTab(inputId = "receptorMain", target = "Sample-level Expression")
+
+    }
+})
+
 # Load dataset
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
 output$loadUserExperiments = renderUI({
@@ -431,10 +446,14 @@ output$QC = renderUI({
   id <- global$DatasetTable$userID[which(global$DatasetTable$desc == input$user_data)]
 
   fluidRow(
+      inlineCSS(list(
+          "#norm" = c("max-width:100%","width=100%"))),
       h4("Expression normalization (array intensity, before and after)"), 
-      tags$img(src=paste("array_normalization_", id, ".png", sep=''),width="480", height="480"),
+      tags$div(class="norm",
+          tags$img(src=paste("array_normalization_", id, ".png", sep=''))
+          ),
       h4("RNA degradation plot (probe position along transcript vs intensity)"),
-      tags$img(src=paste("probe_degradation_", id, ".png", sep=''),width="480", height="480"))
+      tags$img(src=paste("probe_degradation_", id, ".png", sep='')))
 })
 
       
