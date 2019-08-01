@@ -488,12 +488,12 @@ observeEvent(input$user_data,{
             
             incProgress(0.2, message = "Loading gene names")
             # updateSelectInput(session, "gene", choices = all_genes[species])
-            if(is.null(uploaded_features)){
-                updateSelectInput(session, "gene", choices = mapped_probes)
-            }
-            if(is.null(mapped_probes)){
-                updateSelectInput(session, "gene", choices = make.names(uploaded_features))
-            }
+            # if(is.null(uploaded_features)){
+            #     updateSelectInput(session, "gene", choices = mapped_probes)
+            # }
+            # if(is.null(mapped_probes)){
+            #     updateSelectInput(session, "gene", choices = make.names(uploaded_features))
+            # }
         })
         
     }
