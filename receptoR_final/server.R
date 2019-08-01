@@ -162,22 +162,78 @@ observeEvent(input$linkSearch, {
   userSamples <- reactiveValues()
   userSamples$df <- data.frame()
     
+  # 2019-07-31 Upload user data
+  # Upload read count table
+  #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+  userEset <- reactive({
+      inFile <- input$eset_upload
+      if (is.null(inFile))
+          return(NULL)
+      df<- read.csv(inFile$datapath,header=TRUE,sep=",")
+      return(df)
+  })
+  
+  output$upload_table <- DT::renderDataTable({
+      df <- userEset()
+      datatable(df, options=list(
+          searching=TRUE, 
+          paging=TRUE,
+          scrollX=TRUE, 
+          scrollY='25vh',
+          scrollCollapse=TRUE,
+          fixedHeader=TRUE,
+          autoWidth=FALSE))
+      })
+  
+  observeEvent(input$uploadButton, {
+      showModal(modalDialog(title="Select your data to upload for analysis","Make sure things look right before proceeding. There is the ability to add some options here, if I want to make it slightly more flexible (e.g. separator, header).", radioButtons("speciesSelection", "Choose species:", choices = c("Mouse" = "mouse", "Human" = "human")),
+          fileInput('eset_upload','Choose file to upload', accept = c('text/csv','text/comma-separated-values','.csv')),
+          DT::dataTableOutput("upload_table"),
+          easyClose = TRUE,
+          footer = tagList(
+              actionButton("uploaded","Upload read table"))))
+  })
+  
+  # 'uploaded file' flag
+  eset_is_uploaded = FALSE
+  
+  observeEvent(input$uploaded, {
+      eset_is_uploaded <<- TRUE
+      removeModal()
+      uploadSamples <- userEset()
+      tableRows <- ncol(uploadSamples)
+      userSamples$df <<- data.frame(samples = colnames(uploadSamples), category = rep("Not yet assigned", tableRows), features = rep(nrow(uploadSamples), tableRows), description = rep("User uploaded samples",tableRows))
+      updateTabsetPanel(session = session, inputId = "searchpanel", selected = "2")  ## jump to 'Assign' tab
+  })
+
+  observeEvent(input$clear_upload, {
+      eset_is_uploaded <<- FALSE
+      userSamples$df <<- data.frame()
+      removeModal()
+  })
 # Add sample (array) record to the current experiment 
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
  
   observeEvent(input$addButton, {
+      if(eset_is_uploaded){
+          showModal(modalDialog(title = "Alert! Uploaded data detected.", "Continuing with public arrays will erase uploaded dataset.",
+              easyClose = TRUE, footer = tagList(actionButton("clear_upload","Proceed"), modalButton("Cancel"))))
+      } else {
       gsm_selected <- searchGSM()[input$searchResultsGSM_rows_selected,]
       gsm_selected$category <- rep("Not yet assigned", nrow(gsm_selected))
       userSamples$df <<- rbind(userSamples$df,gsm_selected)
       proxy.search %>% selectRows(NULL)
       updateTabsetPanel(session = session, inputId = "searchpanel", selected = "2")
+      }
   })
 
 # Assign categories to each sample (GSM)
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
   
   observeEvent(input$assignButton, {
+        userSamples$df[,"category"] <<- as.character(userSamples$df[,"category"])
         userSamples$df[input$gsm_table_rows_selected,"category"] <<- input$selection
+        userSamples$df[,"category"] <<- as.factor(userSamples$df[,"category"])
   })      
    
   output$gsm_table <- DT::renderDataTable({
@@ -288,32 +344,46 @@ rv <- reactiveValues(download_flag = 0)
           rv$download_flag <- rv$download_flag + 1
       })
 
+
+
 # Modal confirming CEL download, and processing function
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_     
 observeEvent(input$downloadCEL, {
-    userSamples$finishedtable %>% group_by(category) %>% summarise(n.gse = n_distinct(series_id)) -> gse.check
-    warning <- "Please click below to begin processing the data."
-    numCat <- length(gse.check$category)>1
-    if(length(which(gse.check$n.gse==1))!=0){
-        catAlert <- paste(gse.check$category[which(gse.check$n.gse==1)], collapse = ", ")
-        warning <- paste("WARNING: The following categories contain samples from a single experiment (GSE) and as such they will be confounded by batch effects: ",catAlert,".<br>Please proceed with caution or cancel and select additional samples to add to these categories.",sep="")
-    }
-    if(!numCat){
-        showModal(modalDialog(title="Error! A minimum of two categories are needed.","Experimental samples need to be organized into 2 or 3 categories for appropriate downstream analysis. If you are interested in only one type of sample, we suggest choosing samples to act as 'background', which will allow for differential analysis to identify which receptor genes are enriched or depleted in your sample of interest.",
+    if (!eset_is_uploaded){
+        userSamples$finishedtable %>% group_by(category) %>% summarise(n.gse = n_distinct(series_id)) -> gse.check
+        warning <- "Please click below to begin processing the data."
+        numCat <- length(gse.check$category)>1
+        if(length(which(gse.check$n.gse==1))!=0){
+            catAlert <- paste(gse.check$category[which(gse.check$n.gse==1)], collapse = ", ")
+            warning <- paste("WARNING: The following categories contain samples from a single experiment (GSE) and as such they will be confounded by batch effects: ",catAlert,".<br>Please proceed with caution or cancel and select additional samples to add to these categories.",sep="")
+        }
+        if(!numCat){
+            showModal(modalDialog(title="Error! A minimum of two categories are needed.","Experimental samples need to be organized into 2 or 3 categories for appropriate downstream analysis. If you are interested in only one type of sample, we suggest choosing samples to act as 'background', which will allow for differential analysis to identify which receptor genes are enriched or depleted in your sample of interest.",
+            easyClose = TRUE,
+            footer = tagList(
+                modalButton("Cancel")))) 
+        } else {
+            showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.",HTML(paste("June 20th, 2019<br>",warning)),
+            easyClose = TRUE,
+            footer = tagList(
+                modalButton("Cancel"),
+                actionButton("processCEL","Proceed"))))      
+        }}
+# If the flag is TRUE, confirm and process uploaded data
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_             
+    else { 
+        shinyjs::disable("downloadCEL")
+        userID <<- processDataUpload(userSamples$finishedtable, userEset(), input$downloadId, input$comments, input$speciesSelection, poolUserData)
+        global$DatasetTable <<- loadUserDatasets(poolUserData)
+        showModal(modalDialog(title="Your dataset was successfully processed!","Analyse your data in the 'Load Expression Datasets' tab. You can also download a report from this page.",
         easyClose = TRUE,
         footer = tagList(
-            modalButton("Cancel")))) 
-    } else {
-        showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.",HTML(paste("June 20th, 2019<br>",warning)),
-        easyClose = TRUE,
-        footer = tagList(
-            modalButton("Cancel"),
-            actionButton("process","Proceed"))))      
+            modalButton("OK"))))# modal
     }
   })
 
-observeEvent(input$process, {
-    shinyjs::disable("process")
+observeEvent(input$processCEL, {
+    shinyjs::disable("processCEL")
     userID <<- processData(userSamples$finishedtable, input$downloadId, input$comments, input$gplSelection, poolUserData)
     global$DatasetTable <<- loadUserDatasets(poolUserData)
     removeModal()
@@ -322,6 +392,7 @@ observeEvent(input$process, {
     footer = tagList(
         modalButton("OK"))))# modal
   })
+
 
 # Reset button, modal confirmation
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
@@ -391,7 +462,8 @@ observeEvent(input$user_data,{
     datasetToLoad <- NULL
    
    if(input$user_data=="none"){
-        mapped_probes<<-NULL
+        mapped_probes<<-NULL  ### this is going to be the key for detecting upload data
+        uploaded_features<<-NULL ## ^ this set will be used for uploaded data
         eset<<-NULL
         de_choices<<-NULL
         sig_genes_lfc<<-NULL
@@ -400,6 +472,7 @@ observeEvent(input$user_data,{
         assign(
               x = "species", value = global$DatasetTable$species[which(global$DatasetTable$desc == input$user_data)], envir = .GlobalEnv
            )
+           uploaded_features <<-NULL ## I think this might have to be here for non-uploaded datasets
         datasetToLoad <- paste("./data/app_data_", id, ".rda", sep='')
         withProgress(message="Loading dataset",value=0.2,{
             load(datasetToLoad,envir=.GlobalEnv)
@@ -414,7 +487,13 @@ observeEvent(input$user_data,{
             updateCheckboxGroupInput(session, "genelist", label = NULL, choices = names(gene_lists[[species]]), selected = NULL, inline = FALSE)
             
             incProgress(0.2, message = "Loading gene names")
-            updateSelectInput(session, "gene", choices = all_genes[species])
+            # updateSelectInput(session, "gene", choices = all_genes[species])
+            if(is.null(uploaded_features)){
+                updateSelectInput(session, "gene", choices = mapped_probes)
+            }
+            if(is.null(mapped_probes)){
+                updateSelectInput(session, "gene", choices = make.names(uploaded_features))
+            }
         })
         
     }
@@ -440,7 +519,8 @@ rvDEG <- reactiveValues(download_flag = 0)
 
 output$QC = renderUI({
   validate(
-    need(input$user_data!="none","No dataset selected")
+    need(input$user_data!="none","No dataset selected"),
+    need(is.null(uploaded_features), "QC data not available for uploaded read table")
   )
 
   id <- global$DatasetTable$userID[which(global$DatasetTable$desc == input$user_data)]
@@ -515,7 +595,9 @@ output$QC = renderUI({
     genes_to_plot = summary_gene_data()$Symbol[rows]
     
     gene_data = get_gene_data(eset, genes_to_plot)
-    by_gene_violplot(gene_data,tissues=groups)
+    density <- gene_data %>% group_by(tissue) %>% summarise(count=n())
+    if (any(density$count < 3)) {by_gene_violplot(gene_data,tissues=groups)}
+        else {by_gene_boxplot(gene_data,tissues=groups)}
     
     
   })
@@ -536,7 +618,7 @@ output$QC = renderUI({
     
     if(input$de_state) {
       selected_de = input$de
-      de_lists = lapply(selected_de, function(x) { as.character(get_de_genes(genes, x, sig_genes_lfc)$Symbol) })
+      de_lists = lapply(selected_de, function(x) {as.character(get_de_genes(genes, x, sig_genes_lfc)$Symbol) })
       genes = Reduce(union, de_lists)
     } 
    
@@ -560,7 +642,8 @@ output$QC = renderUI({
        
     selected_tissues = input$tissues
     sub_eset = eset[, eset$tissue %in% selected_tissues]
-    genes = gene2probe(genesToPlot(), mapped_probes)
+    genes = genesToPlot()
+    if(is.null(uploaded_features)){genes = gene2probe(genesToPlot(), mapped_probes)}
     
     cat(file=stderr(), "Preparing heatmap:\n Tissues:", paste(input$tissues, collapse = ", "), "\n gene list: ",paste(genesToPlot(),collapse=", "),"\n genes: ", paste(genes,collapse=", "),"\n")
     

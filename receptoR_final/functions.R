@@ -186,6 +186,103 @@ withProgress(
 
 }
 
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
+#$# Data processing 31 July 2018
+##  Uploaded count table processing, similar to above but without downloading CEL files
+processDataUpload = function(finished_table, read_counts, datasetID, userComments, gpl, userDB){
+    ## categories need to have R-safe names so we'll store the user input as a new column
+    finished_table$category.labels <- finished_table$category
+    safeNames <- make.names(levels(factor(finished_table$category)),unique=TRUE)
+    finished_table$category <- factor(finished_table$category, levels = levels(factor(finished_table$category)), labels=safeNames)
+    ## colours
+    catCol <- factor(brewer.pal(9,"Set1")[1:length(levels(factor(finished_table$category)))])
+    finished_table$colours <- finished_table$category
+    finished_table$colours <- factor(finished_table$colours, levels=levels(factor(finished_table$category)), labels=catCol)
+    
+    ## timestamp
+    timeStamp <- strftime(Sys.time(),"%Y%m%d-%H%M")
+
+    PATH = "./data/"
+          
+withProgress(
+   message = "Processing user count data", value = 0,
+   {
+# Convert ------------------------------------------------------------
+        incProgress(0.1, message = "Converting to expression set")
+        sample_names <- as.character(finished_table$samples)
+        final_counts <- tbl_df(read_counts) %>% dplyr::select(sample_names)
+        uploaded_features <- as.character(read_counts[,1])
+        matrix_counts <- as.matrix(final_counts)
+        rownames(matrix_counts) <- make.names(uploaded_features, unique=TRUE)   ##### This is currently a problem with non-unique row names: solved, but not the best method
+        all_eset = ExpressionSet(matrix_counts)
+        all_pData<-data.frame(tissue=finished_table$category)
+        rownames(all_pData)<-finished_table$samples 
+        
+        ## Change of object name
+        all_eset_final<-all_eset
+        pData(all_eset_final)<-all_pData
+
+        ## Save data files 
+        save(all_eset_final, finished_table, file = paste(PATH, "final_processed_data_", timeStamp, ".rda", sep=''))
+
+# Differentially Expressed Gene (DEG) Analysis ------------------------------------------------------------
+        incProgress(0.1, message = "Determining differential gene expression")
+
+        eset = all_eset_final
+
+        tissue = as.factor(pData(eset)$tissue)
+        design = model.matrix(~0 + tissue)
+        colnames(design) = levels(tissue)
+        
+        incProgress(0.1, message = "Fitting model")
+        fit = lmFit(eset, design)
+        matrices<-t(combn(levels(tissue),2))
+        contrasts <- paste(matrices[,1],matrices[,2],sep='-')
+        contrast_matrix = makeContrasts(contrasts=contrasts, levels = design)
+
+        fit2 = contrasts.fit(fit, contrast_matrix)
+        efit = eBayes(fit2)
+        tfit = treat(fit2, lfc = 1)
+
+        results = decideTests(efit)
+        results_lfc = decideTests(tfit)
+
+        coefs = colnames(contrast_matrix)
+        sig_genes = lapply(coefs, function(x) {
+            topTable(efit, coef = x, number = Inf, p.value = 0.01, sort.by = "p")
+        })
+
+        sig_genes_lfc = lapply(coefs, function(x) {
+            topTreat(tfit, coef = x, number = Inf, p.value = 0.01, sort.by = "p")
+        })
+        
+        names(sig_genes) = coefs
+        names(sig_genes_lfc) = coefs
+
+        sapply(sig_genes, nrow)
+        sapply(sig_genes_lfc, nrow)
+
+        # get list of DEG
+        de_choices = names(sig_genes_lfc)
+        # set groups
+        groups = levels(tissue)
+
+# Save user-generated experiments -----------------------------------   
+        incProgress(0.1, message = "Saving processed data")
+        db <- poolCheckout(userDB)
+        data <- data.frame(userID = timeStamp, desc = datasetID, comments = userComments, species = gpl)
+        dbWriteTable(conn=db, name="userData", data, append=T, row.names=F)
+        poolReturn(db)
+
+        save(uploaded_features, eset, de_choices, sig_genes_lfc, groups, file = paste(PATH,"app_data_",timeStamp,".rda",sep=''))
+        
+        incProgress(0.1, message = "Success!")
+    })
+    return(timeStamp)
+}
+
+
+#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$#$
 loadUserDatasets <- function(userDB) {
      # Connect to the database
      db <- poolCheckout(userDB)
@@ -221,7 +318,11 @@ loadUserDatasets <- function(userDB) {
  # Get de genes from topTable output that match a genelist -------------------------------------
 
  get_de_genes = function(gene_list, de_choice, sig_genes_lfc) {
-   sig_genes_lfc[[de_choice]] %>% tibble::rownames_to_column("probe") %>% filter(Symbol %in% gene_list)
+     if(is.null(uploaded_features)){
+   sig_genes_lfc[[de_choice]] %>% tibble::rownames_to_column("probe") %>% filter(Symbol %in% gene_list)}
+   else {
+       sig_genes_lfc[[de_choice]] %>% tibble::rownames_to_column("Symbol") #%>% filter(Symbol %in% gene_list)}
+   }
  }
 
 
@@ -249,25 +350,29 @@ loadUserDatasets <- function(userDB) {
 
    cat(file=stderr(), "incoming ", length(subset_probes), " probes\n")
    #mat = t(scale(t(mat)))
-   if(species == 'mouse'){
+   if(species == 'mouse' & is.null(uploaded_features)){
        mat = exprs(eset)[c(subset_probes),]
        cat(file=stderr(), "attempting to load ", length(rownames(mat)), " mouse genes\n")
        row_labs = paste(getSYMBOL(rownames(mat), "mouse4302.db"),rownames(mat),sep=":")
        rownames(mat) = getSYMBOL(rownames(mat), "mouse4302.db")
-   } else {
+   } else if(species == 'human' & is.null(uploaded_features)) {
        mat = exprs(eset)[c(subset_probes),]
        cat(file=stderr(), "attempting to load ", length(rownames(mat)), " human genes\n")
        row_labs = paste(getSYMBOL(rownames(mat), "hgu133plus2.db"),rownames(mat),sep=":")
        rownames(mat) = getSYMBOL(rownames(mat), "hgu133plus2.db")
        row_labs = row_labs[!is.na(rownames(mat))]
        mat = mat[which(!is.na(rownames(mat))),]
-       
+   } else {
+       mat = exprs(eset)
+       mat = mat[c(subset_probes),]
+       cat(file=stderr(), "attempting to load ", length(rownames(mat)), "uploaded features\n")
+       row_labs = rownames(mat)
    }
    
    # debug
     cat(file=stderr(), "These are the genes to plot: ", rownames(mat),"\n")
    
-   mat = mat[order(rownames(mat)),]
+    mat = mat[order(row_labs),]
    
    if (!probe_level) {
      mat = aggregate(mat, list(genes = rownames(mat)), mean)
@@ -297,22 +402,28 @@ loadUserDatasets <- function(userDB) {
  get_gene_data = function(eset, gene_list) {
    ph = pData(eset) %>% tibble::rownames_to_column("Sample")
    ph$Sample <- colnames(exprs(eset)) # 2018-04-17 fix missing row names
-   if(species=='mouse'){
-       exprs(eset) %>% 
+   if(!is.null(uploaded_features)){
+       keepCols <- c("Symbol")
+       return(exprs(eset) %>% as.data.frame() %>% tibble::rownames_to_column("Symbol") %>% filter(Symbol %in% gene_list) %>% gather(Sample, expression, -one_of(keepCols)) %>% left_join(ph, by = "Sample"))}
+   
+   if(species=='mouse' & is.null(uploaded_features)){
+       return(exprs(eset) %>% 
          as.data.frame() %>% 
          tibble::rownames_to_column("probe") %>% 
          mutate(Symbol = getSYMBOL(probe, "mouse4302.db")) %>% 
          filter(Symbol %in% gene_list) %>% 
          gather(Sample, expression, starts_with("GSM")) %>% 
-         left_join(ph, by = "Sample")
-   } else {
-     exprs(eset) %>% 
+         left_join(ph, by = "Sample"))
+   }
+   
+   if(species=='human' & is.null(uploaded_features)){
+     return(exprs(eset) %>% 
        as.data.frame() %>% 
        tibble::rownames_to_column("probe") %>% 
        mutate(Symbol = getSYMBOL(probe, "hgu133plus2.db")) %>% 
        filter(Symbol %in% gene_list) %>% 
        gather(Sample, expression, starts_with("GSM")) %>% 
-       left_join(ph, by = "Sample")
+       left_join(ph, by = "Sample"))
    }
  }
 
@@ -391,17 +502,23 @@ loadUserDatasets <- function(userDB) {
      }
     
      exp = t(exp)
-     if(species=='mouse'){
+     if(species=='mouse' & is.null(uploaded_features)){
          return(list(
            result = splsda(exp, tissue, ncomp = 2),
            tissue_grps = tissue_grps,
            varNames = getSYMBOL(colnames(exp), "mouse4302.db")
          ))
-     } else {
+     } else if(species=='mouse' & is.null(uploaded_features)) {
          return(list(
            result = splsda(exp, tissue, ncomp = 2),
            tissue_grps = tissue_grps,
            varNames = getSYMBOL(colnames(exp), "hgu133plus2.db")
+         ))
+     } else {
+         return(list(
+           result = splsda(exp, tissue, ncomp = 2),
+           tissue_grps = tissue_grps,
+           varNames = colnames(exp)
          ))
      }
  } 

@@ -6,7 +6,7 @@
 #                   |_|
 #
 # June 2019 receptoR v 1.3
-## Last update: 2019-06-22, Derek Toms
+## Last update: 2019-07-31, Derek Toms
 ## ui.R
 
 ########################################
@@ -104,10 +104,10 @@ navbarPage("receptoR",
 
 # Search for GSM  ------------------------------------------------------------------------------
 
-    tabPanel("Search Microarray Database",
+    tabPanel("Search Transcriptome Database",
        value = "searchPanel",
        includeCSS("www/receptor.CSS"),
-       h3("Organize publicly available expression data"),
+       h3("Organize publicly available expression data"), ## change
        hr(),
        sidebarLayout(
            
@@ -121,6 +121,7 @@ navbarPage("receptoR",
            tagAppendAttributes(textInput("searchText", "Enter search terms:", value = ""),`data-proxy-click` = "searchButton"),
            helpText("Search for multiple keywords using the boolean operators 'AND','OR','NOT', and the wildcard '*'. For example: 'liver AND hepa* NOT brain'."),
            actionButton("searchButton", "Search for arrays"),
+           actionButton("uploadButton", "I have my own data to analyze"),
            hr(),
            # HTML(paste("These experiments, each containing multiple biological samples, are refered to as ",span("G",style="font-weight:bold"),"EO data ",span("se",style="font-weight:bold"),"ries (GSE). Each ",span("G",style="font-weight:bold"),"EO ",span("s",style="font-weight:bold"), "a",span("m",style="font-weight:bold"),"ple (GSM) represents a digitized transcriptional snapshot.",sep="")),
            p("Click \'Add array to experiment\' to retrieve array (GSM) information and then click on the \'Assign\' tab above to organize this data for analysis."),
@@ -146,10 +147,10 @@ navbarPage("receptoR",
            ),
            
            conditionalPanel(condition="input.searchpanel==3",
-               h4("Thank you for using receptoR!"),
-               p(" Please enter your name and any comments/bugs/questions/requests in the box below, then click the \'Download and Process\' button to retrieve the raw files from the NCBI server and process them based on their assigned categories."),
-               textAreaInput("comments","Comments",width="100%",height="100px",resize="vertical"),
-               textInput("downloadId","Download ID"),
+               h4("Thank you for using receptoR!"), # this should be slightly more informative, along the lines of Process data
+               p(" Please enter your name and any comments/bugs/questions/requests in the box below, then click the \'Download and Process\' button to retrieve the raw files from the NCBI server and process them based on their assigned categories."), # move this off of this page; separate "Help/Comments" button
+               textAreaInput("comments","Comments",width="100%",height="100px",resize="vertical"), # ditto
+               textInput("downloadId","Download ID"), # needs to be mandatory (or filled by default)
                downloadButton("report","Download Report"),
                actionButton("downloadCEL","Process")),
            hr(),
