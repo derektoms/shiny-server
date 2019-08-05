@@ -351,18 +351,21 @@ loadUserDatasets <- function(userDB) {
    cat(file=stderr(), "incoming ", length(subset_probes), " probes\n")
    #mat = t(scale(t(mat)))
    if(species == 'mouse' & is.null(uploaded_features)){
+       cat(file=stderr(), "mouse microarray dataset detected\n")
        mat = exprs(eset)[c(subset_probes),]
-       cat(file=stderr(), "attempting to load ", length(rownames(mat)), " mouse genes\n")
+       cat(file=stderr(), "attempting to load ", length(rownames(mat)), " mouse genes (microarray)\n")
        row_labs = paste(getSYMBOL(rownames(mat), "mouse4302.db"),rownames(mat),sep=":")
        rownames(mat) = getSYMBOL(rownames(mat), "mouse4302.db")
    } else if(species == 'human' & is.null(uploaded_features)) {
+       cat(file=stderr(), "human microarray dataset detected\n")
        mat = exprs(eset)[c(subset_probes),]
-       cat(file=stderr(), "attempting to load ", length(rownames(mat)), " human genes\n")
+       cat(file=stderr(), "attempting to load ", length(rownames(mat)), " human genes (microarray)\n")
        row_labs = paste(getSYMBOL(rownames(mat), "hgu133plus2.db"),rownames(mat),sep=":")
        rownames(mat) = getSYMBOL(rownames(mat), "hgu133plus2.db")
        row_labs = row_labs[!is.na(rownames(mat))]
        mat = mat[which(!is.na(rownames(mat))),]
    } else {
+       cat(file=stderr(), "uploaded dataset detected\n")
        mat = exprs(eset)
        mat = mat[c(subset_probes),]
        cat(file=stderr(), "attempting to load ", length(rownames(mat)), "uploaded features\n")
