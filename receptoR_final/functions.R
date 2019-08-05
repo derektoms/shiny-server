@@ -500,9 +500,11 @@ loadUserDatasets <- function(userDB) {
      } else if(species == 'human' & is.null(uploaded_features)) {
          exp = exprs(eset)[genes,]     
      } else {
-         exp = exprs(eset)[c(genes),]
-         # exp = exp[!(apply(exp,1,function(y) all(y==0))),]
-         cat(file=stderr(),"did we get this far?",rownames(exp),"\n")
+         exp = exprs(eset) %>% as.data.frame() %>% tibble::rownames_to_column("Symbol") %>% filter(Symbol %in% subset_probes)
+         row_labs=mat$Symbol
+         exp = data.matrix(exp[,-1])
+         rownames(exp) = row_labs
+         exp = exp[!(apply(exp,1,function(y) all(y==0))),]
      }
 
      
