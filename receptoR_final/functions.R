@@ -366,7 +366,7 @@ loadUserDatasets <- function(userDB) {
        mat = mat[which(!is.na(rownames(mat))),]
    } else {
        mat = exprs(eset)
-       cat(file=stderr(), "uploaded dataset detected\n",c(subset_probes),"\n",mat,"\n")
+       cat(file=stderr(), "uploaded dataset detected\n",c(subset_probes),"\nthis is a",class(mat),"\n",mat,"\n")
        mat[c(subset_probes),]
        cat(file=stderr(), "bet it won't get here\n")
        row_labs = rownames(mat)
