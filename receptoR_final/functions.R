@@ -370,6 +370,7 @@ loadUserDatasets <- function(userDB) {
        mat = data.matrix(mat[,-1])
        rownames(mat) = row_labs
        mat = mat[!(apply(mat,1,function(y) all(y==0))),-1]
+       row_labs = rownames(mat)
    }
    
    # debug
