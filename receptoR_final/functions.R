@@ -368,7 +368,7 @@ loadUserDatasets <- function(userDB) {
        mat = data.frame(exprs(eset))
        cat(file=stderr(), "uploaded dataset detected\n",rownames(mat),"\n")
        row_labs = rownames(mat)
-       mat = mat[c(subset_probes)]
+       mat = mat[c(subset_probes),]
        cat(file=stderr(), "bet it won't get here\n")
        mat = as.matrix(mat)
    }
