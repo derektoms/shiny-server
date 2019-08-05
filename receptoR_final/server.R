@@ -720,7 +720,7 @@ output$QC = renderUI({
        need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
        need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
        need(length(input$pls_tissues) >= 2, "Please select at least two tissues for a PLS-DA plot."),
-       need(!is.null(plsdaData), if(input$de_state){paste("Based on the genes selected in 'Load Data', ", length(genesToPlot())," genes were differentially expressed in these tissues (",paste(input$tissues, collapse = ", "), "); try unselecting that option in the side menu.",sep="")}else{paste("No genes to plot. Try including more receptor types in 'Load Data'.")})
+       need(!is.null(plsdaData()$result), if(input$de_state){paste("Based on the genes selected in 'Load Data', ", length(genesToPlot())," genes were differentially expressed in these tissues (",paste(input$tissues, collapse = ", "), "); try unselecting that option in the side menu.",sep="")}else{paste("No genes to plot. Try including more receptor types in 'Load Data'.")})
     )
     
     plotIndiv(plsdaData()$result, ind.names = FALSE, group = factor(plsdaData()$tissue_grps), pch = 16, 
@@ -733,7 +733,7 @@ output$QC = renderUI({
          need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
          need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
          need(length(input$pls_tissues) >= 2, "Please select at least two tissues for a Correlation circle plot."),
-         need(!is.null(plsdaData), if(input$de_state){paste("Based on the genes selected in 'Load Data', ", length(genesToPlot())," genes were differentially expressed in these tissues (",paste(input$tissues, collapse = ", "), "); try unselecting that option in the side menu.",sep="")}else{paste("No genes to plot. Try including more receptor types in 'Load Data'.")})
+         need(!is.null(plsdaData()$result), if(input$de_state){paste("Based on the genes selected in 'Load Data', ", length(genesToPlot())," genes were differentially expressed in these tissues (",paste(input$tissues, collapse = ", "), "); try unselecting that option in the side menu.",sep="")}else{paste("No genes to plot. Try including more receptor types in 'Load Data'.")})
       )
       comp = as.integer(input$pls_ncomp)
     plotVar(plsdaData()$result, var.names = list(plsdaData()$varNames), comp.select=comp, cex = 1, overlap=FALSE, col="grey",title="Correlation circle between genes and discriminant components", style="graphics")
@@ -751,7 +751,7 @@ output$QC = renderUI({
          need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
          need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
          need(length(input$pls_tissues) >= 2, "Please select at least two tissues for a Loadings plot."),
-         need(!is.null(plsdaData), if(input$de_state){paste("Based on the genes selected in 'Load Data', ", length(genesToPlot())," genes were differentially expressed in these tissues (",paste(input$tissues, collapse = ", "), "); try unselecting that option in the side menu.",sep="")}else{paste("No genes to plot. Try including more receptor types in 'Load Data'.")})
+         need(!is.null(plsdaData()$result), if(input$de_state){paste("Based on the genes selected in 'Load Data', ", length(genesToPlot())," genes were differentially expressed in these tissues (",paste(input$tissues, collapse = ", "), "); try unselecting that option in the side menu.",sep="")}else{paste("No genes to plot. Try including more receptor types in 'Load Data'.")})
       )
 
     
