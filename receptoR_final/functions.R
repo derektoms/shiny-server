@@ -501,7 +501,7 @@ loadUserDatasets <- function(userDB) {
          exp = exprs(eset)[genes,]     
      } else {
          exp = exprs(eset)[c(genes),]
-         exp = exp[!(apply(exp,1,function(y) all(y==0))),]
+         # exp = exp[!(apply(exp,1,function(y) all(y==0))),]
          cat(file=stderr(),"did we get this far?",rownames(exp),"\n")
      }
 
