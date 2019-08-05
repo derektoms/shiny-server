@@ -597,7 +597,7 @@ output$QC = renderUI({
     genes_to_plot = summary_gene_data()$Symbol[rows]
     
     gene_data = get_gene_data(eset, genes_to_plot)
-    density <- gene_data %>% group_by(tissue) %>% summarise(count=n())
+    density <- gene_data %>% group_by(tissue,Symbol) %>% summarise(count=n())
     cat(file=stderr(),"the density is ", as.matrix(density),"\n")
     if (any(density$count > 3)) {by_gene_violplot(gene_data,tissues=groups)}
         else {by_gene_boxplot(gene_data,tissues=groups)}
