@@ -491,10 +491,18 @@ loadUserDatasets <- function(userDB) {
  get_plsda = function(eset, genes, probe) {
      
      if(species=='mouse'){
+         
+     } else {
+         
+     }
+     if(species == 'mouse' & is.null(uploaded_features)){
          exp = exprs(eset)[c(genes),]
+     } else if(species == 'human' & is.null(uploaded_features)) {
+         exp = exprs(eset)[genes,]     
      } else {
          exp = exprs(eset)[genes,]
      }
+
      
      tissue = factor(pData(eset)$tissue)
      tissue_grps = pData(eset)$tissue
