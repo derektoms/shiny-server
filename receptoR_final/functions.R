@@ -501,7 +501,7 @@ loadUserDatasets <- function(userDB) {
          exp = exprs(eset)[genes,]     
      } else {
          exp = exprs(eset) %>% as.data.frame() %>% tibble::rownames_to_column("Symbol") %>% filter(Symbol %in% genes)
-         row_labs=mat$Symbol
+         row_labs=exp$Symbol
          exp = data.matrix(exp[,-1])
          rownames(exp) = row_labs
          exp = exp[!(apply(exp,1,function(y) all(y==0))),]
