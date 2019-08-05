@@ -367,6 +367,7 @@ loadUserDatasets <- function(userDB) {
    } else {
        mat = exprs(eset) %>% as.data.frame() %>% tibble::rownames_to_column("Symbol") %>% filter(Symbol %in% subset_probes)
        mat = data.matrix(mat[,-1])
+       cat(file=stderr(),mat,"\n")
        row_labs=rownames(mat)
    }
    
