@@ -704,6 +704,7 @@ output$QC = renderUI({
     if(is.null(uploaded_features)){genes = gene2probe(genesToPlot(), mapped_probes)}
     
     if(length(genes) < 10) {
+        cat(file=stderr(),"genes are: ",genes,"\n")
       return(NULL)
     }
     
