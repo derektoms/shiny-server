@@ -369,13 +369,13 @@ loadUserDatasets <- function(userDB) {
        row_labs=mat$Symbol
        mat = data.matrix(mat[,-1])
        rownames(mat) = row_labs
-       mat = mat[][!(apply(mat,1,function(y) all(y==0))),-1]
+       mat = mat[[!(apply(mat,1,function(y) all(y==0))),-1]]
    }
    
    # debug
     cat(file=stderr(), "These are the genes to plot: ", rownames(mat),"\n")
    
-    mat = mat[order(row_labs),]
+    # mat = mat[order(row_labs),]
    
    if (!probe_level) {
      mat = aggregate(mat, list(genes = rownames(mat)), mean)

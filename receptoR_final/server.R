@@ -634,11 +634,8 @@ output$QC = renderUI({
   output$expressionPlot = renderPlot({
       validate(
           need(input$user_data!="none","No dataset selected. Please select an experiment for analysis in 'Load Expression Data'."),
-          
           need(geneList(), "No genes selected. Please select receptor type(s) to analyse in 'Load Expression Data'."),
-          
           need(input$tissues, "No tissues selected. Please choose at least one tissue to plot receptor heatmap."),
-          
           need(length(genesToPlot())>10, if(input$de_state){paste("Based on the genes selected in 'Load Data', ", length(genesToPlot())," genes were differentially expressed in these tissues (",paste(input$tissues, collapse = ", "), "); try unselecting that option in the side menu.",sep="")}else{paste("No genes to plot as a heatmap (minimum = 10). Try including more receptor types in 'Load Data'.")})
     )
        
