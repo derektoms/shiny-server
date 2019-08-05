@@ -500,7 +500,7 @@ loadUserDatasets <- function(userDB) {
      } else if(species == 'human' & is.null(uploaded_features)) {
          exp = exprs(eset)[genes,]     
      } else {
-         exp = exprs(eset)[genes,]
+         exp = exprs(eset)[c(genes),]
      }
 
      
