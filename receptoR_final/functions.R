@@ -365,12 +365,8 @@ loadUserDatasets <- function(userDB) {
        row_labs = row_labs[!is.na(rownames(mat))]
        mat = mat[which(!is.na(rownames(mat))),]
    } else {
-       mat = data.frame(exprs(eset))
-       cat(file=stderr(), "uploaded dataset detected\n",rownames(mat),"\n")
-       row_labs = rownames(mat)
-       mat = mat[c(subset_probes),]
-       cat(file=stderr(), "bet it won't get here\n")
-       mat = as.matrix(mat)
+       mat = exprs(eset) %>% as.data.frame() %>% tibble::rownames_to_column("Symbol") %>% filter(Symbol %in% subset_probes)
+       mat = data.matrix(mat[,-1])
    }
    
    # debug
