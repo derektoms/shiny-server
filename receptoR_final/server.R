@@ -57,7 +57,7 @@ library(mouse4302cdf)
 source("functions.R")
 ## 2019-03-27 Ran this to get the latest database
 # if(!file.exists('./../data/GEOmetadb.sqlite')) getSQLiteFile()
-load("./../2019-04_genelists.rda")
+load("./../2019-08_genelists.rda")
 
 #------------------------------------------------------------------------------------+
 ### for local work
@@ -487,15 +487,7 @@ observeEvent(input$user_data,{
             updateCheckboxGroupInput(session, "genelist", label = NULL, choices = names(gene_lists[[species]]), selected = NULL, inline = FALSE)
             
             incProgress(0.2, message = "Loading gene names")
-            # updateSelectInput(session, "gene", choices = all_genes[species])
-            if(is.null(uploaded_features)){
-                updateSelectInput(session, "gene", choices = mapped_probes)
-              # updateSelectInput(session,"gene",choices = c("microarray gene 1","microarray gene 2","microarray gene 3"))
-            }
-            if(is.null(mapped_probes)){
-             # updateSelectInput(session, "gene", choices = make.names(uploaded_features))
-               updateSelectInput(session,"gene",choices = c("uploaded features","are not currently","available"))
-            }
+            updateSelectInput(session, "gene", choices = all_genes[species])
         })
         
     }
