@@ -5,8 +5,8 @@
 # |_|  \___|\___\___| .__/ \__\___/|_| \_\
 #                   |_|
 #
-# June 2019 receptoR v 1.3
-## Last update: 2019-06-22, Derek Toms
+# August 2019 receptoR v 1.3
+## Last update: 2019-08-05, Derek Toms
 ## server.R
 
 
@@ -489,12 +489,12 @@ observeEvent(input$user_data,{
             incProgress(0.2, message = "Loading gene names")
             # updateSelectInput(session, "gene", choices = all_genes[species])
             if(is.null(uploaded_features)){
-                # updateSelectInput(session, "gene", choices = mapped_probes)
-                updateSelectInput(session,"gene",choices = c("microarray gene 1","microarray gene 2","microarray gene 3"))
+                updateSelectInput(session, "gene", choices = mapped_probes)
+              # updateSelectInput(session,"gene",choices = c("microarray gene 1","microarray gene 2","microarray gene 3"))
             }
             if(is.null(mapped_probes)){
-            #    updateSelectInput(session, "gene", choices = make.names(uploaded_features))
-                updateSelectInput(session,"gene",choices = c("uploaded gene 1","uploaded gene 2","uploaded gene 3"))
+             # updateSelectInput(session, "gene", choices = make.names(uploaded_features))
+               updateSelectInput(session,"gene",choices = c("uploaded features","are not currently","available"))
             }
         })
         
