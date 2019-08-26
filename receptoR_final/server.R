@@ -373,7 +373,7 @@ observeEvent(input$downloadCEL, {
         #     footer = tagList(
         #         modalButton("Cancel"),
         #         actionButton("processCEL","Proceed"))))
-        }}
+        }#}
 # If the flag is TRUE, confirm and process uploaded data
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_             
     else { 
