@@ -351,7 +351,7 @@ rv <- reactiveValues(download_flag = 0)
 observeEvent(input$downloadCEL, {
     if (!eset_is_uploaded){
         ### 2019-08-26 GEO seems to be having problems
-            showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.",HTML("August 26th, 2019<br>It appears as though the NCBI server is having some issues with its server. Currently, we are unable to retrieve CEL files and can not process your request. Please use the 'Download Report' button to save your categorized samples. When the server connection is restored, this CSV file can be used to pick up where you left off. We apologize for the inconvenience."),
+            showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.",HTML("August 26th, 2019<br>It appears as though the NCBI server is having some issues and <strong>receptoR</strong> is currently unable to retrieve CEL files. Please use the 'Download Report' button to save your categorized samples. When the server connection is restored, this CSV file can be used to pick up where you left off. We apologize for the inconvenience."),
             easyClose = TRUE,
             footer = tagList(
                 modalButton("Cancel"))))        
