@@ -350,24 +350,29 @@ rv <- reactiveValues(download_flag = 0)
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_     
 observeEvent(input$downloadCEL, {
     if (!eset_is_uploaded){
-        userSamples$finishedtable %>% group_by(category) %>% summarise(n.gse = n_distinct(series_id)) -> gse.check
-        warning <- "Please click below to begin processing the data."
-        numCat <- length(gse.check$category)>1
-        if(length(which(gse.check$n.gse==1))!=0){
-            catAlert <- paste(gse.check$category[which(gse.check$n.gse==1)], collapse = ", ")
-            warning <- paste("WARNING: The following categories contain samples from a single experiment (GSE) and as such they will be confounded by batch effects: ",catAlert,".<br>Please proceed with caution or cancel and select additional samples to add to these categories.",sep="")
-        }
-        if(!numCat){
-            showModal(modalDialog(title="Error! A minimum of two categories are needed.","Experimental samples need to be organized into 2 or 3 categories for appropriate downstream analysis. If you are interested in only one type of sample, we suggest choosing samples to act as 'background', which will allow for differential analysis to identify which receptor genes are enriched or depleted in your sample of interest.",
+        ### 2019-08-26 GEO seems to be having problems
+            showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.",HTML("August 26th, 2019<br>It appears as though the NCBI server is having some issues with its server. Currently, we are unable to retrieve CEL files and can not process your request. Please use the 'Download Report' button to save your categorized samples. When the server connection is restored, this CSV file can be used to pick up where you left off. We apologize for the inconvenience."),
             easyClose = TRUE,
             footer = tagList(
-                modalButton("Cancel")))) 
-        } else {
-            showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.",HTML(paste("June 20th, 2019<br>",warning)),
-            easyClose = TRUE,
-            footer = tagList(
-                modalButton("Cancel"),
-                actionButton("processCEL","Proceed"))))      
+                modalButton("Cancel"))))        
+        # userSamples$finishedtable %>% group_by(category) %>% summarise(n.gse = n_distinct(series_id)) -> gse.check
+        # warning <- "Please click below to begin processing the data."
+        # numCat <- length(gse.check$category)>1
+        # if(length(which(gse.check$n.gse==1))!=0){
+        #     catAlert <- paste(gse.check$category[which(gse.check$n.gse==1)], collapse = ", ")
+        #     warning <- paste("WARNING: The following categories contain samples from a single experiment (GSE) and as such they will be confounded by batch effects: ",catAlert,".<br>Please proceed with caution or cancel and select additional samples to add to these categories.",sep="")
+        # }
+        # if(!numCat){
+        #     showModal(modalDialog(title="Error! A minimum of two categories are needed.","Experimental samples need to be organized into 2 or 3 categories for appropriate downstream analysis. If you are interested in only one type of sample, we suggest choosing samples to act as 'background', which will allow for differential analysis to identify which receptor genes are enriched or depleted in your sample of interest.",
+        #     easyClose = TRUE,
+        #     footer = tagList(
+        #         modalButton("Cancel"))))
+        # } else {
+        #     showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.",HTML(paste("June 20th, 2019<br>",warning)),
+        #     easyClose = TRUE,
+        #     footer = tagList(
+        #         modalButton("Cancel"),
+        #         actionButton("processCEL","Proceed"))))
         }}
 # If the flag is TRUE, confirm and process uploaded data
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_             
