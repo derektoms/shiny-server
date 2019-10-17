@@ -123,9 +123,9 @@ observeEvent(input$linkSearch, {
   
   searchGSM <- eventReactive(input$searchButton, {
       if(input$gplSelection=='human'){
-          sql<-"SELECT * FROM appgsm WHERE description MATCH ?id1 AND gpl LIKE 'GPL570';"
+          sql<-"SELECT * FROM appgsm WHERE table MATCH ?id1 AND gpl LIKE 'GPL570';"
       } else {
-          sql<-"SELECT * FROM appgsm WHERE description MATCH ?id1 AND gpl LIKE 'GPL1261';"
+          sql<-"SELECT * FROM appgsm WHERE table MATCH ?id1 AND gpl LIKE 'GPL1261';"
       }
       query<-sqlInterpolate(poolGEO,sql,id1=input$searchText)
       queryGSM<-dbGetQuery(poolGEO,query)
