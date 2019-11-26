@@ -293,6 +293,6 @@ navbarPage("receptoR",
     ),
     show_waiter_on_load(tagList(
         spin_three_bounce(),
-        span("Please wait while receptoR loads..."),style="color:white;"))
+        span("Please wait while receptoR loads...",style="color:white;"))
 )
 )
