@@ -16,6 +16,7 @@
 library(shiny)
 library(shinythemes)
 library(shinyjs)
+library(waiter)
 
 
 ########################################
@@ -68,6 +69,7 @@ tags$head(tags$style(
 ),
 # tags$script(HTML("$('body').addClass('fixed);")),
 shinyjs::useShinyjs(),
+use_waiter(include_js = FALSE),
 navbarPage("receptoR",
     id = "receptorMain",
     theme = shinytheme("spacelab"),
@@ -288,6 +290,7 @@ navbarPage("receptoR",
         fluid = TRUE
         )
         )
-    )
+    ),
+    show_waiter_on_load(spin_three_bounce())
 )
 )

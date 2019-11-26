@@ -27,6 +27,7 @@ library(stringr)
 library(shiny)
 library(shinythemes)
 library(shinyjs)
+library(waiter)
 library(dbplyr)
 library(DT)
 
@@ -389,8 +390,8 @@ observeEvent(input$processCEL, {
     userID <<- processData(userSamples$finishedtable, input$downloadId, input$comments, input$gplSelection, poolUserData)
     global$DatasetTable <<- loadUserDatasets(poolUserData)
     removeModal()
-    modalText <- paste("Your dataset was successfully processed!\n","Analyse your data in the 'Load Expression Datasets' tab by loading '",userID,"'. You can also download a report from this page.",sep="")
-    showModal(modalDialog(title=modalText,
+    modalText <- paste("Analyse your data in the 'Load Expression Datasets' tab by loading '",userID,"'. You can also download a report from this page.",sep="")
+    showModal(modalDialog(title="Your dataset was successfully processed!", modalText,
     easyClose = TRUE,
     footer = tagList(
         modalButton("OK"))))# modal
@@ -707,6 +708,7 @@ output$QC = renderUI({
     
     get_plsda(sub_eset, genes, probe = FALSE) 
     
+    hide_waiter()
   })
 
 # PCA plot ----------------------------------------------------------------------------
