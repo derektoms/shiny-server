@@ -350,7 +350,7 @@ rv <- reactiveValues(download_flag = 0)
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_     
 observeEvent(input$downloadCEL, {
     validate(need(userSamples$finishedtable,"This message doesn't get printed."))
-    if (input$downloadId=="") {
+    if (!isTruthy(input$downloadId)) {
         showModal(modalDialog(title="Error! Please enter a name for this dataset.",
         easyClose = TRUE,
         footer = tagList(
