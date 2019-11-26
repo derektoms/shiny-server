@@ -290,7 +290,9 @@ navbarPage("receptoR",
         fluid = TRUE
         )
         )
-    ),
-    show_waiter_on_load(spin_three_bounce())
-)
+    )
+),
+    show_waiter_on_load(tagList(
+        spin_three_bounce(),
+        span("Please wait while receptoR loads..."))
 )
