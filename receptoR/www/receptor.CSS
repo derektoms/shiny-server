@@ -1,0 +1,42 @@
+/* receptor.CSS January 2019 by Derek Toms */
+
+input[type="text"] {
+  width: 100%;
+  border: 2px solid #aaa;
+  border-radius: 4px;
+  margin: 8px 0;
+  outline: none;
+  padding: 8px;
+  box-sizing: border-box;
+  transition: 0.3s;
+}
+
+
+/* Change the colour on focus */
+.inputWithIcon input[type="text"]:focus {
+/*  border-color: tomato;
+    box-shadow: 0 0 8px 0 tomato; 
+  text-indent: 35px;*/
+}
+
+.inputWithIcon input[type="text"] {
+  text-indent: 30px !important;
+}
+
+.inputWithIcon {
+  position: relative;
+}
+
+.inputWithIcon i{
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 4px 8px;
+  transition: 0.3s;
+}
+
+/* Not sure this will work; it doesn't with the way the ui.R is currently set up
+.inputWithIcon input[type="text"]:invalid {
+  color: #aaa;
+}*/
+
