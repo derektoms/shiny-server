@@ -92,7 +92,7 @@ navbarPage("receptoR",
                actionLink("linkSearch","searching for expression data"),
                " to design your own experiment, or by ",
                actionLink("linkLoad","loading and analysing an existing experiment.")),
-               # To proceed, click \'Search for datasets\', above"),
+
                hr(),
                p("code created by Derek Toms, Qing Yun Tong and Matthew Workentine"),
                p("Copyright (C) 2019, code licensed under GPLv3")
@@ -291,8 +291,8 @@ navbarPage("receptoR",
         )
         )
     ),
-        show_waiter_on_load(tagList(
+    show_waiter_on_load(tagList(
         spin_three_bounce(),
-        span("Please wait while receptoR loads...")))
+        span("Please wait while receptoR loads..."),style="color:white;"))
 )
 )
