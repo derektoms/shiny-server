@@ -83,7 +83,7 @@ poolGEO <- dbPool(
 
 poolUserData <- dbPool(
   drv = RSQLite::SQLite(),
-  dbname = "./data/receptoRUserData.sqlite"
+  dbname = "../receptoR_final/data/receptoRUserData.sqlite"
 )
 
 onStop(function() {
