@@ -5,8 +5,8 @@
 # |_|  \___|\___\___| .__/ \__\___/|_| \_\
 #                   |_|
 #
-# August 2019 receptoR v 1.3
-## Last update: 2019-08-05, Derek Toms
+# November 2019 receptoR v 1.4
+## Last update: 2019-11-25, Derek Toms
 ## ui.R
 
 ########################################
@@ -102,7 +102,9 @@ navbarPage("receptoR",
                
         ),
 
-# Search for GSM  ------------------------------------------------------------------------------
+# Search Transcriptome Database ------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
 
     tabPanel("Search Transcriptome Database",
        value = "searchPanel",
@@ -148,9 +150,9 @@ navbarPage("receptoR",
            
            conditionalPanel(condition="input.searchpanel==3",
                h4("Thank you for using receptoR!"), # this should be slightly more informative, along the lines of Process data
-               p(" Please enter your name and any comments/bugs/questions/requests in the box below, then click the \'Download and Process\' button to retrieve the raw files from the NCBI server and process them based on their assigned categories."), # move this off of this page; separate "Help/Comments" button
-               textAreaInput("comments","Comments",width="100%",height="100px",resize="vertical"), # ditto
-               textInput("downloadId","Download ID"), # needs to be mandatory (or filled by default)
+               p(" To download and process raw files, first name your dataset and any comments/bugs/questions/requests in the box below. Click the \'Process\' button to retrieve the raw files from the NCBI server and process them based on the  categories you assigned them to. You can save a local copy of your work with the \'Download Report\' button"), # move this off of this page; separate "Help/Comments" button
+               textInput("downloadId","Dataset name",placeholder="Please enter a memorable name for this dataset"), # needs to be mandatory (or filled by default)
+               textAreaInput("comments","Comments",width="100%",height="100px",resize="vertical"),
                downloadButton("report","Download Report"),
                actionButton("downloadCEL","Process")),
            hr(),
@@ -186,7 +188,10 @@ navbarPage("receptoR",
         
     ),
     
-    # Load Gene Expression Data tab -------------------------------------
+# Load Gene Expression Datasets ---------------------------------------------------------
+# ------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
+
     tabPanel("Load Expression Datasets",
         value="expressionPanel",
         h3("Pick from user-defined experiments to perform analyses"),

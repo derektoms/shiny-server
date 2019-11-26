@@ -5,8 +5,8 @@
 # |_|  \___|\___\___| .__/ \__\___/|_| \_\
 #                   |_|
 #
-# August 2019 receptoR v 1.3
-## Last update: 2019-08-05, Derek Toms
+# November 2019 receptoR v 1.4
+## Last update: 2019-11-25, Derek Toms
 ## functions.R
 
 

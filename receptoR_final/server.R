@@ -5,8 +5,8 @@
 # |_|  \___|\___\___| .__/ \__\___/|_| \_\
 #                   |_|
 #
-# August 2019 receptoR v 1.3
-## Last update: 2019-08-05, Derek Toms
+# November 2019 receptoR v 1.4
+## Last update: 2019-11-25, Derek Toms
 ## server.R
 
 
@@ -349,12 +349,14 @@ rv <- reactiveValues(download_flag = 0)
 # Modal confirming CEL download, and processing function
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_     
 observeEvent(input$downloadCEL, {
+    validate(need(userSamples$finishedtable,"This message doesn't get printed."))
+    if (input$downloadId=="") {
+        showModal(modalDialog(title="Error! Please enter a name for this dataset.",
+        easyClose = TRUE,
+        footer = tagList(
+            modalButton("Cancel"))))
+    }
     if (!eset_is_uploaded){
-        ### 2019-08-26 GEO seems to be having problems
-            # showModal(modalDialog(title="Important! Downloading raw .CEL files from the NCBI server.",HTML("August 26th, 2019<br>It appears as though the NCBI server is having some issues and <strong>receptoR</strong> is currently unable to retrieve CEL files. Please use the 'Download Report' button to save your categorized samples. When the server connection is restored, this CSV file can be used to pick up where you left off. We apologize for the inconvenience."),
-            # easyClose = TRUE,
-            # footer = tagList(
-            #     modalButton("Cancel"))))        
         userSamples$finishedtable %>% group_by(category) %>% summarise(n.gse = n_distinct(series_id)) -> gse.check
         warning <- "Please click below to begin processing the data."
         numCat <- length(gse.check$category)>1
@@ -392,7 +394,8 @@ observeEvent(input$processCEL, {
     userID <<- processData(userSamples$finishedtable, input$downloadId, input$comments, input$gplSelection, poolUserData)
     global$DatasetTable <<- loadUserDatasets(poolUserData)
     removeModal()
-    showModal(modalDialog(title="Your dataset was successfully processed!","Analyse your data in the 'Load Expression Datasets' tab. You can also download a report from this page.",
+    modalText <- paste("Your dataset was successfully processed!","Analyse your data in the 'Load Expression Datasets' tab by loading '",input$downloadID,"'. You can also download a report from this page.",sep="")
+    showModal(modalDialog(title=modalText,
     easyClose = TRUE,
     footer = tagList(
         modalButton("OK"))))# modal
