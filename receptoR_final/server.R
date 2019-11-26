@@ -454,6 +454,9 @@ observeEvent(input$user_data,{
     }
 })
 
+hide_waiter()
+
+
 # Load dataset
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
 output$loadUserExperiments = renderUI({
@@ -707,8 +710,6 @@ output$QC = renderUI({
     # probe = input$pls_probe
     
     get_plsda(sub_eset, genes, probe = FALSE) 
-    
-    hide_waiter()
   })
 
 # PCA plot ----------------------------------------------------------------------------
