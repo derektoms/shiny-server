@@ -167,6 +167,11 @@ withProgress(
 
 # Save user-generated experiments -----------------------------------   
         incProgress(0.1, message = "Saving processed data")
+        ## validate dataset ID
+        if(datasetID==""){
+            datasetID <- paste(strftime(Sys.time(),"%Y%m%d"),"_dataset",sep="")
+        }
+            
         db <- poolCheckout(userDB)
         data <- data.frame(userID = timeStamp, desc = datasetID, comments = userComments, species = gpl)
         dbWriteTable(conn=db, name="userData", data, append=T, row.names=F)
@@ -177,7 +182,7 @@ withProgress(
         incProgress(0.1, message = "Success!")
 }) # end withProgress
     
-        return(timeStamp)
+        return(datasetID)
     
     } else {
         save(userComments,finished_table, file = paste("annotated_gsm_",timeStamp,".rda",sep=''))

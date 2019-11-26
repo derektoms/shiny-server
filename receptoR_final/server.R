@@ -350,12 +350,7 @@ rv <- reactiveValues(download_flag = 0)
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_     
 observeEvent(input$downloadCEL, {
     validate(need(userSamples$finishedtable,"This message doesn't get printed."))
-    if (!isTruthy(input$downloadId)) {
-        showModal(modalDialog(title="Error! Please enter a name for this dataset.",
-        easyClose = TRUE,
-        footer = tagList(
-            modalButton("Cancel"))))
-    }
+
     if (!eset_is_uploaded){
         userSamples$finishedtable %>% group_by(category) %>% summarise(n.gse = n_distinct(series_id)) -> gse.check
         warning <- "Please click below to begin processing the data."
@@ -394,7 +389,7 @@ observeEvent(input$processCEL, {
     userID <<- processData(userSamples$finishedtable, input$downloadId, input$comments, input$gplSelection, poolUserData)
     global$DatasetTable <<- loadUserDatasets(poolUserData)
     removeModal()
-    modalText <- paste("Your dataset was successfully processed!","Analyse your data in the 'Load Expression Datasets' tab by loading '",input$downloadID,"'. You can also download a report from this page.",sep="")
+    modalText <- paste("Your dataset was successfully processed!\n","Analyse your data in the 'Load Expression Datasets' tab by loading '",userID,"'. You can also download a report from this page.",sep="")
     showModal(modalDialog(title=modalText,
     easyClose = TRUE,
     footer = tagList(
