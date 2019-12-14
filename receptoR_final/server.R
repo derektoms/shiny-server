@@ -58,7 +58,7 @@ library(mouse4302cdf)
 source("functions.R")
 ## 2019-03-27 Ran this to get the latest database
 # if(!file.exists('./../data/GEOmetadb.sqlite')) getSQLiteFile()
-load("./../2019-08_genelists.rda")
+load("./../2019-12_genelists.rda")
 
 #------------------------------------------------------------------------------------+
 ### for local work
