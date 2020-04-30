@@ -94,7 +94,7 @@ navbarPage("receptoR",
                actionLink("linkLoad","loading and analysing an existing experiment.")),
 
                hr(),
-               p("code created by Derek Toms, Qing Yun Tong and Matthew Workentine"),
+               p("code created by Derek Toms, Qing Yun Tong and Matthew Workentine with funding from the Canadian National Institute for the Blind, ", tags$a(href="https://cnib.ca/","Click here to donate!"),
                p("Copyright (C) 2019, code licensed under GPLv3")
                #/div
                ),
