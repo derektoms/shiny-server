@@ -58,33 +58,33 @@ library(mouse4302cdf)
 source("functions.R")
 ## 2019-03-27 Ran this to get the latest database
 # if(!file.exists('./../data/GEOmetadb.sqlite')) getSQLiteFile()
-load("./../2019-08_genelists.rda")
+# load("./../2019-08_genelists.rda")
 
 #------------------------------------------------------------------------------------+
 ### for local work
-# load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-12_genelists.rda")
-# poolGEO <- dbPool(
-#   drv = RSQLite::SQLite(),
-#   dbname = "/Volumes/ULTRA/across_array/GEOmetadb.sqlite"
-# )
-#
-# poolUserData <- dbPool(
-#   drv = RSQLite::SQLite(),
-#   dbname = "~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2019-06-15 v1.3 Update/receptoRUserData.sqlite"
-# )
-#------------------------------------------------------------------------------------+
-
-# 2019-03-04
-## Connection to GEO Metadata DB
+load("~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2018-12_genelists.rda")
 poolGEO <- dbPool(
   drv = RSQLite::SQLite(),
-  dbname = "./data/GEOmetadb.sqlite"
+  dbname = "/Volumes/ULTRA/across_array/GEOmetadb.sqlite"
 )
 
 poolUserData <- dbPool(
   drv = RSQLite::SQLite(),
-  dbname = "./data/receptoRUserData.sqlite"
+  dbname = "~/Documents/Retina/CNIB_TuckMacPhee/Bioinformatics/2019-06-15 v1.3 Update/receptoRUserData.sqlite"
 )
+#------------------------------------------------------------------------------------+
+
+# 2019-03-04
+## Connection to GEO Metadata DB
+# poolGEO <- dbPool(
+#   drv = RSQLite::SQLite(),
+#   dbname = "./data/GEOmetadb.sqlite"
+# )
+#
+# poolUserData <- dbPool(
+#   drv = RSQLite::SQLite(),
+#   dbname = "./data/receptoRUserData.sqlite"
+# )
 
 onStop(function() {
   poolClose(poolGEO)
@@ -134,6 +134,33 @@ observeEvent(input$linkSearch, {
       return(queryGSM)
   })
 
+# Column definitions 
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+DBdefs <- list(
+              # list( ### option for "external link" icon next to accession
+              #   targets = c(3,4,5),
+              #   render = JS(
+              #   "function(data, type, row, meta) {return data = '<a target=\"_blank\", title=\"View record on the GEO website\", class=\"table\", href=\"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + encodeURIComponent(data) + '\">' + data + ' <i class=\"fas fa-external-link-alt fa-xs\"></i></a>';}")
+              # ),
+              list( ### link only
+                targets = c(3,4,5),
+                render = JS(
+                "function(data, type, row, meta) {return data = '<a target=\"_blank\", title=\"View record on the GEO website\", class=\"table\", href=\"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + encodeURIComponent(data) + '\">' + data + '</a>';}")
+
+              ),
+              
+              list( ### truncate cell contents at 100 characters
+                targets = "_all",
+                render = JS(
+                "function(data, type, row, meta) {",
+                "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
+                "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
+                "}")
+              ))
+
+# Search Results Table
+#_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+
   output$searchResultsGSM <- DT::renderDataTable({
           searchGSM()}, extensions = 'Buttons', options=list(
               dom = 'Bfrtip',
@@ -145,14 +172,8 @@ observeEvent(input$linkSearch, {
               scrollCollapse=TRUE,
               fixedHeader=TRUE,
               autoWidth=TRUE,
-              columnDefs=list(list(
-              targets = "_all",
-              render = JS(
-                  "function(data, type, row, meta) {",
-                      "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
-                      "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
-                      "}") 
-                      )))) ## typeof data needs to be a string, as a "NA" converted to JS "NULL" breaks things
+              columnDefs=DBdefs
+          )) ## typeof data needs to be a string, as a "NA" converted to JS "NULL" breaks things
 
 # Set up tables to store user-selected data
 #_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
@@ -249,14 +270,7 @@ observeEvent(input$linkSearch, {
                scrollCollapse=TRUE,
                fixedHeader=TRUE,
                autoWidth=TRUE,
-               columnDefs=list(list(
-             targets = "_all",
-             render = JS(
-                 "function(data, type, row, meta) {",
-                     "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
-                     "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
-                     "}")
-                     )))))
+               columnDefs=DBdefs)))
       } else {
          return (datatable(userSamples$df, extensions = 'Buttons', options=list(
              dom = 'Bfrtip',
@@ -268,14 +282,7 @@ observeEvent(input$linkSearch, {
              scrollCollapse=TRUE,
              fixedHeader=TRUE,
              autoWidth=TRUE,
-             columnDefs=list(list(
-             targets = "_all",
-             render = JS(
-                 "function(data, type, row, meta) {",
-                     "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
-                     "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
-                     "}")
-                     )))) %>%
+             columnDefs=DBdefs)) %>%
                      formatStyle('category', target="row", backgroundColor=styleEqual(c(input$cat1, input$cat2, input$cat3), c(rowCol[1], rowCol[2], rowCol[3]))))
       }
   })
@@ -323,14 +330,7 @@ observeEvent(input$assignButton, {
           scrollCollapse=TRUE,
           fixedHeader=TRUE,
           autoWidth=TRUE,
-          columnDefs=list(list(
-          targets = "_all",
-          render = JS(
-              "function(data, type, row, meta) {",
-                  "return type === 'display' && typeof data === 'string' && data.length > 100 ?",
-                  "'<span title=\"' + data + '\">' + data.substr(0, 100) + '...</span>' : data;",
-                  "}")
-          )))) %>%
+          columnDefs=DBdefs)) %>%
       formatStyle('category',target="row",
       backgroundColor=styleEqual(c(input$cat1,input$cat2,input$cat3),c(rowCol[1],rowCol[2],rowCol[3]))
   )}})
